@@ -35,7 +35,7 @@ export default function AboutModal({ isOpen, onClose }: AboutModalProps) {
             <Heart className="w-8 h-8 text-white" />
           </div>
           <h2 className="text-2xl font-bold text-white mb-2">
-            Reporta Viseu
+            Viseu Reporta
           </h2>
           <p className="text-white/90 text-sm">
             Uma ponte entre cidadãos e município

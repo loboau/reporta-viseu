@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { LayoutDashboard, FileText, FolderTree, Settings } from 'lucide-react'
 
 export const metadata = {
-  title: 'Admin - Reporta Viseu',
+  title: 'Admin - Viseu Reporta',
   description: 'Administrative dashboard for managing reports',
 }
 
@@ -38,7 +38,7 @@ export default function AdminLayout({
         <div className="mb-8">
           <Link href="/admin" className="block">
             <h1 className="text-2xl font-bold text-viseu-dark">
-              Reporta <span className="text-viseu-gold">Viseu</span>
+              Viseu <span className="text-viseu-gold">Reporta</span>
             </h1>
             <p className="text-sm text-gray-600 mt-1">Admin Dashboard</p>
           </Link>

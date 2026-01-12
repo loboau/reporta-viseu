@@ -66,7 +66,7 @@ export default function StepSuccess({ data, onNewReport, onRegenerateLetter, isR
   const testEmail = 'teste@reportaviseu.pt'
 
   // Email link com a carta formal
-  const emailLink = `mailto:${testEmail}?subject=${encodeURIComponent(`[${data.reference}] ${data.category?.label || 'Reporte'} - Reporta Viseu`)}&body=${encodeURIComponent(formalLetter)}`
+  const emailLink = `mailto:${testEmail}?subject=${encodeURIComponent(`[${data.reference}] ${data.category?.label || 'Reporte'} - Viseu Reporta`)}&body=${encodeURIComponent(formalLetter)}`
 
   return (
     <div className="space-y-6 animate-fade-in">

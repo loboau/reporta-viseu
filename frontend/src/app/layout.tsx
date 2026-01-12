@@ -18,12 +18,12 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'Reporta Viseu - Comunique Problemas na Cidade',
+  title: 'Viseu Reporta - Comunique Problemas na Cidade',
   description: 'Aplicação de reporte de problemas urbanos para a cidade de Viseu. Comunique buracos, iluminação, lixo e outros problemas.',
   keywords: ['Viseu', 'câmara municipal', 'reporte', 'problemas', 'cidade', 'urbano'],
   authors: [{ name: 'Say What?' }],
   openGraph: {
-    title: 'Reporta Viseu',
+    title: 'Viseu Reporta',
     description: 'Comunique problemas na sua cidade',
     type: 'website',
     locale: 'pt_PT',

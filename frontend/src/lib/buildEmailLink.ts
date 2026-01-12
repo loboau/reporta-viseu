@@ -4,7 +4,7 @@ import { URGENCY_LABELS } from './constants'
 export function buildEmailLink(data: ReportData): string {
   if (!data.category || !data.location) return '#'
 
-  const subject = `[${data.reference}] ${data.category.label} - Reporta Viseu`
+  const subject = `[${data.reference}] ${data.category.label} - Viseu Reporta`
 
   const body = `
 REPORTA VISEU - REPORTE DE PROBLEMA
@@ -41,7 +41,7 @@ ${new Date().toLocaleString('pt-PT', {
 })}
 
 ═══════════════════════════════════════════════════════
-Enviado através de Reporta Viseu
+Enviado através de Viseu Reporta
 Aplicação desenvolvida para a Câmara Municipal de Viseu
   `.trim()
 
@@ -88,7 +88,7 @@ ${new Date().toLocaleString('pt-PT', {
 })}
 
 ═══════════════════════════════════════════════════════
-Enviado através de Reporta Viseu
+Enviado através de Viseu Reporta
 Aplicação desenvolvida para a Câmara Municipal de Viseu
   `.trim()
 }
