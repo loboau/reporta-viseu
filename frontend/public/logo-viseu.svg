@@ -1,0 +1,44 @@
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Octogono amarelo dourado de Viseu -->
+  <path d="M 29.289 4.289 L 70.711 4.289 L 95.711 29.289 L 95.711 70.711 L 70.711 95.711 L 29.289 95.711 L 4.289 70.711 L 4.289 29.289 Z"
+        fill="#E8B923"
+        stroke="#C99E1D"
+        stroke-width="0.5"/>
+
+  <!-- Torre medieval com ameias -->
+  <g id="torre">
+    <!-- Base da torre -->
+    <rect x="32" y="72" width="36" height="3" fill="#2D2D2D"/>
+
+    <!-- Corpo principal da torre -->
+    <rect x="35" y="30" width="30" height="42" fill="#3D3D3D"/>
+
+    <!-- Ameias (merlon pattern) -->
+    <rect x="35" y="25" width="5" height="5" fill="#3D3D3D"/>
+    <rect x="45" y="25" width="5" height="5" fill="#3D3D3D"/>
+    <rect x="55" y="25" width="5" height="5" fill="#3D3D3D"/>
+
+    <!-- Espacos entre ameias (crenels) - vazios -->
+    <rect x="40" y="25" width="5" height="3" fill="#E8B923"/>
+    <rect x="50" y="25" width="5" height="3" fill="#E8B923"/>
+    <rect x="60" y="25" width="5" height="3" fill="#E8B923"/>
+
+    <!-- Porta da torre -->
+    <rect x="43" y="60" width="14" height="12" rx="7" fill="#2D2D2D"/>
+
+    <!-- Janelas -->
+    <rect x="42" y="40" width="6" height="8" rx="1" fill="#2D2D2D"/>
+    <rect x="52" y="40" width="6" height="8" rx="1" fill="#2D2D2D"/>
+    <rect x="42" y="50" width="6" height="6" rx="1" fill="#2D2D2D"/>
+    <rect x="52" y="50" width="6" height="6" rx="1" fill="#2D2D2D"/>
+  </g>
+
+  <!-- Figura do cavaleiro/guerreiro estilizado -->
+  <g id="cavaleiro" fill="white">
+    <!-- Escudo -->
+    <path d="M 50 35 L 47 38 L 47 44 L 50 47 L 53 44 L 53 38 Z" opacity="0.9"/>
+
+    <!-- Elmo/capacete -->
+    <ellipse cx="50" cy="37" rx="3" ry="2.5" opacity="0.9"/>
+  </g>
+</svg>

@@ -1,0 +1,168 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Urgency {
+  BAIXA
+  MEDIA
+  ALTA
+}
+
+enum ReportStatus {
+  PENDENTE
+  PROCESSADO
+  ENVIADO
+  EM_PROGRESSO
+  RESOLVIDO
+  FECHADO
+}
+
+model Category {
+  id              String   @id @default(uuid())
+  slug            String   @unique
+  icon            String
+  label           String
+  sublabel        String
+  departamento    String
+  email           String
+  telefone        String?
+  permiteAnonimo  Boolean  @default(true)
+  ativo           Boolean  @default(true)
+  ordem           Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  reports         Report[]
+
+  @@index([ativo, ordem])
+  @@map("categories")
+}
+
+model Report {
+  id              String        @id @default(uuid())
+  reference       String        @unique
+  latitude        Float
+  longitude       Float
+  address         String
+  freguesia       String?
+  categoryId      String
+  description     String        @db.Text
+  urgency         Urgency       @default(MEDIA)
+  isAnonymous     Boolean       @default(false)
+  name            String?
+  email           String?
+  phone           String?
+  letter          String?       @db.Text
+  status          ReportStatus  @default(PENDENTE)
+  emailSentAt     DateTime?
+  emailSentTo     String?
+  assignedTo      String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  category        Category         @relation(fields: [categoryId], references: [id])
+  photos          Photo[]
+  statusHistory   StatusHistory[]
+  notes           InternalNote[]
+
+  @@index([reference])
+  @@index([categoryId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("reports")
+}
+
+model Photo {
+  id              String   @id @default(uuid())
+  reportId        String?
+  filename        String
+  originalName    String
+  mimeType        String
+  size            Int
+  url             String
+  createdAt       DateTime @default(now())
+
+  report          Report?  @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([reportId])
+  @@map("photos")
+}
+
+model StatusHistory {
+  id              String        @id @default(uuid())
+  reportId        String
+  previousStatus  ReportStatus?
+  newStatus       ReportStatus
+  changedBy       String?
+  notes           String?       @db.Text
+  createdAt       DateTime      @default(now())
+
+  report          Report        @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([reportId])
+  @@index([createdAt])
+  @@map("status_history")
+}
+
+model InternalNote {
+  id              String   @id @default(uuid())
+  reportId        String
+  content         String   @db.Text
+  author          String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  report          Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+
+  @@index([reportId])
+  @@index([createdAt])
+  @@map("internal_notes")
+}
+
+enum UserRole {
+  ADMIN
+  SUPER_ADMIN
+}
+
+model User {
+  id              String      @id @default(uuid())
+  email           String      @unique
+  password        String
+  name            String
+  role            UserRole    @default(ADMIN)
+  isActive        Boolean     @default(true)
+  lastLoginAt     DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  sessions        Session[]
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+model Session {
+  id              String      @id @default(uuid())
+  userId          String
+  refreshToken    String      @unique
+  userAgent       String?
+  ipAddress       String?
+  expiresAt       DateTime
+  createdAt       DateTime    @default(now())
+
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([refreshToken])
+  @@index([expiresAt])
+  @@map("sessions")
+}

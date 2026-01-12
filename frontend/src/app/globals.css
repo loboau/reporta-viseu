@@ -1,0 +1,519 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ====== BASE STYLES - City Guide Theme ====== */
+@layer base {
+  * {
+    @apply border-gray-200;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply min-h-screen text-viseu-dark font-body;
+    background: linear-gradient(180deg, #E8F4FD 0%, #D4E8F7 30%, #E8F4FD 70%, #F0F9FF 100%);
+    background-attachment: fixed;
+  }
+
+  /* Prevent iOS zoom on input focus */
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+
+  /* Smooth focus for accessibility */
+  :focus-visible {
+    @apply outline-none ring-2 ring-viseu-gold ring-offset-2;
+  }
+}
+
+/* ====== COMPONENT STYLES ====== */
+@layer components {
+
+  /* ====== BUTTON COMPONENTS - City Guide Style ====== */
+  .btn-primary {
+    @apply bg-gradient-viseu text-viseu-dark font-semibold
+           px-8 py-4 rounded-3xl transition-all duration-300
+           shadow-gold hover:shadow-gold-lg hover:scale-[1.02]
+           active:scale-95 active:shadow-card
+           disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
+           flex items-center justify-center gap-2;
+  }
+
+  .btn-secondary {
+    @apply bg-white hover:bg-gray-50 text-viseu-dark font-semibold
+           px-8 py-4 rounded-3xl border-2 border-white
+           transition-all duration-300 shadow-soft-md hover:shadow-soft-lg
+           active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
+           flex items-center justify-center gap-2;
+  }
+
+  .btn-outline {
+    @apply bg-white hover:bg-gray-50 text-viseu-gray font-semibold
+           px-6 py-3.5 rounded-2xl border-2 border-gray-200 hover:border-gray-300
+           transition-all duration-200 active:scale-95 shadow-soft hover:shadow-soft-md
+           flex items-center justify-center gap-2;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent hover:bg-white/60 text-viseu-gray font-medium
+           px-4 py-2 rounded-2xl transition-all duration-200 active:scale-95;
+  }
+
+  .btn-icon {
+    @apply w-12 h-12 bg-white rounded-2xl shadow-soft flex items-center justify-center
+           transition-all duration-200 hover:shadow-soft-md hover:scale-105
+           active:scale-95 text-viseu-gray hover:text-viseu-dark;
+  }
+
+  /* ====== CARD COMPONENTS - City Guide Glass Style ====== */
+  .card {
+    @apply bg-white rounded-3xl shadow-soft p-6
+           transition-all duration-300;
+  }
+
+  .card-interactive {
+    @apply card cursor-pointer
+           hover:shadow-soft-lg hover:scale-[1.01]
+           active:scale-[0.99] active:shadow-soft-md;
+  }
+
+  .card-glass {
+    @apply bg-white/70 backdrop-blur-xl rounded-3xl shadow-glass p-6
+           border border-white/40;
+  }
+
+  .card-glass-solid {
+    @apply bg-white/90 backdrop-blur-xl rounded-3xl shadow-glass p-6
+           border border-white/50;
+  }
+
+  .card-float {
+    @apply bg-white rounded-3xl shadow-float p-6;
+  }
+
+  .card-elevated {
+    @apply bg-white rounded-3xl shadow-soft-lg p-6;
+  }
+
+  /* ====== INPUT COMPONENTS - City Guide Pill Style ====== */
+  .input {
+    @apply w-full px-6 py-4 bg-white border-2 border-gray-100 rounded-2xl
+           focus:border-viseu-gold focus:ring-4 focus:ring-viseu-gold/10
+           outline-none transition-all duration-200
+           placeholder:text-gray-400 text-viseu-dark text-base font-medium
+           shadow-soft hover:border-gray-200 hover:shadow-soft-md;
+  }
+
+  .input-pill {
+    @apply w-full px-6 py-4 bg-white border-0 rounded-pill
+           focus:ring-4 focus:ring-viseu-gold/20
+           outline-none transition-all duration-200
+           placeholder:text-gray-400 text-viseu-dark text-base font-medium
+           shadow-soft-md hover:shadow-soft-lg;
+  }
+
+  .input-error {
+    @apply border-category-red focus:border-category-red focus:ring-category-red/10;
+  }
+
+  .textarea {
+    @apply input resize-none leading-relaxed;
+  }
+
+  /* ====== CATEGORY CARD COMPONENTS - City Guide Vibrant Style ====== */
+  .category-card {
+    @apply relative overflow-hidden rounded-3xl p-5
+           transition-all duration-300 ease-out
+           hover:scale-105 hover:-translate-y-1
+           active:scale-95 cursor-pointer
+           flex flex-col items-center justify-center gap-3
+           min-h-[120px];
+  }
+
+  .category-card-icon {
+    @apply w-14 h-14 bg-white rounded-2xl shadow-soft-md
+           flex items-center justify-center
+           transition-all duration-300;
+  }
+
+  .category-card:hover .category-card-icon {
+    @apply scale-110 shadow-soft-lg;
+  }
+
+  .category-card-label {
+    @apply text-sm font-semibold text-white text-center leading-tight;
+  }
+
+  /* Category color variants with vibrant gradients */
+  .category-purple {
+    @apply bg-gradient-to-br from-[#8B5CF6] to-[#7C3AED] shadow-purple text-white;
+  }
+
+  .category-yellow {
+    @apply bg-gradient-to-br from-[#FBBF24] to-[#F59E0B] shadow-yellow-glow text-white;
+  }
+
+  .category-green {
+    @apply bg-gradient-to-br from-[#22C55E] to-[#16A34A] shadow-green text-white;
+  }
+
+  .category-emerald {
+    @apply bg-gradient-to-br from-[#10B981] to-[#059669] shadow-emerald text-white;
+  }
+
+  .category-blue {
+    @apply bg-gradient-to-br from-[#3B82F6] to-[#2563EB] shadow-blue text-white;
+  }
+
+  .category-red {
+    @apply bg-gradient-to-br from-[#EF4444] to-[#DC2626] shadow-red text-white;
+  }
+
+  .category-orange {
+    @apply bg-gradient-to-br from-[#F97316] to-[#EA580C] shadow-orange text-white;
+  }
+
+  .category-pink {
+    @apply bg-gradient-to-br from-[#EC4899] to-[#DB2777] shadow-pink text-white;
+  }
+
+  .category-indigo {
+    @apply bg-gradient-to-br from-[#6366F1] to-[#4F46E5] shadow-indigo text-white;
+  }
+
+  .category-gray {
+    @apply bg-gradient-to-br from-[#6B7280] to-[#4B5563] shadow-soft-md text-white;
+  }
+
+  /* Selected state for categories */
+  .category-card-selected {
+    @apply ring-4 ring-white/90 ring-offset-2 scale-105 -translate-y-1;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2), 0 0 0 4px rgba(255, 255, 255, 0.9);
+  }
+
+  /* ====== LOADING ANIMATION ====== */
+  .spinner {
+    @apply inline-block w-8 h-8 border-4 border-gray-200 border-t-viseu-gold
+           rounded-full animate-spin-slow;
+  }
+
+  .spinner-sm {
+    @apply inline-block w-5 h-5 border-2 border-gray-200 border-t-viseu-gold
+           rounded-full animate-spin-slow;
+  }
+
+  /* ====== PROGRESS BAR ====== */
+  .progress-bar {
+    @apply h-2 bg-white/50 rounded-full overflow-hidden shadow-inner;
+  }
+
+  .progress-bar-fill {
+    @apply h-full bg-gradient-viseu rounded-full transition-all duration-500 ease-out;
+  }
+
+  /* ====== BADGE ====== */
+  .badge {
+    @apply inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold;
+  }
+
+  .badge-gold {
+    @apply bg-viseu-gold/20 text-viseu-dark;
+  }
+
+  .badge-success {
+    @apply bg-category-green/20 text-category-green-dark;
+  }
+
+  .badge-warning {
+    @apply bg-category-orange/20 text-category-orange-dark;
+  }
+
+  .badge-error {
+    @apply bg-category-red/20 text-category-red-dark;
+  }
+
+  .badge-info {
+    @apply bg-category-blue/20 text-category-blue-dark;
+  }
+
+  /* ====== SECTION COMPONENTS ====== */
+  .section-title {
+    @apply text-2xl md:text-3xl font-display font-bold text-viseu-dark;
+  }
+
+  .section-subtitle {
+    @apply text-gray-500 mt-2 text-base;
+  }
+
+  /* ====== FLOATING BADGE - City Guide Style ====== */
+  .floating-badge {
+    @apply w-12 h-12 bg-white rounded-2xl shadow-soft-lg
+           flex items-center justify-center
+           transition-all duration-300 hover:scale-110
+           cursor-pointer;
+  }
+
+  /* ====== MAP CONTROLS - City Guide Style ====== */
+  .map-control-group {
+    @apply bg-white rounded-2xl shadow-soft-lg overflow-hidden;
+  }
+
+  .map-control-btn {
+    @apply w-12 h-12 flex items-center justify-center
+           text-viseu-gray hover:text-viseu-dark hover:bg-gray-50
+           transition-all duration-200 active:bg-gray-100;
+  }
+
+  /* ====== CUSTOM SCROLLBAR ====== */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    @apply bg-viseu-gold/30 rounded-full hover:bg-viseu-gold/50;
+  }
+
+  /* ====== SAFE AREA PADDING ====== */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 20px);
+  }
+
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  /* ====== URGENCY SELECTOR ====== */
+  .urgency-button {
+    @apply flex flex-col items-center gap-2 p-5 rounded-3xl
+           border-2 transition-all duration-300
+           hover:scale-105 active:scale-95 shadow-soft;
+  }
+
+  .urgency-baixa {
+    @apply border-category-green/30 bg-category-green/5 text-category-green-dark;
+  }
+
+  .urgency-baixa-selected {
+    @apply border-category-green bg-category-green/20 shadow-green;
+  }
+
+  .urgency-media {
+    @apply border-category-yellow/30 bg-category-yellow/5 text-category-yellow-dark;
+  }
+
+  .urgency-media-selected {
+    @apply border-category-yellow bg-category-yellow/20 shadow-yellow-glow;
+  }
+
+  .urgency-alta {
+    @apply border-category-red/30 bg-category-red/5 text-category-red-dark;
+  }
+
+  .urgency-alta-selected {
+    @apply border-category-red bg-category-red/20 shadow-red;
+  }
+}
+
+/* ====== UTILITY CLASSES ====== */
+@layer utilities {
+  .animation-delay-100 {
+    animation-delay: 100ms;
+  }
+
+  .animation-delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+
+  .animation-delay-400 {
+    animation-delay: 400ms;
+  }
+
+  .animation-delay-500 {
+    animation-delay: 500ms;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  /* Glass effect utilities */
+  .glass {
+    @apply bg-white/70 backdrop-blur-xl;
+  }
+
+  .glass-strong {
+    @apply bg-white/85 backdrop-blur-2xl;
+  }
+
+  .glass-dark {
+    @apply bg-black/30 backdrop-blur-xl;
+  }
+
+  /* Gradient text */
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-viseu;
+  }
+
+  /* Touch-friendly minimum size */
+  .touch-target {
+    @apply min-w-[44px] min-h-[44px];
+  }
+}
+
+/* ====== LEAFLET MAP OVERRIDES - City Guide Style ====== */
+.leaflet-container {
+  @apply rounded-3xl z-0 font-body;
+  background: #E8F4FD;
+}
+
+.leaflet-popup-content-wrapper {
+  @apply rounded-2xl shadow-float p-0 overflow-hidden;
+}
+
+.leaflet-popup-content {
+  @apply m-0 p-4;
+}
+
+.leaflet-popup-tip {
+  @apply bg-white;
+}
+
+/* Hide default Leaflet zoom controls - we use custom ones */
+.leaflet-control-zoom {
+  display: none !important;
+}
+
+.leaflet-control-attribution {
+  @apply text-xs text-gray-400 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-xl m-3;
+}
+
+/* Custom marker styles */
+.custom-marker {
+  @apply drop-shadow-lg;
+}
+
+.custom-marker-pulse {
+  animation: markerPulse 2s ease-in-out infinite;
+}
+
+@keyframes markerPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+/* ====== PHOTO UPLOAD STYLES ====== */
+.photo-upload-grid {
+  @apply grid grid-cols-3 gap-4;
+}
+
+.photo-upload-item {
+  @apply relative aspect-square rounded-2xl overflow-hidden
+         bg-gray-50 border-2 border-dashed border-gray-200
+         hover:border-viseu-gold hover:bg-viseu-gold/5
+         transition-all duration-200 cursor-pointer
+         flex items-center justify-center shadow-soft;
+}
+
+.photo-upload-item-filled {
+  @apply border-solid border-transparent shadow-soft-md;
+}
+
+/* ====== HEADER OCTAGON LOGO ====== */
+.octagon-logo {
+  clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+}
+
+/* ====== SELECTION CHECKMARK ====== */
+.selection-check {
+  @apply absolute -top-1 -right-1 w-7 h-7 bg-white rounded-full
+         flex items-center justify-center shadow-soft-md
+         animate-bounce-in border-2 border-viseu-gold;
+}
+
+/* ====== STEP INDICATOR DOTS ====== */
+.step-dot {
+  @apply w-3 h-3 rounded-full transition-all duration-300;
+}
+
+.step-dot-active {
+  @apply w-8 bg-gradient-viseu shadow-gold;
+}
+
+.step-dot-completed {
+  @apply bg-category-green shadow-green;
+}
+
+.step-dot-pending {
+  @apply bg-gray-200;
+}
+
+/* ====== FLOATING ELEMENTS ANIMATION ====== */
+@keyframes floatBadge {
+  0%, 100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-5px) rotate(2deg);
+  }
+  75% {
+    transform: translateY(-5px) rotate(-2deg);
+  }
+}
+
+.animate-float-badge {
+  animation: floatBadge 4s ease-in-out infinite;
+}
+
+/* ====== SEARCH DROPDOWN ====== */
+.search-dropdown {
+  @apply absolute z-30 w-full mt-2 bg-white/95 backdrop-blur-xl
+         border border-white/50 rounded-2xl shadow-float
+         max-h-72 overflow-y-auto;
+}
+
+.search-dropdown-item {
+  @apply w-full px-4 py-3 text-left hover:bg-viseu-gold/5
+         transition-colors flex items-start gap-3;
+}
+
+/* ====== LOCATION INFO CARD ====== */
+.location-card {
+  @apply bg-white/95 backdrop-blur-xl rounded-3xl shadow-float p-5
+         border border-white/50;
+}
+
+/* ====== WIZARD NAVIGATION BAR ====== */
+/* Navigation now uses inline Tailwind classes in WizardNavigation component */
+
+/* ====== SUCCESS CONFETTI EFFECT ====== */
+@keyframes confetti {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+.confetti-particle {
+  animation: confetti 3s ease-out forwards;
+}
