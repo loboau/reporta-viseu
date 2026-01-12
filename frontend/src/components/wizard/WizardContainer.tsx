@@ -1,7 +1,7 @@
 'use client'
 
-import React, { useReducer, useCallback, useState } from 'react'
-import { WizardState, WizardAction, ReportData } from '@/types'
+import React, { useReducer, useCallback, useMemo } from 'react'
+import { WizardState, WizardAction, ReportData, Location, Category, Photo, Urgency } from '@/types'
 import { generateReference } from '@/lib/generateReference'
 import WizardNavigation from './WizardNavigation'
 import Step1Location from './Step1Location'
@@ -203,16 +203,16 @@ async function generateLetter(data: ReportData, reference: string): Promise<stri
 export default function WizardContainer() {
   const [state, dispatch] = useReducer(wizardReducer, initialState)
 
-  // Validation functions
-  const canProceedFromStep1 = (): boolean => {
+  // Validation functions - memoized
+  const canProceedFromStep1 = useMemo(() => {
     return state.data.location !== null
-  }
+  }, [state.data.location])
 
-  const canProceedFromStep2 = (): boolean => {
+  const canProceedFromStep2 = useMemo(() => {
     return state.data.category !== null
-  }
+  }, [state.data.category])
 
-  const canProceedFromStep3 = (): boolean => {
+  const canProceedFromStep3 = useMemo(() => {
     if (state.data.isAnonymous) {
       return true
     }
@@ -221,7 +221,48 @@ export default function WizardContainer() {
       state.data.email.trim() !== '' &&
       /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.data.email)
     )
-  }
+  }, [state.data.isAnonymous, state.data.name, state.data.email])
+
+  // Memoized dispatch handlers to prevent unnecessary re-renders
+  const handleLocationChange = useCallback((location: Location) => {
+    dispatch({ type: 'SET_LOCATION', payload: location })
+  }, [])
+
+  const handleCategoryChange = useCallback((category: Category) => {
+    dispatch({ type: 'SET_CATEGORY', payload: category })
+  }, [])
+
+  const handleDescriptionChange = useCallback((description: string) => {
+    dispatch({ type: 'SET_DESCRIPTION', payload: description })
+  }, [])
+
+  const handleAddPhoto = useCallback((photo: Photo) => {
+    dispatch({ type: 'ADD_PHOTO', payload: photo })
+  }, [])
+
+  const handleRemovePhoto = useCallback((id: string) => {
+    dispatch({ type: 'REMOVE_PHOTO', payload: id })
+  }, [])
+
+  const handleUrgencyChange = useCallback((urgency: Urgency) => {
+    dispatch({ type: 'SET_URGENCY', payload: urgency })
+  }, [])
+
+  const handleAnonymousChange = useCallback((isAnonymous: boolean) => {
+    dispatch({ type: 'SET_ANONYMOUS', payload: isAnonymous })
+  }, [])
+
+  const handleNameChange = useCallback((name: string) => {
+    dispatch({ type: 'SET_NAME', payload: name })
+  }, [])
+
+  const handleEmailChange = useCallback((email: string) => {
+    dispatch({ type: 'SET_EMAIL', payload: email })
+  }, [])
+
+  const handlePhoneChange = useCallback((phone: string) => {
+    dispatch({ type: 'SET_PHONE', payload: phone })
+  }, [])
 
   // Submit handler with letter generation
   const handleSubmit = useCallback(async () => {
@@ -244,23 +285,23 @@ export default function WizardContainer() {
   }, [state.data])
 
   // Navigation handlers
-  const handleNext = () => {
-    if (state.currentStep === 1 && canProceedFromStep1()) {
+  const handleNext = useCallback(() => {
+    if (state.currentStep === 1 && canProceedFromStep1) {
       dispatch({ type: 'NEXT_STEP' })
-    } else if (state.currentStep === 2 && canProceedFromStep2()) {
+    } else if (state.currentStep === 2 && canProceedFromStep2) {
       dispatch({ type: 'NEXT_STEP' })
-    } else if (state.currentStep === 3 && canProceedFromStep3()) {
+    } else if (state.currentStep === 3 && canProceedFromStep3) {
       handleSubmit()
     }
-  }
+  }, [state.currentStep, canProceedFromStep1, canProceedFromStep2, canProceedFromStep3, handleSubmit])
 
-  const handleBack = () => {
+  const handleBack = useCallback(() => {
     dispatch({ type: 'PREV_STEP' })
-  }
+  }, [])
 
-  const handleNewReport = () => {
+  const handleNewReport = useCallback(() => {
     dispatch({ type: 'RESET' })
-  }
+  }, [])
 
   // Regenerate letter handler
   const handleRegenerateLetter = useCallback(async () => {
@@ -273,6 +314,32 @@ export default function WizardContainer() {
       dispatch({ type: 'SUBMIT_ERROR', payload: 'Erro ao regenerar a carta.' })
     }
   }, [state.data])
+
+  // Get next button label and disabled state - memoized (must be before conditional return)
+  const nextButtonProps = useMemo(() => {
+    switch (state.currentStep) {
+      case 1:
+        return {
+          label: 'Reporta',
+          disabled: !canProceedFromStep1,
+          isLoading: false,
+        }
+      case 2:
+        return {
+          label: 'Reporta',
+          disabled: !canProceedFromStep2,
+          isLoading: false,
+        }
+      case 3:
+        return {
+          label: state.isSubmitting ? 'A gerar carta...' : 'Gerar Carta',
+          disabled: !canProceedFromStep3 || state.isSubmitting,
+          isLoading: state.isSubmitting,
+        }
+      default:
+        return { label: 'Reporta', disabled: false, isLoading: false }
+    }
+  }, [state.currentStep, state.isSubmitting, canProceedFromStep1, canProceedFromStep2, canProceedFromStep3])
 
   // If submitted, show success screen
   if (state.isSubmitted) {
@@ -287,34 +354,6 @@ export default function WizardContainer() {
       </div>
     )
   }
-
-  // Get next button label and disabled state
-  const getNextButtonProps = () => {
-    switch (state.currentStep) {
-      case 1:
-        return {
-          label: 'Reporta',
-          disabled: !canProceedFromStep1(),
-          isLoading: false,
-        }
-      case 2:
-        return {
-          label: 'Reporta',
-          disabled: !canProceedFromStep2(),
-          isLoading: false,
-        }
-      case 3:
-        return {
-          label: state.isSubmitting ? 'A gerar carta...' : 'Gerar Carta',
-          disabled: !canProceedFromStep3() || state.isSubmitting,
-          isLoading: state.isSubmitting,
-        }
-      default:
-        return { label: 'Reporta', disabled: false, isLoading: false }
-    }
-  }
-
-  const nextButtonProps = getNextButtonProps()
 
   return (
     <div className={state.currentStep === 1 ? '' : 'pb-36 pt-4'}>
@@ -333,9 +372,7 @@ export default function WizardContainer() {
         {state.currentStep === 1 && (
           <Step1Location
             location={state.data.location}
-            onLocationChange={(location) =>
-              dispatch({ type: 'SET_LOCATION', payload: location })
-            }
+            onLocationChange={handleLocationChange}
           />
         )}
 
@@ -346,21 +383,11 @@ export default function WizardContainer() {
             description={state.data.description}
             photos={state.data.photos}
             urgency={state.data.urgency}
-            onCategoryChange={(category) =>
-              dispatch({ type: 'SET_CATEGORY', payload: category })
-            }
-            onDescriptionChange={(description) =>
-              dispatch({ type: 'SET_DESCRIPTION', payload: description })
-            }
-            onAddPhoto={(photo) =>
-              dispatch({ type: 'ADD_PHOTO', payload: photo })
-            }
-            onRemovePhoto={(id) =>
-              dispatch({ type: 'REMOVE_PHOTO', payload: id })
-            }
-            onUrgencyChange={(urgency) =>
-              dispatch({ type: 'SET_URGENCY', payload: urgency })
-            }
+            onCategoryChange={handleCategoryChange}
+            onDescriptionChange={handleDescriptionChange}
+            onAddPhoto={handleAddPhoto}
+            onRemovePhoto={handleRemovePhoto}
+            onUrgencyChange={handleUrgencyChange}
           />
         )}
 
@@ -368,18 +395,10 @@ export default function WizardContainer() {
         {state.currentStep === 3 && (
           <Step3Submit
             data={state.data}
-            onAnonymousChange={(isAnonymous) =>
-              dispatch({ type: 'SET_ANONYMOUS', payload: isAnonymous })
-            }
-            onNameChange={(name) =>
-              dispatch({ type: 'SET_NAME', payload: name })
-            }
-            onEmailChange={(email) =>
-              dispatch({ type: 'SET_EMAIL', payload: email })
-            }
-            onPhoneChange={(phone) =>
-              dispatch({ type: 'SET_PHONE', payload: phone })
-            }
+            onAnonymousChange={handleAnonymousChange}
+            onNameChange={handleNameChange}
+            onEmailChange={handleEmailChange}
+            onPhoneChange={handlePhoneChange}
           />
         )}
       </div>

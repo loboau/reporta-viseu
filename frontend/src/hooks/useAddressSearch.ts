@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { Location } from '@/types'
 import { isPointInViseuConcelho, VISEU_BBOX } from '@/lib/constants'
 
@@ -50,29 +50,40 @@ export function useAddressSearch() {
   const [results, setResults] = useState<AddressSearchResult[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const abortControllerRef = useRef<AbortController | null>(null)
 
-  // Debounced search
+  // Debounced search with abort controller
   useEffect(() => {
     if (!query || query.length < 3) {
       setResults([])
       setError(null)
+      setLoading(false)
       return
+    }
+
+    // Cancel any pending request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
     }
 
     setLoading(true)
     setError(null)
 
     const timeoutId = setTimeout(async () => {
+      // Create new abort controller for this request
+      abortControllerRef.current = new AbortController()
+
       try {
         // Pesquisa com viewbox para dar prioridade ao concelho de Viseu
         const searchQuery = encodeURIComponent(`${query}, Viseu`)
         const viewbox = `${VISEU_BBOX.west},${VISEU_BBOX.north},${VISEU_BBOX.east},${VISEU_BBOX.south}`
         const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?q=${searchQuery}&format=json&limit=15&addressdetails=1&viewbox=${viewbox}&bounded=0&countrycodes=pt`,
+          `https://nominatim.openstreetmap.org/search?q=${searchQuery}&format=json&limit=8&addressdetails=1&viewbox=${viewbox}&bounded=0&countrycodes=pt`,
           {
             headers: {
               'Accept': 'application/json',
             },
+            signal: abortControllerRef.current.signal,
           }
         )
 
@@ -109,21 +120,34 @@ export function useAddressSearch() {
 
         // Limitar a 5 resultados, priorizando os do concelho
         setResults(sortedResults.slice(0, 5))
+        setLoading(false)
       } catch (err) {
+        // Don't set error for aborted requests
+        if (err instanceof Error && err.name === 'AbortError') {
+          return
+        }
         setError(err instanceof Error ? err.message : 'Erro ao pesquisar')
         setResults([])
-      } finally {
         setLoading(false)
       }
-    }, 500) // 500ms debounce
+    }, 400) // 400ms debounce
 
-    return () => clearTimeout(timeoutId)
+    return () => {
+      clearTimeout(timeoutId)
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort()
+      }
+    }
   }, [query])
 
   const clearSearch = useCallback(() => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort()
+    }
     setQuery('')
     setResults([])
     setError(null)
+    setLoading(false)
   }, [])
 
   return {

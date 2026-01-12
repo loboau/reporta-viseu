@@ -44,17 +44,13 @@ export default function PhotoUpload({
         return
       }
 
-      // Create preview
-      const reader = new FileReader()
-      reader.onload = (event) => {
-        const photo: Photo = {
-          id: `${Date.now()}-${Math.random()}`,
-          file,
-          preview: event.target?.result as string,
-        }
-        onAddPhoto(photo)
+      // Create preview using URL.createObjectURL (much faster than FileReader)
+      const photo: Photo = {
+        id: `${Date.now()}-${Math.random()}`,
+        file,
+        preview: URL.createObjectURL(file),
       }
-      reader.readAsDataURL(file)
+      onAddPhoto(photo)
     })
 
     // Reset input

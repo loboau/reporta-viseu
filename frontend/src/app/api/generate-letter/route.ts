@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+// Set max duration for API route (in seconds)
+export const maxDuration = 30
+
 // Tipo para os dados do reporte
 interface ReportData {
   location: {
@@ -136,6 +139,10 @@ PARÁGRAFO FORMAL:`
   try {
     console.log('Chamando Gemini API com descricao:', data.description)
 
+    // Create abort controller with 15 second timeout
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 15000)
+
     const response = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
       {
@@ -158,8 +165,11 @@ PARÁGRAFO FORMAL:`
             maxOutputTokens: 2000,
           },
         }),
+        signal: controller.signal,
       }
     )
+
+    clearTimeout(timeoutId)
 
     console.log('Gemini response status:', response.status)
 
