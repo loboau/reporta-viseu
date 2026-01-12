@@ -9,9 +9,10 @@ import { Location } from '@/types'
 import { MAP_CONFIG, VISEU_CONCELHO_BOUNDS, isPointInViseuConcelho } from '@/lib/constants'
 
 // Câmara Municipal de Viseu location and info
+// Coordinates from: https://mapcarta.com/W282549483
 const CAMARA_VISEU = {
-  lat: 40.657494,
-  lng: -7.914051,
+  lat: 40.65757,
+  lng: -7.91431,
   name: 'Câmara Municipal de Viseu',
   address: 'Praça da República, 3514-501 Viseu',
   phone: '+351 232 427 422',
