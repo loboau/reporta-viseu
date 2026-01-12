@@ -1,6 +1,7 @@
 import { LatLngExpression, LatLngTuple } from 'leaflet'
 
-export const VISEU_CENTER: LatLngExpression = [40.6566, -7.9122]
+// Praça da República, 3514-501 Viseu (centro histórico)
+export const VISEU_CENTER: LatLngExpression = [40.6610, -7.9097]
 
 export const MAP_CONFIG = {
   center: VISEU_CENTER,
