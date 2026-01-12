@@ -65,6 +65,8 @@ export type WizardAction =
   | { type: 'SUBMIT_START' }
   | { type: 'SUBMIT_SUCCESS'; payload: { reference: string; letter: string } }
   | { type: 'SUBMIT_ERROR'; payload: string }
+  | { type: 'REGENERATE_START' }
+  | { type: 'REGENERATE_SUCCESS'; payload: string }
   | { type: 'RESET' }
 
 export interface GeolocationState {
