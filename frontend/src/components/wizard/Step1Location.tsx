@@ -2,12 +2,11 @@
 
 import React, { useEffect, useState, useRef, useCallback } from 'react'
 import dynamic from 'next/dynamic'
-import { MapPin, Navigation, Search, X, Target, ChevronDown, Eye, AlertTriangle } from 'lucide-react'
+import { MapPin, Navigation, Search, X, Target, Eye, AlertTriangle } from 'lucide-react'
 import { Location } from '@/types'
 import { useGeolocation } from '@/hooks/useGeolocation'
 import { useReverseGeocode } from '@/hooks/useReverseGeocode'
 import { useAddressSearch } from '@/hooks/useAddressSearch'
-import { freguesias } from '@/lib/freguesias'
 import { isPointInViseuConcelho } from '@/lib/constants'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 
@@ -36,14 +35,9 @@ export default function Step1Location({
   location,
   onLocationChange,
 }: Step1LocationProps) {
-  const [selectedFreguesia, setSelectedFreguesia] = useState<string>(
-    location?.freguesia || ''
-  )
   const [showDropdown, setShowDropdown] = useState(false)
-  const [showFreguesiaDropdown, setShowFreguesiaDropdown] = useState(false)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
-  const freguesiaDropdownRef = useRef<HTMLDivElement>(null)
 
   // Zoom triggers - increment to trigger zoom (fallback method)
   const [zoomInTrigger, setZoomInTrigger] = useState(0)
@@ -102,7 +96,7 @@ export default function Step1Location({
     }
   }, [addressSearch.results, addressSearch.query])
 
-  // Close dropdowns when clicking outside
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -113,12 +107,6 @@ export default function Step1Location({
       ) {
         setShowDropdown(false)
       }
-      if (
-        freguesiaDropdownRef.current &&
-        !freguesiaDropdownRef.current.contains(event.target as Node)
-      ) {
-        setShowFreguesiaDropdown(false)
-      }
     }
 
     document.addEventListener('mousedown', handleClickOutside)
@@ -126,31 +114,17 @@ export default function Step1Location({
   }, [])
 
   const handleLocationChange = useCallback(async (newLocation: Location) => {
-    onLocationChange({
-      ...newLocation,
-      freguesia: selectedFreguesia || undefined,
-    })
+    onLocationChange(newLocation)
 
     const result = await reverseGeocode(newLocation)
     if (result) {
       onLocationChange({
         ...newLocation,
         address: result.address,
-        freguesia: selectedFreguesia || result.freguesia || undefined,
+        freguesia: result.freguesia || undefined,
       })
     }
-  }, [onLocationChange, reverseGeocode, selectedFreguesia])
-
-  const handleFrequesiaChange = (freguesia: string) => {
-    setSelectedFreguesia(freguesia)
-    setShowFreguesiaDropdown(false)
-    if (location) {
-      onLocationChange({
-        ...location,
-        freguesia: freguesia || undefined,
-      })
-    }
-  }
+  }, [onLocationChange, reverseGeocode])
 
   const [outOfBoundsError, setOutOfBoundsError] = useState<string | null>(null)
 
@@ -395,45 +369,6 @@ export default function Step1Location({
                   <Eye className="w-4 h-4" />
                   <span>Ver no Google Street View</span>
                 </button>
-
-                {/* Freguesia Selector */}
-                <div className="mt-3 relative" ref={freguesiaDropdownRef}>
-                  <button
-                    type="button"
-                    onClick={() => setShowFreguesiaDropdown(!showFreguesiaDropdown)}
-                    className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-xl
-                               text-sm text-gray-600 hover:bg-gray-100 transition-colors w-full"
-                  >
-                    <span className="flex-1 text-left truncate">
-                      {selectedFreguesia || 'Selecionar freguesia (opcional)'}
-                    </span>
-                    <ChevronDown className={`w-4 h-4 transition-transform ${showFreguesiaDropdown ? 'rotate-180' : ''}`} />
-                  </button>
-
-                  {showFreguesiaDropdown && (
-                    <div className="absolute bottom-full left-0 right-0 mb-2 bg-white rounded-xl shadow-float
-                                    max-h-48 overflow-y-auto border border-gray-100 z-30">
-                      <button
-                        type="button"
-                        onClick={() => handleFrequesiaChange('')}
-                        className="w-full px-4 py-2.5 text-left text-sm text-gray-500 hover:bg-gray-50"
-                      >
-                        Nenhuma
-                      </button>
-                      {freguesias.map((f) => (
-                        <button
-                          key={f}
-                          type="button"
-                          onClick={() => handleFrequesiaChange(f)}
-                          className={`w-full px-4 py-2.5 text-left text-sm hover:bg-viseu-gold/5 transition-colors
-                                     ${selectedFreguesia === f ? 'bg-viseu-gold/10 text-viseu-dark font-medium' : 'text-gray-700'}`}
-                        >
-                          {f}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
               </div>
             </div>
           </div>
