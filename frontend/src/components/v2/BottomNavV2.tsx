@@ -1,6 +1,6 @@
 'use client'
 
-import { ChevronRight, Loader2 } from 'lucide-react'
+import { ChevronRight, ChevronLeft, Loader2 } from 'lucide-react'
 
 interface BottomNavV2Props {
   currentStep: number
@@ -13,7 +13,7 @@ interface BottomNavV2Props {
   showBack?: boolean
 }
 
-const TABS = [
+const STEPS = [
   { step: 1, label: 'Localização' },
   { step: 2, label: 'Problema' },
   { step: 3, label: 'Enviar' },
@@ -31,52 +31,65 @@ export function BottomNavV2({
 }: BottomNavV2Props) {
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-40 safe-area-pb">
-      {/* Tabs - Responsive sizing */}
-      <div className="flex justify-center border-b border-gray-100">
-        {TABS.map((tab) => (
+      {/* Step Labels */}
+      <div className="flex justify-between px-6 sm:px-8 pt-3 sm:pt-4">
+        {STEPS.map((step) => (
           <button
-            key={tab.step}
-            onClick={() => onTabClick(tab.step)}
-            disabled={tab.step > currentStep}
-            className={`flex-1 max-w-[120px] px-3 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-medium transition-all relative ${
-              tab.step === currentStep
+            key={step.step}
+            onClick={() => onTabClick(step.step)}
+            disabled={step.step > currentStep}
+            className={`text-xs sm:text-sm font-medium transition-all ${
+              step.step === currentStep
                 ? 'text-gray-900'
-                : tab.step < currentStep
+                : step.step < currentStep
                 ? 'text-gray-500 hover:text-gray-700'
                 : 'text-gray-300 cursor-not-allowed'
             }`}
           >
-            {tab.label}
-            {/* Active indicator */}
-            {tab.step === currentStep && (
-              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900" />
-            )}
+            {step.label}
           </button>
         ))}
       </div>
 
-      {/* Navigation Buttons - Responsive */}
-      <div className="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3">
-        {/* Back Button */}
-        {showBack && currentStep > 1 ? (
+      {/* Progress Line */}
+      <div className="flex items-center gap-1 px-6 sm:px-8 py-2 sm:py-2.5">
+        {STEPS.map((step, index) => (
+          <div key={step.step} className="flex-1 flex items-center">
+            {/* Progress segment */}
+            <div
+              className={`h-1 sm:h-1.5 flex-1 rounded-full transition-all ${
+                step.step <= currentStep
+                  ? 'bg-v2-yellow'
+                  : 'bg-gray-200'
+              }`}
+            />
+            {/* Gap between segments (except last) */}
+            {index < STEPS.length - 1 && <div className="w-1" />}
+          </div>
+        ))}
+      </div>
+
+      {/* Navigation Buttons */}
+      <div className="flex items-center justify-center gap-3 px-4 sm:px-6 pb-3 sm:pb-4">
+        {/* Back Button - Only show if not first step */}
+        {showBack && currentStep > 1 && (
           <button
             onClick={onBack}
-            className="px-4 sm:px-6 py-2 sm:py-2.5 text-sm text-gray-600 font-medium rounded-full hover:bg-gray-100 transition-colors"
+            className="flex items-center gap-1 px-4 sm:px-5 py-2 sm:py-2.5 text-sm text-gray-600 font-medium rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
           >
-            Voltar
+            <ChevronLeft className="w-4 h-4" />
+            <span>Voltar</span>
           </button>
-        ) : (
-          <div /> // Spacer
         )}
 
-        {/* Next/Submit Button */}
+        {/* Next/Submit Button - Centered */}
         <button
           onClick={onNext}
           disabled={nextDisabled || isLoading}
-          className={`flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-sm sm:text-base font-semibold transition-all ${
+          className={`flex items-center gap-1.5 sm:gap-2 px-6 sm:px-8 py-2.5 sm:py-3 rounded-full text-sm sm:text-base font-semibold transition-all ${
             nextDisabled || isLoading
               ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-              : 'bg-v2-yellow text-gray-900 hover:bg-yellow-400 active:scale-95'
+              : 'bg-v2-yellow text-gray-900 hover:bg-yellow-400 active:scale-95 shadow-sm'
           }`}
         >
           {isLoading ? (
