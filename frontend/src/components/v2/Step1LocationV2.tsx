@@ -291,9 +291,13 @@ export default function Step1LocationV2({
         {location ? (
           <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 animate-slide-up">
             <div className="flex items-start gap-2.5 sm:gap-3">
-              {/* R Logo Icon */}
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-v2-pink rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-lg sm:text-xl">R</span>
+              {/* R Logo Icon - Yellow symbol matching the map marker */}
+              <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center flex-shrink-0">
+                <img
+                  src="/v2/logos/Viseu_Reporta_Símbolo_R.png"
+                  alt="Localização"
+                  className="w-full h-full object-contain"
+                />
               </div>
 
               <div className="flex-1 min-w-0">

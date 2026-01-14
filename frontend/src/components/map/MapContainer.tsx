@@ -153,15 +153,15 @@ const createUserLocationIcon = () => {
   })
 }
 
-// Câmara Municipal marker icon - uses the main symbol without letter
+// Câmara Municipal marker icon - uses green pin for official/fixed location
 const createCamaraMarkerIcon = () => {
   if (typeof window === 'undefined') return undefined
 
   return new Icon({
-    iconUrl: '/v2/logos/Viseu_Reporta_Símbolo.png',
-    iconSize: [40, 40],
-    iconAnchor: [20, 40],
-    popupAnchor: [0, -40],
+    iconUrl: '/v2/icons/Icon_Pin_Verde.png',
+    iconSize: [40, 48],
+    iconAnchor: [20, 48],
+    popupAnchor: [0, -48],
   })
 }
 
