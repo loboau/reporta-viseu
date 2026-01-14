@@ -35,10 +35,10 @@ export default function Step2ProblemV2({
   const placeholder = category?.placeholder || defaultPlaceholder
 
   return (
-    <div className="space-y-6 animate-fade-in pb-44">
+    <div className="space-y-4 sm:space-y-6 animate-fade-in pb-44">
       {/* Category Selection */}
       <div>
-        <h2 className="text-lg font-bold text-gray-900 mb-4">
+        <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4">
           Identifique o tipo de problema
         </h2>
         <CategoryGridV2
@@ -48,8 +48,8 @@ export default function Step2ProblemV2({
       </div>
 
       {/* Description */}
-      <div className="bg-white rounded-2xl p-4 shadow-sm">
-        <h2 className="text-lg font-bold text-gray-900 mb-3">
+      <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-sm">
+        <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-2 sm:mb-3">
           Descreva o problema
         </h2>
         <Textarea
@@ -64,17 +64,17 @@ export default function Step2ProblemV2({
       </div>
 
       {/* Photo Upload */}
-      <div className="bg-white rounded-2xl p-4 shadow-sm">
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <h2 className="text-lg font-bold text-gray-900">
-              Adicionar fotos (opcional)
+      <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-sm">
+        <div className="flex items-center justify-between mb-2 sm:mb-3">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-base sm:text-lg font-bold text-gray-900">
+              Adicionar fotos
             </h2>
-            <p className="text-sm text-gray-500 mt-0.5">
-              As fotografias ajudam a resolver o problema mais rapidamente
+            <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+              Opcional - ajuda a resolver mais rapidamente
             </p>
           </div>
-          <span className="text-sm text-gray-400">{photos.length}/5</span>
+          <span className="text-xs sm:text-sm text-gray-400 flex-shrink-0 ml-2">{photos.length}/5</span>
         </div>
         <PhotoUploadV2
           photos={photos}
@@ -84,13 +84,13 @@ export default function Step2ProblemV2({
       </div>
 
       {/* Urgency Level */}
-      <div className="bg-white rounded-2xl p-4 shadow-sm">
-        <div className="mb-4">
-          <h2 className="text-lg font-bold text-gray-900">
+      <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-sm">
+        <div className="mb-3 sm:mb-4">
+          <h2 className="text-base sm:text-lg font-bold text-gray-900">
             Nível de urgência
           </h2>
-          <p className="text-sm text-gray-500 mt-0.5">
-            Para emergências (acidentes, incêndios, etc.), ligue 112
+          <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
+            Emergências: ligue 112
           </p>
         </div>
         <UrgencySelectorV2

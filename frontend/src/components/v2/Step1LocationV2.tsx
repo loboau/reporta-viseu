@@ -154,19 +154,19 @@ export default function Step1LocationV2({
       </div>
 
       {/* Search Bar - V2 Style */}
-      <div className="absolute top-20 left-4 right-4 z-20 max-w-xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-lg">
+      <div className="absolute top-16 sm:top-20 left-3 right-3 sm:left-4 sm:right-4 z-20 max-w-xl mx-auto">
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg">
           <div className="relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 pointer-events-none" />
+            <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400 pointer-events-none" />
             <input
               ref={searchInputRef}
               type="text"
               value={addressSearch.query}
               onChange={(e) => addressSearch.setQuery(e.target.value)}
               placeholder="Pesquisar morada"
-              className="w-full px-12 py-3.5 bg-transparent border-0 rounded-2xl
+              className="w-full px-10 sm:px-12 py-3 sm:py-3.5 bg-transparent border-0 rounded-xl sm:rounded-2xl
                          focus:ring-0 outline-none
-                         placeholder:text-gray-400 text-gray-900 text-base"
+                         placeholder:text-gray-400 text-gray-900 text-sm sm:text-base"
             />
             {addressSearch.query ? (
               <button
@@ -249,23 +249,23 @@ export default function Step1LocationV2({
       </div>
 
       {/* Map Controls - V2 Style */}
-      <div className="absolute right-4 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-3">
-        <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+      <div className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-2 sm:gap-3">
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden">
           <button
             type="button"
-            className="w-11 h-11 flex items-center justify-center border-b border-gray-100 hover:bg-gray-50 transition-colors"
+            className="w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center border-b border-gray-100 hover:bg-gray-50 transition-colors"
             onClick={handleZoomIn}
             aria-label="Aumentar zoom"
           >
-            <span className="text-xl font-medium text-gray-600">+</span>
+            <span className="text-lg sm:text-xl font-medium text-gray-600">+</span>
           </button>
           <button
             type="button"
-            className="w-11 h-11 flex items-center justify-center hover:bg-gray-50 transition-colors"
+            className="w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center hover:bg-gray-50 transition-colors"
             onClick={handleZoomOut}
             aria-label="Diminuir zoom"
           >
-            <span className="text-xl font-medium text-gray-600">−</span>
+            <span className="text-lg sm:text-xl font-medium text-gray-600">−</span>
           </button>
         </div>
 
@@ -274,42 +274,42 @@ export default function Step1LocationV2({
           type="button"
           onClick={geolocation.getCurrentLocation}
           disabled={geolocation.loading}
-          className="w-11 h-11 bg-white rounded-2xl shadow-lg flex items-center justify-center
+          className="w-10 h-10 sm:w-11 sm:h-11 bg-white rounded-xl sm:rounded-2xl shadow-lg flex items-center justify-center
                      transition-all hover:scale-105 active:scale-95"
           aria-label="Usar minha localização"
         >
           {geolocation.loading ? (
             <LoadingSpinner size="sm" />
           ) : (
-            <Target className="w-5 h-5 text-gray-600" />
+            <Target className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
           )}
         </button>
       </div>
 
       {/* Location Info Card - V2 Style */}
-      <div className="absolute bottom-44 left-4 right-4 z-20 max-w-xl mx-auto">
+      <div className="absolute bottom-40 sm:bottom-44 left-3 right-3 sm:left-4 sm:right-4 z-20 max-w-xl mx-auto">
         {location ? (
-          <div className="bg-white rounded-2xl shadow-lg p-4 animate-slide-up">
-            <div className="flex items-start gap-3">
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 animate-slide-up">
+            <div className="flex items-start gap-2.5 sm:gap-3">
               {/* R Logo Icon */}
-              <div className="w-12 h-12 bg-v2-pink rounded-xl flex items-center justify-center flex-shrink-0">
-                <span className="text-white font-bold text-xl">R</span>
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-v2-pink rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
+                <span className="text-white font-bold text-lg sm:text-xl">R</span>
               </div>
 
               <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-gray-900 mb-1">
+                <h3 className="font-bold text-gray-900 text-sm sm:text-base mb-0.5 sm:mb-1">
                   Localização marcada
                 </h3>
 
                 {geocodeLoading ? (
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
                     <LoadingSpinner size="sm" />
                     A obter morada...
                   </div>
                 ) : (
                   <>
                     {location.address && (
-                      <p className="text-sm text-gray-600 line-clamp-2">
+                      <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">
                         {location.address}
                       </p>
                     )}
@@ -319,26 +319,26 @@ export default function Step1LocationV2({
             </div>
           </div>
         ) : (
-          <div className="bg-white rounded-2xl shadow-lg p-4 animate-fade-in">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                <Target className="w-6 h-6 text-gray-400" />
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 animate-fade-in">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
+                <Target className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
               </div>
 
               <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 mb-0.5">
+                <h3 className="font-semibold text-gray-900 text-sm sm:text-base mb-0.5">
                   Onde é o problema?
                 </h3>
-                <p className="text-sm text-gray-500">
+                <p className="text-xs sm:text-sm text-gray-500">
                   Toque no mapa ou use o GPS
                 </p>
               </div>
             </div>
 
             {(geolocation.error || outOfBoundsError) && (
-              <div className="mt-3 p-3 bg-red-50 rounded-xl flex items-center gap-2">
+              <div className="mt-2 sm:mt-3 p-2 sm:p-3 bg-red-50 rounded-lg sm:rounded-xl flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" />
-                <p className="text-sm text-red-600">{geolocation.error || outOfBoundsError}</p>
+                <p className="text-xs sm:text-sm text-red-600">{geolocation.error || outOfBoundsError}</p>
               </div>
             )}
           </div>

@@ -31,14 +31,14 @@ export function BottomNavV2({
 }: BottomNavV2Props) {
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-40 safe-area-pb">
-      {/* Tabs */}
+      {/* Tabs - Responsive sizing */}
       <div className="flex justify-center border-b border-gray-100">
         {TABS.map((tab) => (
           <button
             key={tab.step}
             onClick={() => onTabClick(tab.step)}
             disabled={tab.step > currentStep}
-            className={`px-6 py-3 text-sm font-medium transition-all relative ${
+            className={`flex-1 max-w-[120px] px-3 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-medium transition-all relative ${
               tab.step === currentStep
                 ? 'text-gray-900'
                 : tab.step < currentStep
@@ -55,13 +55,13 @@ export function BottomNavV2({
         ))}
       </div>
 
-      {/* Navigation Buttons */}
-      <div className="flex items-center justify-between px-4 py-3">
+      {/* Navigation Buttons - Responsive */}
+      <div className="flex items-center justify-between px-3 sm:px-4 py-2.5 sm:py-3">
         {/* Back Button */}
         {showBack && currentStep > 1 ? (
           <button
             onClick={onBack}
-            className="px-6 py-2.5 text-gray-600 font-medium rounded-full hover:bg-gray-100 transition-colors"
+            className="px-4 sm:px-6 py-2 sm:py-2.5 text-sm text-gray-600 font-medium rounded-full hover:bg-gray-100 transition-colors"
           >
             Voltar
           </button>
@@ -73,7 +73,7 @@ export function BottomNavV2({
         <button
           onClick={onNext}
           disabled={nextDisabled || isLoading}
-          className={`flex items-center gap-2 px-6 py-2.5 rounded-full font-semibold transition-all ${
+          className={`flex items-center gap-1.5 sm:gap-2 px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-sm sm:text-base font-semibold transition-all ${
             nextDisabled || isLoading
               ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
               : 'bg-v2-yellow text-gray-900 hover:bg-yellow-400 active:scale-95'
@@ -82,7 +82,8 @@ export function BottomNavV2({
           {isLoading ? (
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
-              <span>A processar...</span>
+              <span className="hidden sm:inline">A processar...</span>
+              <span className="sm:hidden">...</span>
             </>
           ) : (
             <>

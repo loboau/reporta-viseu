@@ -62,7 +62,7 @@ export function HeaderV2({ onMenuClick }: HeaderV2Props) {
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
-      <div className="px-4 py-3 flex items-center justify-between">
+      <div className="px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between">
         {/* Logo Section - Using PNG logo */}
         <div className="flex items-center">
           <Image
@@ -70,7 +70,7 @@ export function HeaderV2({ onMenuClick }: HeaderV2Props) {
             alt="Viseu Reporta"
             width={160}
             height={48}
-            className="h-10 w-auto"
+            className="h-8 sm:h-10 w-auto"
             priority
           />
         </div>

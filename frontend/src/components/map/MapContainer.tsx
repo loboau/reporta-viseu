@@ -292,18 +292,6 @@ function MapContainerComponent({
         )}
       </LeafletMap>
 
-      {/* Instruction overlay - only when no location */}
-      {!location && !showOutOfBoundsWarning && (
-        <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
-          <div className="bg-white/95 backdrop-blur-sm px-5 py-3 rounded-2xl shadow-float
-                          text-sm text-gray-700 font-medium flex items-center gap-2
-                          animate-fade-in">
-            <span className="w-2.5 h-2.5 bg-v2-pink rounded-full animate-pulse" />
-            Toque no mapa para marcar
-          </div>
-        </div>
-      )}
-
       {/* Aviso de localização fora do concelho */}
       {showOutOfBoundsWarning && (
         <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none animate-fade-in">

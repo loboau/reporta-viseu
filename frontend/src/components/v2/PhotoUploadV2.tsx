@@ -71,12 +71,12 @@ export function PhotoUploadV2({
       />
 
       {/* Photo Grid - V2 Style */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3">
         {/* Existing Photos */}
         {photos.map((photo) => (
           <div
             key={photo.id}
-            className="relative group aspect-square rounded-2xl overflow-hidden bg-gray-100 shadow-sm"
+            className="relative group aspect-square rounded-xl sm:rounded-2xl overflow-hidden bg-gray-100 shadow-sm"
           >
             <Image
               src={photo.preview}
@@ -87,13 +87,13 @@ export function PhotoUploadV2({
             <button
               type="button"
               onClick={() => onRemovePhoto(photo.id)}
-              className="absolute top-2 right-2 w-7 h-7 bg-white/90 backdrop-blur-sm text-v2-pink
+              className="absolute top-1 right-1 sm:top-2 sm:right-2 w-6 h-6 sm:w-7 sm:h-7 bg-white/90 backdrop-blur-sm text-v2-pink
                          rounded-full flex items-center justify-center
-                         opacity-0 group-hover:opacity-100 sm:opacity-100
+                         opacity-100
                          transition-all hover:bg-white shadow-sm"
               aria-label="Remover fotografia"
             >
-              <X className="w-4 h-4" />
+              <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             </button>
           </div>
         ))}
@@ -103,34 +103,34 @@ export function PhotoUploadV2({
           <button
             type="button"
             onClick={handleButtonClick}
-            className="aspect-square rounded-2xl border-2 border-dashed border-gray-200
+            className="aspect-square rounded-xl sm:rounded-2xl border-2 border-dashed border-gray-200
                        hover:border-gray-300 hover:bg-gray-50
-                       flex flex-col items-center justify-center gap-2
+                       flex flex-col items-center justify-center gap-1.5 sm:gap-2
                        transition-all duration-200 cursor-pointer"
             aria-label="Adicionar fotografia"
           >
             {photos.length === 0 ? (
               <>
                 {/* Use the PNG icon */}
-                <div className="w-12 h-12 flex items-center justify-center">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center">
                   <CategoryIconV2
                     iconPath="/v2/icons/Icon_Foto.png"
                     alt="Tirar Foto"
-                    size={40}
-                    className="opacity-40"
+                    size={32}
+                    className="opacity-40 sm:w-10 sm:h-10"
                   />
                 </div>
-                <span className="text-xs text-gray-400 font-medium">
+                <span className="text-[10px] sm:text-xs text-gray-400 font-medium">
                   Tirar Foto
                 </span>
               </>
             ) : (
               <>
-                <div className="w-10 h-10 rounded-xl bg-gray-100
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gray-100
                                 flex items-center justify-center">
-                  <Plus className="w-5 h-5 text-gray-400" />
+                  <Plus className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                 </div>
-                <span className="text-xs text-gray-400 font-medium">
+                <span className="text-[10px] sm:text-xs text-gray-400 font-medium">
                   Mais
                 </span>
               </>
