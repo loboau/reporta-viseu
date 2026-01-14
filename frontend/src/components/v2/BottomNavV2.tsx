@@ -31,46 +31,38 @@ export function BottomNavV2({
 }: BottomNavV2Props) {
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-40 safe-area-pb">
-      {/* Step Labels */}
-      <div className="flex justify-between px-6 sm:px-8 pt-3 sm:pt-4">
-        {STEPS.map((step) => (
-          <button
-            key={step.step}
-            onClick={() => onTabClick(step.step)}
-            disabled={step.step > currentStep}
-            className={`text-xs sm:text-sm font-medium transition-all ${
-              step.step === currentStep
-                ? 'text-gray-900'
-                : step.step < currentStep
-                ? 'text-gray-500 hover:text-gray-700'
-                : 'text-gray-300 cursor-not-allowed'
-            }`}
-          >
-            {step.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Progress Line */}
-      <div className="flex items-center gap-1 px-6 sm:px-8 py-2 sm:py-2.5">
+      {/* Step Labels + Progress Line */}
+      <div className="flex gap-1 px-6 sm:px-8 pt-3 sm:pt-4">
         {STEPS.map((step, index) => (
-          <div key={step.step} className="flex-1 flex items-center">
+          <div key={step.step} className="flex-1 flex flex-col items-center gap-1.5">
+            {/* Label - centered above progress bar */}
+            <button
+              onClick={() => onTabClick(step.step)}
+              disabled={step.step > currentStep}
+              className={`text-xs sm:text-sm font-medium transition-all text-center ${
+                step.step === currentStep
+                  ? 'text-gray-900'
+                  : step.step < currentStep
+                  ? 'text-gray-500 hover:text-gray-700'
+                  : 'text-gray-300 cursor-not-allowed'
+              }`}
+            >
+              {step.label}
+            </button>
             {/* Progress segment */}
             <div
-              className={`h-1 sm:h-1.5 flex-1 rounded-full transition-all ${
+              className={`h-1 sm:h-1.5 w-full rounded-full transition-all ${
                 step.step <= currentStep
                   ? 'bg-v2-yellow'
                   : 'bg-gray-200'
               }`}
             />
-            {/* Gap between segments (except last) */}
-            {index < STEPS.length - 1 && <div className="w-1" />}
           </div>
         ))}
       </div>
 
       {/* Navigation Buttons */}
-      <div className="flex items-center justify-center gap-3 px-4 sm:px-6 pb-3 sm:pb-4">
+      <div className="flex items-center justify-center gap-3 px-4 sm:px-6 pt-3 pb-3 sm:pb-4">
         {/* Back Button - Only show if not first step */}
         {showBack && currentStep > 1 && (
           <button
