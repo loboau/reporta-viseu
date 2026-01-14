@@ -30,7 +30,7 @@ const PIN_ICONS: Record<PinColor, string> = {
   amarelo: '/v2/icons/Icon_Pin_Amarelo.png',
 }
 
-// V2 marker icon using PNG pins
+// V2 marker icon using PNG pins (for future use with different pin colors)
 const createV2MarkerIcon = (color: PinColor = 'rosa') => {
   if (typeof window === 'undefined') return undefined
 
@@ -41,9 +41,6 @@ const createV2MarkerIcon = (color: PinColor = 'rosa') => {
     popupAnchor: [0, -48],
   })
 }
-
-// Legacy function for backwards compatibility
-const createViseuMarkerIcon = () => createV2MarkerIcon('rosa')
 
 interface MapContainerProps {
   location: Location | null
@@ -142,9 +139,9 @@ function MapController({
   return null
 }
 
-// Câmara Municipal marker icon - uses yellow "R" pin from logos
+// User's selected location marker - uses yellow "R" pin from logos
 // Original image is 421x479px (ratio ~0.88), has pointed bottom like a pin
-const createCamaraMarkerIcon = () => {
+const createUserLocationIcon = () => {
   if (typeof window === 'undefined') return undefined
 
   // Keep aspect ratio: 421/479 ≈ 0.88, so for height 54, width ≈ 47
@@ -153,6 +150,18 @@ const createCamaraMarkerIcon = () => {
     iconSize: [47, 54],
     iconAnchor: [23, 54], // Center-bottom anchor (pin points down)
     popupAnchor: [0, -54],
+  })
+}
+
+// Câmara Municipal marker icon - uses the main symbol without letter
+const createCamaraMarkerIcon = () => {
+  if (typeof window === 'undefined') return undefined
+
+  return new Icon({
+    iconUrl: '/v2/logos/Viseu_Reporta_Símbolo.png',
+    iconSize: [40, 40],
+    iconAnchor: [20, 40],
+    popupAnchor: [0, -40],
   })
 }
 
@@ -172,7 +181,7 @@ function MapContainerComponent({
 
   useEffect(() => {
     setIsMounted(true)
-    setMarkerIcon(createViseuMarkerIcon())
+    setMarkerIcon(createUserLocationIcon())
     setCamaraIcon(createCamaraMarkerIcon())
   }, [])
 
