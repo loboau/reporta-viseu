@@ -317,6 +317,9 @@ export default function Step1LocationV2({
                         {location.address}
                       </p>
                     )}
+                    <p className="text-[10px] sm:text-xs text-gray-400 mt-0.5 font-mono">
+                      {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
+                    </p>
                   </>
                 )}
               </div>
