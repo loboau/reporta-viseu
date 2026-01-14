@@ -38,7 +38,7 @@ export function CategoryGridV2({ selectedCategory, onSelectCategory }: CategoryG
                 iconPath={category.iconPath}
                 alt={category.label}
                 size={24}
-                className="brightness-0 invert sm:w-7 sm:h-7"
+                className="brightness-0 invert"
               />
             </div>
             {/* Label & Sublabel */}

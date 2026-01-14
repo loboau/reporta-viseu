@@ -117,7 +117,7 @@ export function PhotoUploadV2({
                     iconPath="/v2/icons/Icon_Foto.png"
                     alt="Tirar Foto"
                     size={32}
-                    className="opacity-40 sm:w-10 sm:h-10"
+                    className="opacity-40"
                   />
                 </div>
                 <span className="text-[10px] sm:text-xs text-gray-400 font-medium">

@@ -83,7 +83,7 @@ export default function Step3SubmitV2({
                   iconPath={data.category.iconPath}
                   alt={data.category.label}
                   size={18}
-                  className="brightness-0 invert sm:w-5 sm:h-5"
+                  className="brightness-0 invert"
                 />
               </div>
               <div className="flex-1 min-w-0">
@@ -166,7 +166,6 @@ export default function Step3SubmitV2({
                   iconPath={urgencyOption.iconPath}
                   alt={urgencyOption.label}
                   size={18}
-                  className="sm:w-5 sm:h-5"
                 />
               </div>
               <div className="flex-1">
