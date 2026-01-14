@@ -1,10 +1,12 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
+  // Performance: More specific content paths reduce scanning time
   content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
     './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+    './src/hooks/**/*.{js,ts,jsx,tsx}',
+    './src/lib/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     extend: {
@@ -17,6 +19,30 @@ const config: Config = {
           dark: '#1F2937',
           gray: '#374151',
           light: '#F8FAFC',
+        },
+        // V2 Design System Colors
+        v2: {
+          // Category colors
+          purple: '#7C4DFF',
+          yellow: '#FFC107',
+          pink: '#E91E63',
+          green: '#8BC34A',
+          blue: '#2196F3',
+          orange: '#FF9800',
+          gray: '#9E9E9E',
+          'gray-light': '#BDBDBD',
+          // Pin colors
+          'pin-green': '#8BC34A',
+          'pin-yellow': '#FFC107',
+          'pin-pink': '#E91E63',
+          // Urgency backgrounds
+          'urgency-low-bg': '#E8F5E9',
+          'urgency-medium-bg': '#FFF8E1',
+          'urgency-high-bg': '#FCE4EC',
+          // Urgency text/icon colors
+          'urgency-low': '#4CAF50',
+          'urgency-medium': '#FFC107',
+          'urgency-high': '#E91E63',
         },
         // City Guide Style - Vibrant Category Colors
         category: {
@@ -143,6 +169,11 @@ const config: Config = {
         'wiggle': 'wiggle 0.5s ease-in-out',
         'float': 'float 3s ease-in-out infinite',
         'ping-slow': 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+        // V2 Sidebar animations
+        'slide-in-left': 'slideInLeft 0.3s ease-out',
+        'slide-out-left': 'slideOutLeft 0.3s ease-in',
+        'fade-in-overlay': 'fadeInOverlay 0.3s ease-out',
+        'fade-out-overlay': 'fadeOutOverlay 0.3s ease-in',
       },
       keyframes: {
         fadeIn: {
@@ -186,6 +217,23 @@ const config: Config = {
         float: {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-8px)' },
+        },
+        // V2 Sidebar keyframes
+        slideInLeft: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(0)' },
+        },
+        slideOutLeft: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-100%)' },
+        },
+        fadeInOverlay: {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        fadeOutOverlay: {
+          '0%': { opacity: '1' },
+          '100%': { opacity: '0' },
         },
       },
       transitionTimingFunction: {

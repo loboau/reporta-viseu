@@ -26,6 +26,63 @@ export interface Photo {
 
 export type Urgency = 'baixa' | 'media' | 'alta'
 
+// V2 Types
+export type UrgencyV2 = 'pouco_urgente' | 'urgente' | 'perigoso'
+
+export interface CategoryV2 {
+  id: string
+  label: string
+  sublabel: string
+  departamento: string
+  email: string
+  color: string
+  iconPath: string
+  placeholder?: string
+}
+
+export interface ReportDataV2 {
+  location: Location | null
+  category: CategoryV2 | null
+  description: string
+  photos: Photo[]
+  urgency: UrgencyV2
+  isAnonymous: boolean
+  name: string
+  email: string
+  phone: string
+  reference?: string
+  letter?: string
+}
+
+export interface WizardStateV2 {
+  currentStep: number
+  data: ReportDataV2
+  isSubmitting: boolean
+  isSubmitted: boolean
+  submitError: string | null
+}
+
+export type WizardActionV2 =
+  | { type: 'SET_LOCATION'; payload: Location }
+  | { type: 'SET_CATEGORY'; payload: CategoryV2 }
+  | { type: 'SET_DESCRIPTION'; payload: string }
+  | { type: 'ADD_PHOTO'; payload: Photo }
+  | { type: 'REMOVE_PHOTO'; payload: string }
+  | { type: 'SET_URGENCY'; payload: UrgencyV2 }
+  | { type: 'SET_ANONYMOUS'; payload: boolean }
+  | { type: 'SET_NAME'; payload: string }
+  | { type: 'SET_EMAIL'; payload: string }
+  | { type: 'SET_PHONE'; payload: string }
+  | { type: 'NEXT_STEP' }
+  | { type: 'PREV_STEP' }
+  | { type: 'SET_STEP'; payload: number }
+  | { type: 'SUBMIT_START' }
+  | { type: 'SUBMIT_SUCCESS'; payload: { reference: string; letter: string } }
+  | { type: 'SUBMIT_ERROR'; payload: string }
+  | { type: 'REGENERATE_START' }
+  | { type: 'REGENERATE_SUCCESS'; payload: string }
+  | { type: 'RESET' }
+
 export interface ReportData {
   location: Location | null
   category: Category | null

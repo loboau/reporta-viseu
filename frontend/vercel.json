@@ -3,5 +3,9 @@
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
-  "installCommand": "npm install"
+  "installCommand": "npm ci",
+  "env": {
+    "SKIP_ENV_VALIDATION": "true"
+  },
+  "crons": []
 }

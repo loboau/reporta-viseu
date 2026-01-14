@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef, useCallback } from 'react'
 import { MapContainer as LeafletMap, TileLayer, Marker, Popup, useMapEvents, useMap, Polygon } from 'react-leaflet'
-import { LatLngExpression, Icon, DivIcon, Map } from 'leaflet'
+import { LatLngExpression, Icon, Map } from 'leaflet'
 import { Phone, Mail, Globe, AlertTriangle } from 'lucide-react'
 import 'leaflet/dist/leaflet.css'
 import { Location } from '@/types'
@@ -21,38 +21,29 @@ const CAMARA_VISEU = {
 }
 
 
-// Custom Viseu gold marker icon - City Guide style pin
-const createViseuMarkerIcon = () => {
+// V2 Pin colors - uses PNG icons from /v2/icons/
+type PinColor = 'rosa' | 'verde' | 'amarelo'
+
+const PIN_ICONS: Record<PinColor, string> = {
+  rosa: '/v2/icons/Icon_Pin_Rosa.png',
+  verde: '/v2/icons/Icon_Pin_Verde.png',
+  amarelo: '/v2/icons/Icon_Pin_Amarelo.png',
+}
+
+// V2 marker icon using PNG pins
+const createV2MarkerIcon = (color: PinColor = 'rosa') => {
   if (typeof window === 'undefined') return undefined
 
-  return new DivIcon({
-    className: 'custom-marker',
-    html: `
-      <div class="relative">
-        <svg width="48" height="56" viewBox="0 0 48 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <g filter="url(#shadow)">
-            <path d="M24 52C24 52 42 34.5 42 22C42 12.0589 33.9411 4 24 4C14.0589 4 6 12.0589 6 22C6 34.5 24 52 24 52Z" fill="#E8B923"/>
-            <path d="M24 52C24 52 42 34.5 42 22C42 12.0589 33.9411 4 24 4C14.0589 4 6 12.0589 6 22C6 34.5 24 52 24 52Z" fill="url(#gradient)"/>
-            <circle cx="24" cy="22" r="10" fill="white"/>
-            <circle cx="24" cy="22" r="6" fill="#E8B923"/>
-          </g>
-          <defs>
-            <linearGradient id="gradient" x1="24" y1="4" x2="24" y2="52" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#F2D054"/>
-              <stop offset="1" stop-color="#E8B923"/>
-            </linearGradient>
-            <filter id="shadow" x="0" y="0" width="48" height="60" filterUnits="userSpaceOnUse">
-              <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.25"/>
-            </filter>
-          </defs>
-        </svg>
-      </div>
-    `,
-    iconSize: [48, 56],
-    iconAnchor: [24, 56],
-    popupAnchor: [0, -56],
+  return new Icon({
+    iconUrl: PIN_ICONS[color],
+    iconSize: [40, 48],
+    iconAnchor: [20, 48],
+    popupAnchor: [0, -48],
   })
 }
+
+// Legacy function for backwards compatibility
+const createViseuMarkerIcon = () => createV2MarkerIcon('rosa')
 
 interface MapContainerProps {
   location: Location | null
@@ -151,24 +142,17 @@ function MapController({
   return null
 }
 
-// Câmara Municipal marker icon
+// Câmara Municipal marker icon - uses yellow "R" pin from logos
+// Original image is 421x479px (ratio ~0.88), has pointed bottom like a pin
 const createCamaraMarkerIcon = () => {
   if (typeof window === 'undefined') return undefined
 
-  return new DivIcon({
-    className: 'camara-marker',
-    html: `
-      <div class="relative cursor-pointer">
-        <svg width="40" height="48" viewBox="0 0 40 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M20 46C20 46 36 30 36 18C36 9.16344 28.8366 2 20 2C11.1634 2 4 9.16344 4 18C4 30 20 46 20 46Z" fill="#3B82F6"/>
-          <circle cx="20" cy="18" r="8" fill="white"/>
-          <path d="M16 15h8v6h-8z M18 13h4v2h-4z M15 21h10v1h-10z" fill="#3B82F6"/>
-        </svg>
-      </div>
-    `,
-    iconSize: [40, 48],
-    iconAnchor: [20, 48],
-    popupAnchor: [0, -48],
+  // Keep aspect ratio: 421/479 ≈ 0.88, so for height 54, width ≈ 47
+  return new Icon({
+    iconUrl: '/v2/logos/Viseu_Reporta_Símbolo_R.png',
+    iconSize: [47, 54],
+    iconAnchor: [23, 54], // Center-bottom anchor (pin points down)
+    popupAnchor: [0, -54],
   })
 }
 
@@ -181,8 +165,8 @@ function MapContainerComponent({
   onMapReady,
 }: MapContainerProps) {
   const [isMounted, setIsMounted] = useState(false)
-  const [markerIcon, setMarkerIcon] = useState<DivIcon | undefined>(undefined)
-  const [camaraIcon, setCamaraIcon] = useState<DivIcon | undefined>(undefined)
+  const [markerIcon, setMarkerIcon] = useState<Icon | undefined>(undefined)
+  const [camaraIcon, setCamaraIcon] = useState<Icon | undefined>(undefined)
   const [mapInstance, setMapInstance] = useState<Map | null>(null)
   const [showOutOfBoundsWarning, setShowOutOfBoundsWarning] = useState(false)
 
@@ -242,15 +226,15 @@ function MapContainerComponent({
           onOutOfBounds={handleOutOfBounds}
         />
 
-        {/* Limites do Concelho de Viseu */}
+        {/* Limites do Concelho de Viseu - V2 pink */}
         <Polygon
           positions={VISEU_CONCELHO_BOUNDS}
           pathOptions={{
-            color: '#E8B923',
+            color: '#E91E63',
             weight: 2,
-            opacity: 0.8,
-            fillColor: '#E8B923',
-            fillOpacity: 0.05,
+            opacity: 0.7,
+            fillColor: '#E91E63',
+            fillOpacity: 0.03,
             dashArray: '5, 10',
           }}
         />
@@ -312,9 +296,9 @@ function MapContainerComponent({
       {!location && !showOutOfBoundsWarning && (
         <div className="absolute bottom-20 left-1/2 -translate-x-1/2 z-10 pointer-events-none">
           <div className="bg-white/95 backdrop-blur-sm px-5 py-3 rounded-2xl shadow-float
-                          text-sm text-viseu-gray font-medium flex items-center gap-2
+                          text-sm text-gray-700 font-medium flex items-center gap-2
                           animate-fade-in">
-            <span className="w-2.5 h-2.5 bg-viseu-gold rounded-full animate-pulse" />
+            <span className="w-2.5 h-2.5 bg-v2-pink rounded-full animate-pulse" />
             Toque no mapa para marcar
           </div>
         </div>
@@ -334,8 +318,8 @@ function MapContainerComponent({
       {/* Legenda do limite do concelho */}
       <div className="absolute bottom-4 left-4 z-10 pointer-events-none">
         <div className="bg-white/90 backdrop-blur-sm px-3 py-2 rounded-lg shadow-sm
-                        text-xs text-viseu-gray flex items-center gap-2">
-          <span className="w-4 h-0.5 bg-viseu-gold" style={{ borderStyle: 'dashed' }} />
+                        text-xs text-gray-600 flex items-center gap-2">
+          <span className="w-4 h-0.5 bg-v2-pink" style={{ borderStyle: 'dashed' }} />
           Limite do Concelho
         </div>
       </div>

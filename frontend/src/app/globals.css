@@ -291,6 +291,10 @@
     padding-top: env(safe-area-inset-top, 0px);
   }
 
+  .safe-area-pb {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
   /* ====== URGENCY SELECTOR ====== */
   .urgency-button {
     @apply flex flex-col items-center gap-2 p-5 rounded-3xl
