@@ -263,7 +263,6 @@ function MapContainerComponent({
         zoomControl={false}
         // Touch-optimized settings for fluid navigation
         dragging={true}
-        tap={true}
         touchZoom={true}
         doubleClickZoom={true}
         scrollWheelZoom={true}
@@ -274,12 +273,8 @@ function MapContainerComponent({
         easeLinearity={0.2}
         // Disable world copies for cleaner experience
         worldCopyJump={false}
-        // Faster tap response
-        tapTolerance={15}
         // Enable bounce at bounds for natural feel
         bounceAtZoomLimits={true}
-        // Disable keyboard for cleaner mobile experience
-        keyboard={false}
       >
         {/* Voyager map with terrain colors - shows green parks, blue water, elevation */}
         <TileLayer
