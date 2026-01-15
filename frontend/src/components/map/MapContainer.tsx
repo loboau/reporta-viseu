@@ -218,16 +218,11 @@ function MapContainerComponent({
         className="z-0"
         zoomControl={false}
       >
-        {/* Ultra minimal map - light blue-gray base without labels */}
+        {/* Voyager map with terrain colors - shows green parks, blue water, elevation */}
         <TileLayer
           attribution={MAP_CONFIG.attribution}
-          url="https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png"
-          className="map-desaturated"
-        />
-        {/* Subtle labels layer on top */}
-        <TileLayer
-          url="https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png"
-          opacity={0.5}
+          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+          className="map-styled"
         />
 
         <MapController
@@ -305,6 +300,9 @@ function MapContainerComponent({
           </>
         )}
       </LeafletMap>
+
+      {/* Film grain overlay - 400 ISO effect */}
+      <div className="map-grain-overlay rounded-3xl" />
 
       {/* Aviso de localização fora do concelho */}
       {showOutOfBoundsWarning && (
