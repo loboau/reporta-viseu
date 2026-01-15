@@ -467,32 +467,34 @@ export default function WizardContainerV2() {
                 </div>
               )}
 
-              {/* Content Card */}
-              <div className="bg-white rounded-2xl sm:rounded-3xl shadow-sm p-4 sm:p-5">
-              {/* Step 2: Problem */}
-              {state.currentStep === 2 && (
-                <Step2ProblemV2
-                  category={state.data.category}
-                  description={state.data.description}
-                  photos={state.data.photos}
-                  urgency={state.data.urgency}
-                  onCategoryChange={handleCategoryChange}
-                  onDescriptionChange={handleDescriptionChange}
-                  onAddPhoto={handleAddPhoto}
-                  onRemovePhoto={handleRemovePhoto}
-                  onUrgencyChange={handleUrgencyChange}
-                />
-              )}
+              {/* Content Card - same width as bottom nav badge */}
+              <div className="bg-white rounded-2xl sm:rounded-3xl shadow-sm">
+                <div className="p-4 sm:p-5">
+                  {/* Step 2: Problem */}
+                  {state.currentStep === 2 && (
+                    <Step2ProblemV2
+                      category={state.data.category}
+                      description={state.data.description}
+                      photos={state.data.photos}
+                      urgency={state.data.urgency}
+                      onCategoryChange={handleCategoryChange}
+                      onDescriptionChange={handleDescriptionChange}
+                      onAddPhoto={handleAddPhoto}
+                      onRemovePhoto={handleRemovePhoto}
+                      onUrgencyChange={handleUrgencyChange}
+                    />
+                  )}
 
-              {/* Step 3: Submit */}
-              {state.currentStep === 3 && (
-                <Step3SubmitV2
-                  data={state.data}
-                  onNameChange={handleNameChange}
-                  onEmailChange={handleEmailChange}
-                  onPhoneChange={handlePhoneChange}
-                />
-              )}
+                  {/* Step 3: Submit */}
+                  {state.currentStep === 3 && (
+                    <Step3SubmitV2
+                      data={state.data}
+                      onNameChange={handleNameChange}
+                      onEmailChange={handleEmailChange}
+                      onPhoneChange={handlePhoneChange}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </div>
