@@ -383,14 +383,9 @@
   background: #f0f4f8;
 }
 
-/* Ultra minimal map style - desaturated, light blue-gray tint */
+/* Soft, pleasant map style - warm gray with subtle saturation */
 .map-desaturated {
-  filter: saturate(0.3) brightness(1.08) contrast(0.95);
-}
-
-.leaflet-tile-pane {
-  /* Add subtle blue tint overlay effect */
-  filter: hue-rotate(-5deg);
+  filter: saturate(0.5) brightness(1.02) contrast(0.92);
 }
 
 .leaflet-popup-content-wrapper {

@@ -241,16 +241,15 @@ function MapContainerComponent({
           onOutOfBounds={handleOutOfBounds}
         />
 
-        {/* Limites do Concelho de Viseu - V2 pink */}
+        {/* Limites do Concelho de Viseu - apenas tracejado sem fill */}
         <Polygon
           positions={VISEU_CONCELHO_BOUNDS}
           pathOptions={{
-            color: '#E91E63',
+            color: '#9CA3AF',
             weight: 2,
-            opacity: 0.7,
-            fillColor: '#E91E63',
-            fillOpacity: 0.03,
-            dashArray: '5, 10',
+            opacity: 0.6,
+            fill: false,
+            dashArray: '8, 12',
           }}
         />
 
@@ -322,7 +321,7 @@ function MapContainerComponent({
       <div className="absolute bottom-4 left-4 z-10 pointer-events-none">
         <div className="bg-white/90 backdrop-blur-sm px-3 py-2 rounded-lg shadow-sm
                         text-xs text-gray-600 flex items-center gap-2">
-          <span className="w-4 h-0.5 bg-v2-pink" style={{ borderStyle: 'dashed' }} />
+          <span className="w-5 border-t-2 border-dashed border-gray-400" />
           Limite do Concelho
         </div>
       </div>
