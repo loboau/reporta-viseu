@@ -172,6 +172,7 @@ const config: Config = {
         // V2 Sidebar animations
         'slide-in-left': 'slideInLeft 0.3s ease-out',
         'slide-out-left': 'slideOutLeft 0.3s ease-in',
+        'slide-in-right-drawer': 'slideInRightDrawer 0.3s ease-out',
         'fade-in-overlay': 'fadeInOverlay 0.3s ease-out',
         'fade-out-overlay': 'fadeOutOverlay 0.3s ease-in',
       },
@@ -226,6 +227,10 @@ const config: Config = {
         slideOutLeft: {
           '0%': { transform: 'translateX(0)' },
           '100%': { transform: 'translateX(-100%)' },
+        },
+        slideInRightDrawer: {
+          '0%': { transform: 'translateX(100%)' },
+          '100%': { transform: 'translateX(0)' },
         },
         fadeInOverlay: {
           '0%': { opacity: '0' },
