@@ -11,7 +11,7 @@ interface CategoryGridV2Props {
 
 export function CategoryGridV2({ selectedCategory, onSelectCategory }: CategoryGridV2Props) {
   return (
-    <div className="grid grid-cols-3 gap-2 sm:gap-3">
+    <div className="grid grid-cols-3 gap-3 sm:gap-4">
       {categoriesV2.map((category) => {
         const isSelected = selectedCategory?.id === category.id
 
@@ -19,41 +19,36 @@ export function CategoryGridV2({ selectedCategory, onSelectCategory }: CategoryG
           <button
             key={category.id}
             onClick={() => onSelectCategory(category)}
-            className={`flex flex-col items-center gap-1.5 p-2.5 sm:p-3 rounded-2xl transition-all duration-200 min-h-[100px] ${
+            className={`flex flex-col items-center gap-2 transition-all duration-200 ${
               isSelected
-                ? 'ring-2 ring-offset-2 scale-[1.02] bg-white shadow-sm'
-                : 'hover:scale-[1.02] active:scale-95 hover:bg-gray-50'
+                ? 'scale-[1.02]'
+                : 'hover:scale-[1.02] active:scale-95'
             }`}
-            style={{
-              // Use CSS custom property for ring color
-              ['--tw-ring-color' as string]: isSelected ? category.color : undefined,
-            }}
           >
-            {/* Icon Container */}
+            {/* Icon Container - Larger rounded square matching design */}
             <div
-              className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0"
-              style={{ backgroundColor: category.color }}
+              className={`w-[72px] h-[72px] sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl flex items-center justify-center transition-all ${
+                isSelected ? 'ring-2 ring-offset-2 shadow-md' : ''
+              }`}
+              style={{
+                backgroundColor: category.color,
+                ['--tw-ring-color' as string]: isSelected ? category.color : undefined,
+              }}
             >
               <CategoryIconV2
                 iconPath={category.iconPath}
                 alt={category.label}
-                size={24}
-                className="brightness-0 invert"
+                size={32}
+                className="brightness-0 invert sm:scale-110"
               />
             </div>
-            {/* Label & Sublabel */}
-            <div className="flex flex-col items-center w-full px-0.5">
-              <span
-                className={`text-xs font-semibold text-center leading-tight line-clamp-1 w-full ${
-                  isSelected ? 'text-gray-900' : 'text-gray-700'
-                }`}
-              >
-                {category.label}
-              </span>
-              <span className="text-[10px] text-gray-400 text-center leading-tight line-clamp-1 w-full mt-0.5 hidden sm:block">
-                {category.sublabel}
-              </span>
-            </div>
+            {/* Label - Colored to match icon */}
+            <span
+              className="text-xs sm:text-sm font-semibold text-center leading-tight"
+              style={{ color: category.color }}
+            >
+              {category.label}
+            </span>
           </button>
         )
       })}

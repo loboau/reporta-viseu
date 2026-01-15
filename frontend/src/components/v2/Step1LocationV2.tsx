@@ -2,13 +2,19 @@
 
 import React, { useEffect, useState, useRef, useCallback } from 'react'
 import dynamic from 'next/dynamic'
-import { MapPin, Navigation, Search, X, Target, Eye, AlertTriangle } from 'lucide-react'
+import { MapPin, Navigation, Search, X, Target, Eye, AlertTriangle, ChevronRight } from 'lucide-react'
 import { Location } from '@/types'
 import { useGeolocation } from '@/hooks/useGeolocation'
 import { useReverseGeocode } from '@/hooks/useReverseGeocode'
 import { useAddressSearch } from '@/hooks/useAddressSearch'
 import { isPointInViseuConcelho } from '@/lib/constants'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
+
+const STEPS = [
+  { step: 1, label: 'Localização' },
+  { step: 2, label: 'Problema' },
+  { step: 3, label: 'Enviar' },
+]
 
 // Dynamically import map to avoid SSR issues with Leaflet
 const MapContainer = dynamic(
@@ -29,11 +35,15 @@ const MapContainer = dynamic(
 interface Step1LocationV2Props {
   location: Location | null
   onLocationChange: (location: Location) => void
+  onNext: () => void
+  canProceed: boolean
 }
 
 export default function Step1LocationV2({
   location,
   onLocationChange,
+  onNext,
+  canProceed,
 }: Step1LocationV2Props) {
   const [showDropdown, setShowDropdown] = useState(false)
   const searchInputRef = useRef<HTMLInputElement>(null)
@@ -286,56 +296,104 @@ export default function Step1LocationV2({
         </button>
       </div>
 
-      {/* Location Info Card - Only shows when location is selected */}
-      {location && (
-        <div className="absolute bottom-20 sm:bottom-32 left-3 right-3 sm:left-4 sm:right-4 z-20 max-w-xl mx-auto">
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-2.5 sm:p-4 animate-slide-up">
-            <div className="flex items-start gap-2 sm:gap-3">
-              {/* R Logo Icon - Yellow symbol matching the map marker */}
-              <div className="w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center flex-shrink-0">
-                <img
-                  src="/v2/logos/Viseu_Reporta_Símbolo_R.png"
-                  alt="Localização"
-                  className="w-full h-full object-contain"
-                />
+      {/* Bottom Card - Fixed at bottom with steps + location info + button */}
+      <div className="absolute bottom-0 left-0 right-0 z-20 safe-area-pb">
+        <div className="bg-white rounded-t-2xl sm:rounded-t-3xl shadow-lg">
+          {/* Steps Progress */}
+          <div className="flex gap-1 px-4 sm:px-6 pt-3 sm:pt-4">
+            {STEPS.map((step) => (
+              <div key={step.step} className="flex-1 flex flex-col items-center gap-1">
+                <span className={`text-[10px] sm:text-xs font-medium ${
+                  step.step === 1 ? 'text-gray-900' : 'text-gray-300'
+                }`}>
+                  {step.label}
+                </span>
+                <div className={`h-1 w-full rounded-full ${
+                  step.step === 1 ? 'bg-v2-yellow' : 'bg-gray-200'
+                }`} />
               </div>
+            ))}
+          </div>
 
-              <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-gray-900 text-xs sm:text-base mb-0.5">
-                  Localização marcada
-                </h3>
+          {/* Location Info + Button */}
+          <div className="p-3 sm:p-4">
+            {location ? (
+              <div className="flex items-center gap-2 sm:gap-3">
+                {/* R Logo Icon */}
+                <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center flex-shrink-0">
+                  <img
+                    src="/v2/logos/Viseu_Reporta_Símbolo_R.png"
+                    alt="Localização"
+                    className="w-full h-full object-contain"
+                  />
+                </div>
 
-                {geocodeLoading ? (
-                  <div className="flex items-center gap-2 text-[10px] sm:text-sm text-gray-600">
-                    <LoadingSpinner size="sm" />
-                    A obter morada...
-                  </div>
-                ) : (
-                  <>
-                    {location.address && (
-                      <p className="text-[10px] sm:text-sm text-gray-600 line-clamp-1 sm:line-clamp-2">
-                        {location.address}
-                      </p>
-                    )}
-                  </>
-                )}
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-gray-900 text-xs sm:text-sm">
+                    Localização marcada
+                  </h3>
+                  {geocodeLoading ? (
+                    <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-gray-500">
+                      <LoadingSpinner size="sm" />
+                      A obter morada...
+                    </div>
+                  ) : location.address ? (
+                    <p className="text-[10px] sm:text-xs text-gray-500 line-clamp-1">
+                      {location.address}
+                    </p>
+                  ) : null}
+                </div>
+
+                {/* Next Button */}
+                <button
+                  onClick={onNext}
+                  disabled={!canProceed}
+                  className={`flex items-center gap-1 px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all ${
+                    canProceed
+                      ? 'bg-v2-yellow text-gray-900 hover:bg-yellow-400 active:scale-95 shadow-sm'
+                      : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  }`}
+                >
+                  <span>Seguinte</span>
+                  <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                </button>
               </div>
-            </div>
+            ) : (
+              <div className="flex items-center gap-2 sm:gap-3">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                  <Target className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
+                </div>
+
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900 text-xs sm:text-sm">
+                    Toque no mapa
+                  </h3>
+                  <p className="text-[10px] sm:text-xs text-gray-500">
+                    ou use o GPS para marcar a localização
+                  </p>
+                </div>
+
+                {/* Disabled Button */}
+                <button
+                  disabled
+                  className="flex items-center gap-1 px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold bg-gray-200 text-gray-400 cursor-not-allowed"
+                >
+                  <span>Seguinte</span>
+                  <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                </button>
+              </div>
+            )}
+
+            {/* Error message */}
+            {(geolocation.error || outOfBoundsError) && (
+              <div className="mt-2 p-2 bg-red-50 rounded-lg flex items-center gap-2">
+                <AlertTriangle className="w-3.5 h-3.5 text-red-500 flex-shrink-0" />
+                <p className="text-[10px] sm:text-xs text-red-600">{geolocation.error || outOfBoundsError}</p>
+              </div>
+            )}
           </div>
         </div>
-      )}
-
-      {/* Error message - Shows only when there's an error and no location */}
-      {!location && (geolocation.error || outOfBoundsError) && (
-        <div className="absolute bottom-20 sm:bottom-32 left-3 right-3 sm:left-4 sm:right-4 z-20 max-w-xl mx-auto">
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-2.5 sm:p-4 animate-fade-in">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" />
-              <p className="text-xs sm:text-sm text-red-600">{geolocation.error || outOfBoundsError}</p>
-            </div>
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   )
 }

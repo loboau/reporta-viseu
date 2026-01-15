@@ -6,7 +6,6 @@ import {
   FileText,
   Camera,
   User,
-  Shield,
   CheckCircle2,
 } from 'lucide-react'
 import { ReportDataV2 } from '@/types'
@@ -17,7 +16,6 @@ import { urgencyOptionsV2 } from '@/lib/categoriesV2'
 
 interface Step3SubmitV2Props {
   data: ReportDataV2
-  onAnonymousChange: (isAnonymous: boolean) => void
   onNameChange: (name: string) => void
   onEmailChange: (email: string) => void
   onPhoneChange: (phone: string) => void
@@ -25,7 +23,6 @@ interface Step3SubmitV2Props {
 
 export default function Step3SubmitV2({
   data,
-  onAnonymousChange,
   onNameChange,
   onEmailChange,
   onPhoneChange,
@@ -182,80 +179,47 @@ export default function Step3SubmitV2({
         )}
       </div>
 
-      {/* Anonymous Toggle */}
+      {/* Contact Information */}
       <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-sm">
-        <div className="flex items-start gap-2.5 sm:gap-3">
-          <div className="w-9 h-9 sm:w-10 sm:h-10 bg-v2-yellow/20 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
-            <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-v2-yellow" />
+        <div className="flex items-center gap-2.5 sm:gap-3 mb-3 sm:mb-4">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 bg-v2-blue/10 rounded-lg sm:rounded-xl flex items-center justify-center">
+            <User className="w-4 h-4 sm:w-5 sm:h-5 text-v2-blue" />
           </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-0.5 sm:mb-1">
-              <h3 className="font-semibold text-gray-900 text-xs sm:text-sm">
-                Como quer enviar?
-              </h3>
-              <label className="relative inline-flex items-center cursor-pointer flex-shrink-0 ml-2">
-                <input
-                  type="checkbox"
-                  checked={data.isAnonymous}
-                  onChange={(e) => onAnonymousChange(e.target.checked)}
-                  className="sr-only peer"
-                  aria-label="Enviar anonimamente"
-                />
-                <div className="w-10 h-5 sm:w-11 sm:h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-v2-yellow/50 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 sm:after:h-5 sm:after:w-5 after:transition-all peer-checked:bg-v2-yellow"></div>
-              </label>
-            </div>
-            <p className="text-[10px] sm:text-xs text-gray-500">
-              {data.isAnonymous
-                ? 'Anónimo - Sem resposta'
-                : 'Identificado - Recebe resposta'}
-            </p>
-          </div>
+          <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
+            Dados de Contacto
+          </h3>
+        </div>
+
+        <div className="space-y-3 sm:space-y-4">
+          <Input
+            label="Nome"
+            type="text"
+            placeholder="O seu nome completo"
+            value={data.name}
+            onChange={(e) => onNameChange(e.target.value)}
+            required
+          />
+
+          <Input
+            label="Email"
+            type="email"
+            placeholder="exemplo@email.com"
+            value={data.email}
+            onChange={(e) => onEmailChange(e.target.value)}
+            required
+            helperText="Para receber atualizações"
+          />
+
+          <Input
+            label="Telefone"
+            type="tel"
+            placeholder="912 345 678"
+            value={data.phone}
+            onChange={(e) => onPhoneChange(e.target.value)}
+            helperText="Opcional"
+          />
         </div>
       </div>
-
-      {/* Contact Information */}
-      {!data.isAnonymous && (
-        <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-sm animate-slide-up">
-          <div className="flex items-center gap-2.5 sm:gap-3 mb-3 sm:mb-4">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 bg-v2-blue/10 rounded-lg sm:rounded-xl flex items-center justify-center">
-              <User className="w-4 h-4 sm:w-5 sm:h-5 text-v2-blue" />
-            </div>
-            <h3 className="font-semibold text-gray-900 text-sm sm:text-base">
-              Dados de Contacto
-            </h3>
-          </div>
-
-          <div className="space-y-3 sm:space-y-4">
-            <Input
-              label="Nome"
-              type="text"
-              placeholder="O seu nome completo"
-              value={data.name}
-              onChange={(e) => onNameChange(e.target.value)}
-              required={!data.isAnonymous}
-            />
-
-            <Input
-              label="Email"
-              type="email"
-              placeholder="exemplo@email.com"
-              value={data.email}
-              onChange={(e) => onEmailChange(e.target.value)}
-              required={!data.isAnonymous}
-              helperText="Para receber atualizações"
-            />
-
-            <Input
-              label="Telefone"
-              type="tel"
-              placeholder="912 345 678"
-              value={data.phone}
-              onChange={(e) => onPhoneChange(e.target.value)}
-              helperText="Opcional"
-            />
-          </div>
-        </div>
-      )}
 
       {/* Info Note */}
       <div className="bg-gray-50 rounded-xl sm:rounded-2xl p-3 sm:p-4">

@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useRef, useCallback } from 'react'
 import { CategoryV2, Photo, UrgencyV2 } from '@/types'
 import Textarea from '@/components/ui/Textarea'
 import { CategoryGridV2 } from './CategoryGridV2'
@@ -30,9 +30,20 @@ export default function Step2ProblemV2({
   onRemovePhoto,
   onUrgencyChange,
 }: Step2ProblemV2Props) {
+  const descriptionRef = useRef<HTMLDivElement>(null)
+
   // Default placeholder when no category is selected
   const defaultPlaceholder = 'Selecione primeiro uma categoria acima para ver um exemplo de descrição...'
   const placeholder = category?.placeholder || defaultPlaceholder
+
+  // Handle category selection with auto-scroll
+  const handleCategorySelect = useCallback((cat: CategoryV2) => {
+    onCategoryChange(cat)
+    // Scroll to description section after a brief delay
+    setTimeout(() => {
+      descriptionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }, 100)
+  }, [onCategoryChange])
 
   return (
     <div className="space-y-4 sm:space-y-6 animate-fade-in pb-44">
@@ -43,12 +54,12 @@ export default function Step2ProblemV2({
         </h2>
         <CategoryGridV2
           selectedCategory={category}
-          onSelectCategory={onCategoryChange}
+          onSelectCategory={handleCategorySelect}
         />
       </div>
 
       {/* Description */}
-      <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-sm">
+      <div ref={descriptionRef} className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-sm scroll-mt-4">
         <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-2 sm:mb-3">
           Descreva o problema
         </h2>

@@ -233,19 +233,16 @@ export default function WizardContainerV2() {
   }, [state.data.location])
 
   const canProceedFromStep2 = useMemo(() => {
-    return state.data.category !== null
-  }, [state.data.category])
+    return state.data.category !== null && state.data.description.trim().length > 0
+  }, [state.data.category, state.data.description])
 
   const canProceedFromStep3 = useMemo(() => {
-    if (state.data.isAnonymous) {
-      return true
-    }
     return (
       state.data.name.trim() !== '' &&
       state.data.email.trim() !== '' &&
       /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.data.email)
     )
-  }, [state.data.isAnonymous, state.data.name, state.data.email])
+  }, [state.data.name, state.data.email])
 
   // Memoized dispatch handlers
   const handleLocationChange = useCallback((location: Location) => {
@@ -272,9 +269,6 @@ export default function WizardContainerV2() {
     dispatch({ type: 'SET_URGENCY', payload: urgency })
   }, [])
 
-  const handleAnonymousChange = useCallback((isAnonymous: boolean) => {
-    dispatch({ type: 'SET_ANONYMOUS', payload: isAnonymous })
-  }, [])
 
   const handleNameChange = useCallback((name: string) => {
     dispatch({ type: 'SET_NAME', payload: name })
@@ -417,6 +411,8 @@ export default function WizardContainerV2() {
           <Step1LocationV2
             location={state.data.location}
             onLocationChange={handleLocationChange}
+            onNext={handleNext}
+            canProceed={canProceedFromStep1}
           />
         )}
 
@@ -439,7 +435,6 @@ export default function WizardContainerV2() {
         {state.currentStep === 3 && (
           <Step3SubmitV2
             data={state.data}
-            onAnonymousChange={handleAnonymousChange}
             onNameChange={handleNameChange}
             onEmailChange={handleEmailChange}
             onPhoneChange={handlePhoneChange}
@@ -447,17 +442,19 @@ export default function WizardContainerV2() {
         )}
       </main>
 
-      {/* Bottom Navigation */}
-      <BottomNavV2
-        currentStep={state.currentStep}
-        onTabClick={handleTabClick}
-        onBack={handleBack}
-        onNext={handleNext}
-        nextLabel={nextButtonProps.label}
-        nextDisabled={nextButtonProps.disabled}
-        isLoading={nextButtonProps.isLoading}
-        showBack={state.currentStep > 1}
-      />
+      {/* Bottom Navigation - Hidden on Step 1 (integrated in map card) */}
+      {state.currentStep > 1 && (
+        <BottomNavV2
+          currentStep={state.currentStep}
+          onTabClick={handleTabClick}
+          onBack={handleBack}
+          onNext={handleNext}
+          nextLabel={nextButtonProps.label}
+          nextDisabled={nextButtonProps.disabled}
+          isLoading={nextButtonProps.isLoading}
+          showBack={state.currentStep > 1}
+        />
+      )}
     </div>
   )
 }
