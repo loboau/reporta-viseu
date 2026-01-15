@@ -50,15 +50,14 @@ export function SidebarDrawer({ isOpen, onClose, onNewReport }: SidebarDrawerPro
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-gray-100">
           <div className="flex items-center gap-3">
-            {/* VR Symbol Logo */}
+            {/* VR Logo */}
             <Image
-              src="/v2/logos/Viseu_Reporta_Símbolo.png"
+              src="/v2/logos/Viseu_Reporta_Logo_Positivo.png"
               alt="Viseu Reporta"
-              width={40}
-              height={40}
-              className="w-10 h-10"
+              width={120}
+              height={36}
+              className="h-8 w-auto"
             />
-            <span className="font-bold text-gray-900">Menu</span>
           </div>
           <button
             onClick={onClose}
