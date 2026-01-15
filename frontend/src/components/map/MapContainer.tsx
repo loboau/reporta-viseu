@@ -218,10 +218,16 @@ function MapContainerComponent({
         className="z-0"
         zoomControl={false}
       >
-        {/* Minimal gray map style - CartoDB Positron (very light and clean) */}
+        {/* Ultra minimal map - light blue-gray base without labels */}
         <TileLayer
           attribution={MAP_CONFIG.attribution}
-          url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
+          url="https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png"
+          className="map-desaturated"
+        />
+        {/* Subtle labels layer on top */}
+        <TileLayer
+          url="https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png"
+          opacity={0.5}
         />
 
         <MapController

@@ -63,8 +63,12 @@ export function HeaderV2({ onMenuClick }: HeaderV2Props) {
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
       <div className="px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between">
-        {/* Logo Section - Using PNG logo */}
-        <div className="flex items-center">
+        {/* Logo Section - Using PNG logo, clickable to reset */}
+        <button
+          onClick={() => window.location.reload()}
+          className="flex items-center"
+          aria-label="Voltar ao início"
+        >
           <Image
             src="/v2/logos/Viseu_Reporta_Logo_Positivo.png"
             alt="Viseu Reporta"
@@ -73,7 +77,7 @@ export function HeaderV2({ onMenuClick }: HeaderV2Props) {
             className="h-10 sm:h-12 w-auto"
             priority
           />
-        </div>
+        </button>
 
         {/* Right Section - Date/Time & Menu */}
         <div className="flex items-center gap-3">

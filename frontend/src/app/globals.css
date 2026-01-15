@@ -380,7 +380,17 @@
 /* ====== LEAFLET MAP OVERRIDES - City Guide Style ====== */
 .leaflet-container {
   @apply rounded-3xl z-0 font-body;
-  background: #E8F4FD;
+  background: #f0f4f8;
+}
+
+/* Ultra minimal map style - desaturated, light blue-gray tint */
+.map-desaturated {
+  filter: saturate(0.3) brightness(1.08) contrast(0.95);
+}
+
+.leaflet-tile-pane {
+  /* Add subtle blue tint overlay effect */
+  filter: hue-rotate(-5deg);
 }
 
 .leaflet-popup-content-wrapper {
