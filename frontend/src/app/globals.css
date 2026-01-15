@@ -381,6 +381,65 @@
 .leaflet-container {
   @apply rounded-3xl z-0 font-body;
   background: #f0f4f8;
+  /* Touch-optimized rendering for fluid navigation */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  /* GPU acceleration for smooth panning */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: transform;
+  /* Prevent text selection during drag */
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* GPU-accelerated tile rendering */
+.leaflet-tile-container {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.leaflet-tile {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  /* Instant tile rendering - no fade delay */
+  opacity: 1 !important;
+}
+
+/* Smooth panning layer */
+.leaflet-map-pane {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+/* Remove all transition delays from map elements */
+.leaflet-pane,
+.leaflet-tile-pane,
+.leaflet-overlay-pane,
+.leaflet-shadow-pane,
+.leaflet-marker-pane,
+.leaflet-tooltip-pane,
+.leaflet-popup-pane {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+/* Disable CSS transitions on map during touch */
+.leaflet-container.leaflet-touch-drag .leaflet-tile-container {
+  transition: none !important;
+}
+
+/* Smooth zoom animation */
+.leaflet-zoom-anim .leaflet-zoom-animated {
+  -webkit-transition: -webkit-transform 0.25s cubic-bezier(0, 0, 0.25, 1);
+  transition: transform 0.25s cubic-bezier(0, 0, 0.25, 1);
+}
+
+/* Prevent jerky marker movement */
+.leaflet-marker-icon {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 /* Film grain effect overlay for map - fine 400 ISO style */
@@ -394,16 +453,38 @@
   z-index: 1000;
   opacity: 0.08;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  /* GPU layer - no impact on touch */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  will-change: opacity;
 }
 
 /* Soft map style with blue-gray roads */
 .map-styled {
   filter: saturate(0.6) brightness(1.02) contrast(0.9) hue-rotate(-8deg);
+  /* GPU acceleration for filter */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
 }
 
 /* Mask for area outside concelho - desaturated effect */
 .outside-mask {
   mix-blend-mode: saturation;
+  /* GPU layer for smooth panning */
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+/* SVG paths in map should be GPU accelerated */
+.leaflet-overlay-pane svg {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+}
+
+.leaflet-overlay-pane svg path {
+  shape-rendering: geometricPrecision;
 }
 
 .leaflet-popup-content-wrapper {
@@ -639,60 +720,25 @@
   background: linear-gradient(90deg, rgba(33, 150, 243, 0.03) 0%, transparent 100%);
 }
 
-/* === 2. ZOOM BUTTON CLICK ANIMATION === */
-/* Ripple effect for zoom buttons */
+/* === 2. ZOOM BUTTON SIMPLE FEEDBACK === */
 .zoom-btn {
-  position: relative;
-  overflow: hidden;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: background-color 0.15s ease;
 }
 
-.zoom-btn::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(33, 150, 243, 0.2);
-  transform: translate(-50%, -50%);
-  transition: width 0.4s ease-out, height 0.4s ease-out, opacity 0.4s ease-out;
-  opacity: 0;
-}
-
-.zoom-btn:active::after {
-  width: 120%;
-  height: 120%;
-  opacity: 1;
-  transition: width 0s, height 0s, opacity 0s;
-}
-
-/* Icon rotation on click - plus rotates clockwise, minus counter-clockwise */
-.zoom-btn-icon {
-  transition: all 0.25s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-}
-
-.zoom-btn:active .zoom-btn-icon {
-  transform: scale(0.85);
-}
-
-.zoom-btn-plus:active .zoom-btn-icon {
-  transform: scale(0.85) rotate(90deg);
-}
-
-.zoom-btn-minus:active .zoom-btn-icon {
-  transform: scale(0.85) rotate(-90deg);
-}
-
-/* Hover glow effect */
 .zoom-btn:hover {
-  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  background-color: #f5f5f5;
+}
+
+.zoom-btn:active {
+  background-color: #eeeeee;
+}
+
+.zoom-btn-icon {
+  transition: color 0.15s ease;
 }
 
 .zoom-btn:hover .zoom-btn-icon {
-  color: #2196F3;
-  transform: scale(1.1);
+  color: #333;
 }
 
 /* === 3. GPS/LOCATION BUTTON PULSE EFFECT === */
@@ -788,12 +834,6 @@
 
 /* === MOBILE TOUCH FEEDBACK ENHANCEMENTS === */
 @media (hover: none) and (pointer: coarse) {
-  /* Stronger visual feedback for touch devices */
-  .zoom-btn:active {
-    background: rgba(33, 150, 243, 0.1);
-    transform: scale(0.96);
-  }
-
   .gps-btn:active {
     background: rgba(33, 150, 243, 0.1);
     transform: scale(0.94);
@@ -802,11 +842,6 @@
   .search-bar-animated:focus-within {
     transform: scale(1.01);
   }
-
-  /* Faster animations for touch responsiveness */
-  .zoom-btn::after {
-    transition: width 0.3s ease-out, height 0.3s ease-out, opacity 0.3s ease-out;
-  }
 }
 
 /* === REDUCED MOTION PREFERENCE === */
@@ -814,8 +849,6 @@
   .search-bar-animated,
   .search-icon-animated,
   .search-input-animated,
-  .zoom-btn,
-  .zoom-btn-icon,
   .gps-btn,
   .gps-icon {
     animation: none;
@@ -825,10 +858,6 @@
   .gps-btn::before,
   .gps-btn::after {
     animation: none;
-    display: none;
-  }
-
-  .zoom-btn::after {
     display: none;
   }
 }

@@ -36,8 +36,8 @@ export function BottomNavV2({
     <div className="w-full p-3 sm:p-4">
       {/* Step 1: Location display with VR yellow icon */}
       {currentStep === 1 && (
-        <div className="flex items-center gap-3 mb-3 px-1">
-          <div className="w-10 h-10 sm:w-11 sm:h-11 flex-shrink-0">
+        <div className="flex items-start gap-3 mb-3 px-1">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 flex-shrink-0 mt-0.5">
             <Image
               src="/v2/icons/Icon_Pin_Amarelo.png"
               alt="Localização"
@@ -48,7 +48,7 @@ export function BottomNavV2({
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-xs text-gray-400 font-medium mb-0.5">Localização marcada</p>
-            <p className="text-sm sm:text-base text-gray-700 font-medium truncate">
+            <p className="text-sm sm:text-base text-gray-700 font-medium leading-snug">
               {isGeocodingLoading ? (
                 <span className="text-gray-400 font-normal">A obter morada...</span>
               ) : location?.address ? (
@@ -63,19 +63,19 @@ export function BottomNavV2({
         </div>
       )}
 
-      {/* Progress bar - thin gradient style */}
+      {/* Progress bar - thin gradient style (yellow to green like VR logo) */}
       <div className="mb-4">
         <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
           <div
             className="h-full rounded-full transition-all duration-500 ease-out"
             style={{
               width: `${progressPercent}%`,
-              background: 'linear-gradient(90deg, #8BC34A 0%, #FFC107 50%, #E91E63 100%)',
+              background: 'linear-gradient(90deg, #FFC107 0%, #8BC34A 100%)',
             }}
           />
         </div>
-        {/* Step labels below progress bar */}
-        <div className="flex justify-between mt-2 px-1">
+        {/* Step labels below progress bar - flex with equal spacing */}
+        <div className="flex justify-between items-center mt-2 px-1">
           {['Localização', 'Problema', 'Enviar'].map((label, index) => {
             const stepNum = index + 1
             const isActive = stepNum === currentStep

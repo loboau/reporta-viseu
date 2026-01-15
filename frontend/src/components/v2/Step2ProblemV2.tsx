@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useCallback } from 'react'
+import React, { useRef, useCallback, useEffect } from 'react'
 import { CategoryV2, Photo, UrgencyV2 } from '@/types'
 import Textarea from '@/components/ui/Textarea'
 import { CategoryGridV2 } from './CategoryGridV2'
@@ -31,67 +31,44 @@ export default function Step2ProblemV2({
   onRemovePhoto,
   onUrgencyChange,
 }: Step2ProblemV2Props) {
-  const descriptionRef = useRef<HTMLDivElement>(null)
+  const descriptionSectionRef = useRef<HTMLDivElement>(null)
+  const previousCategoryRef = useRef<CategoryV2 | null>(null)
 
   // Default placeholder when no category is selected
   const defaultPlaceholder = 'Selecione primeiro uma categoria acima para ver um exemplo de descrição...'
   const placeholder = category?.placeholder || defaultPlaceholder
 
-  // Very smooth, calm scroll animation - works with custom scroll container
-  const smoothScrollTo = useCallback((element: HTMLElement, targetY: number, duration: number = 1200) => {
-    const startY = element.scrollTop
-    const difference = targetY - startY
-    const startTime = performance.now()
+  // Scroll to description section when category changes (not on initial render)
+  useEffect(() => {
+    // Only scroll if category changed from a previous value (not initial load)
+    if (category && previousCategoryRef.current !== category) {
+      // Small delay to ensure DOM is updated with the category badge
+      const timer = setTimeout(() => {
+        if (descriptionSectionRef.current) {
+          const element = descriptionSectionRef.current
+          const rect = element.getBoundingClientRect()
+          const headerOffset = 80 // Account for sticky header
+          const targetY = window.scrollY + rect.top - headerOffset
 
-    // Ease-in-out sine for an extra calm, gentle scroll
-    const easeInOutSine = (t: number): number => -(Math.cos(Math.PI * t) - 1) / 2
+          // Only scroll if the element is not already visible in a good position
+          if (rect.top < headerOffset || rect.top > window.innerHeight * 0.4) {
+            window.scrollTo({
+              top: Math.max(0, targetY),
+              behavior: 'smooth',
+            })
+          }
+        }
+      }, 100)
 
-    const animateScroll = (currentTime: number) => {
-      const elapsed = currentTime - startTime
-      const progress = Math.min(elapsed / duration, 1)
-      const easedProgress = easeInOutSine(progress)
-
-      element.scrollTop = startY + difference * easedProgress
-
-      if (progress < 1) {
-        requestAnimationFrame(animateScroll)
-      }
+      return () => clearTimeout(timer)
     }
+    previousCategoryRef.current = category
+  }, [category])
 
-    requestAnimationFrame(animateScroll)
-  }, [])
-
-  // Handle category selection with precise auto-scroll
+  // Handle category selection
   const handleCategorySelect = useCallback((cat: CategoryV2) => {
     onCategoryChange(cat)
-
-    // Multi-frame delay ensures React updates DOM and browser completes layout
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        setTimeout(() => {
-          if (descriptionRef.current) {
-            // Find the scroll container (either custom container or window)
-            const scrollContainer = document.getElementById('step-content-scroll')
-
-            if (scrollContainer) {
-              // Custom scroll container - calculate relative position
-              const containerRect = scrollContainer.getBoundingClientRect()
-              const elementRect = descriptionRef.current.getBoundingClientRect()
-              const targetY = scrollContainer.scrollTop + (elementRect.top - containerRect.top) - 16
-
-              // Very calm, slow scroll animation over 1200ms
-              smoothScrollTo(scrollContainer, targetY, 1200)
-            } else {
-              // Fallback to window scroll
-              const rect = descriptionRef.current.getBoundingClientRect()
-              const targetY = window.scrollY + rect.top - 64
-              window.scrollTo({ top: targetY, behavior: 'smooth' })
-            }
-          }
-        }, 100) // 100ms delay ensures layout is stable after category badge renders
-      })
-    })
-  }, [onCategoryChange, smoothScrollTo])
+  }, [onCategoryChange])
 
   return (
     <div className="space-y-3 sm:space-y-5">
@@ -107,7 +84,7 @@ export default function Step2ProblemV2({
       </div>
 
       {/* Selected Category Badge + Description */}
-      <div ref={descriptionRef} className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-sm scroll-mt-16">
+      <div ref={descriptionSectionRef} className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-sm scroll-mt-20">
         {/* Selected category mini-badge */}
         {category && (
           <div className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100">

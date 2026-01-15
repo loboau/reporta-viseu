@@ -98,11 +98,11 @@ function MapCenterController({ lat, lng }: { lat: number; lng: number }) {
   return null
 }
 
-// Smooth zoom animation options - calm, premium feel
+// Smooth zoom animation options - stable and calm
 const SMOOTH_ZOOM_OPTIONS = {
   animate: true,
-  duration: 0.5, // 500ms for smooth, calm zoom
-  easeLinearity: 0.1, // Very smooth easing (lower = smoother)
+  duration: 0.35, // 350ms - smooth but not too slow to cause glitches
+  easeLinearity: 0.25, // Standard smooth easing (stable value)
 }
 
 // Component to expose map instance and handle zoom
@@ -261,6 +261,25 @@ function MapContainerComponent({
         style={{ height: '100%', width: '100%' }}
         className="z-0"
         zoomControl={false}
+        // Touch-optimized settings for fluid navigation
+        dragging={true}
+        tap={true}
+        touchZoom={true}
+        doubleClickZoom={true}
+        scrollWheelZoom={true}
+        // Smooth inertia settings - natural deceleration
+        inertia={true}
+        inertiaDeceleration={2500}
+        inertiaMaxSpeed={1500}
+        easeLinearity={0.2}
+        // Disable world copies for cleaner experience
+        worldCopyJump={false}
+        // Faster tap response
+        tapTolerance={15}
+        // Enable bounce at bounds for natural feel
+        bounceAtZoomLimits={true}
+        // Disable keyboard for cleaner mobile experience
+        keyboard={false}
       >
         {/* Voyager map with terrain colors - shows green parks, blue water, elevation */}
         <TileLayer
