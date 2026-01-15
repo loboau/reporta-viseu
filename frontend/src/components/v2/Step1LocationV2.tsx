@@ -366,11 +366,8 @@ export default function Step1LocationV2({
 
                 <div className="flex-1">
                   <h3 className="font-semibold text-gray-900 text-xs sm:text-sm">
-                    Toque no mapa
+                    Toque no mapa ou pesquise a morada
                   </h3>
-                  <p className="text-[10px] sm:text-xs text-gray-500">
-                    ou use o GPS para marcar a localização
-                  </p>
                 </div>
 
                 {/* Disabled Button */}
