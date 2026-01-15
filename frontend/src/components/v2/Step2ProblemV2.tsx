@@ -37,9 +37,9 @@ export default function Step2ProblemV2({
   const defaultPlaceholder = 'Selecione primeiro uma categoria acima para ver um exemplo de descrição...'
   const placeholder = category?.placeholder || defaultPlaceholder
 
-  // Very smooth, calm scroll animation
-  const smoothScrollTo = useCallback((targetY: number, duration: number = 1200) => {
-    const startY = window.scrollY
+  // Very smooth, calm scroll animation - works with custom scroll container
+  const smoothScrollTo = useCallback((element: HTMLElement, targetY: number, duration: number = 1200) => {
+    const startY = element.scrollTop
     const difference = targetY - startY
     const startTime = performance.now()
 
@@ -51,7 +51,7 @@ export default function Step2ProblemV2({
       const progress = Math.min(elapsed / duration, 1)
       const easedProgress = easeInOutSine(progress)
 
-      window.scrollTo(0, startY + difference * easedProgress)
+      element.scrollTop = startY + difference * easedProgress
 
       if (progress < 1) {
         requestAnimationFrame(animateScroll)
@@ -70,12 +70,23 @@ export default function Step2ProblemV2({
       requestAnimationFrame(() => {
         setTimeout(() => {
           if (descriptionRef.current) {
-            // Calculate target position with 64px offset from top
-            const rect = descriptionRef.current.getBoundingClientRect()
-            const targetY = window.scrollY + rect.top - 64
+            // Find the scroll container (either custom container or window)
+            const scrollContainer = document.getElementById('step-content-scroll')
 
-            // Very calm, slow scroll animation over 1200ms
-            smoothScrollTo(targetY, 1200)
+            if (scrollContainer) {
+              // Custom scroll container - calculate relative position
+              const containerRect = scrollContainer.getBoundingClientRect()
+              const elementRect = descriptionRef.current.getBoundingClientRect()
+              const targetY = scrollContainer.scrollTop + (elementRect.top - containerRect.top) - 16
+
+              // Very calm, slow scroll animation over 1200ms
+              smoothScrollTo(scrollContainer, targetY, 1200)
+            } else {
+              // Fallback to window scroll
+              const rect = descriptionRef.current.getBoundingClientRect()
+              const targetY = window.scrollY + rect.top - 64
+              window.scrollTo({ top: targetY, behavior: 'smooth' })
+            }
           }
         }, 100) // 100ms delay ensures layout is stable after category badge renders
       })
