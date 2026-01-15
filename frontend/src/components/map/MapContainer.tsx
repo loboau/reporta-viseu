@@ -162,14 +162,15 @@ const createUserLocationIcon = () => {
 }
 
 // Câmara Municipal marker icon - uses Viseu logo for official/fixed location
+// Increased size to be more proportional to user location pin
 const createCamaraMarkerIcon = () => {
   if (typeof window === 'undefined') return undefined
 
   return new Icon({
     iconUrl: '/v2/icons/Icon_Logo_Viseu.png',
-    iconSize: [52, 52],
-    iconAnchor: [26, 52], // Bottom-center anchor so icon sits above the location point
-    popupAnchor: [0, -52],
+    iconSize: [64, 64],
+    iconAnchor: [32, 64], // Bottom-center anchor so icon sits above the location point
+    popupAnchor: [0, -64],
   })
 }
 
