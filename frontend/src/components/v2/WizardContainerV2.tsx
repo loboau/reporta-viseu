@@ -1,7 +1,6 @@
 'use client'
 
 import React, { useReducer, useCallback, useMemo, useState } from 'react'
-import dynamic from 'next/dynamic'
 import { WizardStateV2, WizardActionV2, ReportDataV2, Location, CategoryV2, Photo, UrgencyV2 } from '@/types'
 import { generateReference } from '@/lib/generateReference'
 import { HeaderV2 } from './HeaderV2'
@@ -11,20 +10,6 @@ import Step1LocationV2 from './Step1LocationV2'
 import Step2ProblemV2 from './Step2ProblemV2'
 import Step3SubmitV2 from './Step3SubmitV2'
 import StepSuccessV2 from './StepSuccessV2'
-import LoadingSpinner from '@/components/ui/LoadingSpinner'
-
-// Dynamically import map to avoid SSR issues with Leaflet
-const MapContainer = dynamic(
-  () => import('@/components/map/MapContainer'),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
-        <LoadingSpinner size="lg" />
-      </div>
-    ),
-  }
-)
 
 // Initial state
 const initialState: WizardStateV2 = {
@@ -241,11 +226,6 @@ async function generateLetter(data: ReportDataV2, reference: string): Promise<st
 export default function WizardContainerV2() {
   const [state, dispatch] = useReducer(wizardReducer, initialState)
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [mapApi, setMapApi] = useState<{ zoomIn: () => void; zoomOut: () => void } | null>(null)
-
-  const handleMapReady = useCallback((api: { zoomIn: () => void; zoomOut: () => void }) => {
-    setMapApi(api)
-  }, [])
 
   // Validation functions
   const canProceedFromStep1 = useMemo(() => {
@@ -415,90 +395,66 @@ export default function WizardContainerV2() {
         onNewReport={handleNewReport}
       />
 
-      {/* Background Map - Only visible on Step 1 */}
-      {state.currentStep === 1 && (
-        <div className="fixed top-14 left-0 right-0 bottom-0 z-0">
-          <MapContainer
+      {/* Main Content */}
+      <main className={state.currentStep === 1 ? '' : 'px-4 py-4 max-w-lg mx-auto'}>
+        {/* Error Message */}
+        {state.submitError && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-2xl animate-fade-in">
+            <p className="text-red-600 text-sm font-medium">
+              {state.submitError}
+            </p>
+          </div>
+        )}
+
+        {/* Step 1: Location */}
+        {state.currentStep === 1 && (
+          <Step1LocationV2
             location={state.data.location}
             onLocationChange={handleLocationChange}
-            onMapReady={handleMapReady}
-            className="h-full w-full"
+            onNext={handleNext}
+            canProceed={canProceedFromStep1}
           />
-        </div>
-      )}
+        )}
 
-      {/* Step 1: Location controls (search, zoom, GPS) */}
-      {state.currentStep === 1 && (
-        <Step1LocationV2
-          location={state.data.location}
-          onLocationChange={handleLocationChange}
-          mapApi={mapApi}
+        {/* Step 2: Problem */}
+        {state.currentStep === 2 && (
+          <Step2ProblemV2
+            category={state.data.category}
+            description={state.data.description}
+            photos={state.data.photos}
+            urgency={state.data.urgency}
+            onCategoryChange={handleCategoryChange}
+            onDescriptionChange={handleDescriptionChange}
+            onAddPhoto={handleAddPhoto}
+            onRemovePhoto={handleRemovePhoto}
+            onUrgencyChange={handleUrgencyChange}
+          />
+        )}
+
+        {/* Step 3: Submit */}
+        {state.currentStep === 3 && (
+          <Step3SubmitV2
+            data={state.data}
+            onNameChange={handleNameChange}
+            onEmailChange={handleEmailChange}
+            onPhoneChange={handlePhoneChange}
+          />
+        )}
+      </main>
+
+      {/* Bottom Navigation - Hidden on Step 1 (integrated in map card) */}
+      {state.currentStep > 1 && (
+        <BottomNavV2
+          currentStep={state.currentStep}
+          onTabClick={handleTabClick}
+          onBack={handleBack}
+          onNext={handleNext}
+          nextLabel={nextButtonProps.label}
+          nextDisabled={nextButtonProps.disabled}
+          isLoading={nextButtonProps.isLoading}
+          showBack={state.currentStep > 1}
         />
       )}
-
-      {/* Steps 2 & 3: Full screen white background */}
-      {state.currentStep > 1 && (
-        <div className="fixed inset-x-0 top-14 bottom-0 z-10 flex flex-col items-center overflow-hidden bg-gray-50">
-          {/* Scrollable Content Area */}
-          <div className="w-full max-w-xl mx-auto flex-1 overflow-y-auto v2-scrollbar px-4 pt-4 pb-36">
-            {/* Error Message */}
-            {state.submitError && (
-              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-2xl">
-                <p className="text-red-600 text-sm font-medium">
-                  {state.submitError}
-                </p>
-              </div>
-            )}
-
-            {/* Content Card */}
-            <div className="bg-white rounded-2xl sm:rounded-3xl shadow-sm p-4 sm:p-5">
-              {/* Step 2: Problem */}
-              {state.currentStep === 2 && (
-                <Step2ProblemV2
-                  category={state.data.category}
-                  description={state.data.description}
-                  photos={state.data.photos}
-                  urgency={state.data.urgency}
-                  onCategoryChange={handleCategoryChange}
-                  onDescriptionChange={handleDescriptionChange}
-                  onAddPhoto={handleAddPhoto}
-                  onRemovePhoto={handleRemovePhoto}
-                  onUrgencyChange={handleUrgencyChange}
-                />
-              )}
-
-              {/* Step 3: Submit */}
-              {state.currentStep === 3 && (
-                <Step3SubmitV2
-                  data={state.data}
-                  onNameChange={handleNameChange}
-                  onEmailChange={handleEmailChange}
-                  onPhoneChange={handlePhoneChange}
-                />
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Bottom Navigation - ALWAYS fixed at bottom, same position for ALL steps */}
-      <div className="fixed bottom-0 left-0 right-0 z-20 w-full">
-        <div className="w-full max-w-xl mx-auto px-4 pb-4 safe-area-pb">
-          <div className="bg-white/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-float">
-            <BottomNavV2
-              currentStep={state.currentStep}
-              onTabClick={handleTabClick}
-              onBack={handleBack}
-              onNext={handleNext}
-              nextLabel={nextButtonProps.label}
-              nextDisabled={nextButtonProps.disabled}
-              isLoading={nextButtonProps.isLoading}
-              showBack={state.currentStep > 1}
-              location={state.data.location}
-            />
-          </div>
-        </div>
-      </div>
     </div>
   )
 }

@@ -1,8 +1,6 @@
 'use client'
 
-import { ChevronRight, ChevronLeft, Loader2, Target } from 'lucide-react'
-import { Location } from '@/types'
-import LoadingSpinner from '@/components/ui/LoadingSpinner'
+import { ChevronRight, ChevronLeft, Loader2 } from 'lucide-react'
 
 interface BottomNavV2Props {
   currentStep: number
@@ -13,9 +11,6 @@ interface BottomNavV2Props {
   nextDisabled?: boolean
   isLoading?: boolean
   showBack?: boolean
-  // Step 1 specific props for location info
-  location?: Location | null
-  isGeocodingLoading?: boolean
 }
 
 const STEPS = [
@@ -33,91 +28,40 @@ export function BottomNavV2({
   nextDisabled = false,
   isLoading = false,
   showBack = true,
-  location,
-  isGeocodingLoading = false,
 }: BottomNavV2Props) {
   return (
-    <div className="w-full">
-      {/* Step Labels */}
-      <div className="flex px-4 sm:px-8 pt-2 sm:pt-4">
-        {STEPS.map((step) => (
-          <button
-            key={step.step}
-            onClick={() => onTabClick(step.step)}
-            disabled={step.step > currentStep}
-            className={`flex-1 text-[10px] sm:text-sm font-medium transition-all text-center ${
-              step.step === currentStep
-                ? 'text-gray-900'
-                : step.step < currentStep
-                ? 'text-gray-500 hover:text-gray-700'
-                : 'text-gray-300 cursor-not-allowed'
-            }`}
-          >
-            {step.label}
-          </button>
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-40 safe-area-pb">
+      {/* Step Labels + Progress Line - More compact on mobile */}
+      <div className="flex gap-1 px-4 sm:px-8 pt-2 sm:pt-4">
+        {STEPS.map((step, index) => (
+          <div key={step.step} className="flex-1 flex flex-col items-center gap-1">
+            {/* Label - centered above progress bar */}
+            <button
+              onClick={() => onTabClick(step.step)}
+              disabled={step.step > currentStep}
+              className={`text-[10px] sm:text-sm font-medium transition-all text-center ${
+                step.step === currentStep
+                  ? 'text-gray-900'
+                  : step.step < currentStep
+                  ? 'text-gray-500 hover:text-gray-700'
+                  : 'text-gray-300 cursor-not-allowed'
+              }`}
+            >
+              {step.label}
+            </button>
+            {/* Progress segment */}
+            <div
+              className={`h-1 w-full rounded-full transition-all ${
+                step.step <= currentStep
+                  ? 'bg-v2-yellow'
+                  : 'bg-gray-200'
+              }`}
+            />
+          </div>
         ))}
       </div>
 
-      {/* Continuous Progress Bar - Green to Yellow gradient */}
-      <div className="px-4 sm:px-8 mt-1.5">
-        <div className="relative h-1.5 w-full bg-gray-200 rounded-full overflow-hidden">
-          <div
-            className="absolute top-0 left-0 h-full rounded-full transition-all duration-500 ease-out"
-            style={{
-              width: `${(currentStep / 3) * 100}%`,
-              background: 'linear-gradient(90deg, #ffca05 0%, #8dc63f 100%)',
-            }}
-          />
-        </div>
-      </div>
-
-      {/* Step 1: Location Info Row */}
-      {currentStep === 1 && (
-        <div className="px-4 sm:px-6 pt-3">
-          <div className="flex items-center gap-2 sm:gap-3">
-            {location ? (
-              <>
-                {/* R Logo Icon */}
-                <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center flex-shrink-0">
-                  <img
-                    src="/v2/logos/Viseu_Reporta_Símbolo_R.png"
-                    alt="Localização"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-gray-900 text-xs sm:text-sm">
-                    Localização marcada
-                  </h3>
-                  {isGeocodingLoading ? (
-                    <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-gray-500">
-                      <LoadingSpinner size="sm" />
-                      A obter morada...
-                    </div>
-                  ) : location.address ? (
-                    <p className="text-[10px] sm:text-xs text-gray-500 line-clamp-1">
-                      {location.address}
-                    </p>
-                  ) : null}
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <Target className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 text-xs sm:text-sm">
-                    Toque no mapa ou pesquise
-                  </h3>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Navigation Buttons */}
+      {/* Navigation Buttons - More compact on mobile */}
       <div className="flex items-center justify-center gap-2 sm:gap-3 px-4 sm:px-6 pt-2 pb-2 sm:pt-3 sm:pb-4">
         {/* Back Button - Only show if not first step */}
         {showBack && currentStep > 1 && (
@@ -130,7 +74,7 @@ export function BottomNavV2({
           </button>
         )}
 
-        {/* Next/Submit Button */}
+        {/* Next/Submit Button - Centered, smaller on mobile */}
         <button
           onClick={onNext}
           disabled={nextDisabled || isLoading}
