@@ -100,11 +100,11 @@ export default function Step1LocationV2({
 
   return (
     <>
-      {/* Search Bar - V2 Style */}
+      {/* Search Bar - V2 Style with Focus Animation */}
       <div className="fixed top-20 sm:top-24 left-3 right-3 sm:left-4 sm:right-4 z-20 max-w-xl mx-auto">
-        <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg">
+        <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg search-bar-animated">
           <div className="relative">
-            <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400 pointer-events-none" />
+            <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400 pointer-events-none search-icon-animated" />
             <input
               ref={searchInputRef}
               type="text"
@@ -113,7 +113,7 @@ export default function Step1LocationV2({
               placeholder="Pesquisar morada"
               className="w-full px-10 sm:px-12 py-3 sm:py-3.5 bg-transparent border-0 rounded-xl sm:rounded-2xl
                          focus:ring-0 outline-none
-                         placeholder:text-gray-400 text-gray-900 text-sm sm:text-base"
+                         placeholder:text-gray-400 text-gray-900 text-sm sm:text-base search-input-animated"
             />
             {addressSearch.query ? (
               <button
@@ -203,40 +203,40 @@ export default function Step1LocationV2({
         )}
       </div>
 
-      {/* Map Controls - V2 Style */}
+      {/* Map Controls - V2 Style with Micro-animations */}
       <div className="fixed right-3 sm:right-4 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-2 sm:gap-3">
         <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden">
           <button
             type="button"
-            className="w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center border-b border-gray-100 hover:bg-gray-50 transition-colors"
+            className="w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center border-b border-gray-100 zoom-btn zoom-btn-plus"
             onClick={handleZoomIn}
             aria-label="Aumentar zoom"
           >
-            <span className="text-lg sm:text-xl font-medium text-gray-600">+</span>
+            <span className="text-lg sm:text-xl font-medium text-gray-600 zoom-btn-icon">+</span>
           </button>
           <button
             type="button"
-            className="w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center hover:bg-gray-50 transition-colors"
+            className="w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center zoom-btn zoom-btn-minus"
             onClick={handleZoomOut}
             aria-label="Diminuir zoom"
           >
-            <span className="text-lg sm:text-xl font-medium text-gray-600">−</span>
+            <span className="text-lg sm:text-xl font-medium text-gray-600 zoom-btn-icon">-</span>
           </button>
         </div>
 
-        {/* GPS Button - Below zoom controls */}
+        {/* GPS Button - Below zoom controls with pulse effect */}
         <button
           type="button"
           onClick={geolocation.getCurrentLocation}
           disabled={geolocation.loading}
-          className="w-10 h-10 sm:w-11 sm:h-11 bg-white rounded-xl sm:rounded-2xl shadow-lg flex items-center justify-center
-                     transition-all hover:scale-105 active:scale-95"
+          className={`w-10 h-10 sm:w-11 sm:h-11 bg-white rounded-xl sm:rounded-2xl shadow-lg flex items-center justify-center
+                     gps-btn ${geolocation.loading ? 'gps-btn-loading' : ''}`}
           aria-label="Usar minha localização"
         >
           {geolocation.loading ? (
             <LoadingSpinner size="sm" />
           ) : (
-            <Target className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600" />
+            <Target className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 gps-icon" />
           )}
         </button>
       </div>

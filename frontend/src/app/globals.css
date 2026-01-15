@@ -606,3 +606,229 @@
   animation: markerFloat 2s ease-in-out infinite;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
+
+/* ====== MICRO-ANIMATIONS - V2 Map Controls ====== */
+
+/* === 1. SEARCH BAR FOCUS ANIMATION === */
+/* Smooth expansion effect when input receives focus */
+.search-bar-animated {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search-bar-animated:focus-within {
+  transform: scale(1.02);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 0 0 2px rgba(33, 150, 243, 0.15);
+}
+
+/* Search icon subtle animation on focus */
+.search-icon-animated {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.search-bar-animated:focus-within .search-icon-animated {
+  color: #2196F3;
+  transform: scale(1.1);
+}
+
+/* Input text highlight on focus */
+.search-input-animated {
+  transition: all 0.25s ease-out;
+}
+
+.search-input-animated:focus {
+  background: linear-gradient(90deg, rgba(33, 150, 243, 0.03) 0%, transparent 100%);
+}
+
+/* === 2. ZOOM BUTTON CLICK ANIMATION === */
+/* Ripple effect for zoom buttons */
+.zoom-btn {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.zoom-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(33, 150, 243, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.4s ease-out, height 0.4s ease-out, opacity 0.4s ease-out;
+  opacity: 0;
+}
+
+.zoom-btn:active::after {
+  width: 120%;
+  height: 120%;
+  opacity: 1;
+  transition: width 0s, height 0s, opacity 0s;
+}
+
+/* Icon rotation on click - plus rotates clockwise, minus counter-clockwise */
+.zoom-btn-icon {
+  transition: all 0.25s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+.zoom-btn:active .zoom-btn-icon {
+  transform: scale(0.85);
+}
+
+.zoom-btn-plus:active .zoom-btn-icon {
+  transform: scale(0.85) rotate(90deg);
+}
+
+.zoom-btn-minus:active .zoom-btn-icon {
+  transform: scale(0.85) rotate(-90deg);
+}
+
+/* Hover glow effect */
+.zoom-btn:hover {
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+}
+
+.zoom-btn:hover .zoom-btn-icon {
+  color: #2196F3;
+  transform: scale(1.1);
+}
+
+/* === 3. GPS/LOCATION BUTTON PULSE EFFECT === */
+/* Radar pulse rings emanating from center */
+.gps-btn {
+  position: relative;
+}
+
+.gps-btn::before,
+.gps-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+/* First pulse ring - inner */
+.gps-btn::before {
+  border: 1.5px solid rgba(33, 150, 243, 0.4);
+  animation: gpsPulse 2.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* Second pulse ring - outer (delayed) */
+.gps-btn::after {
+  border: 1px solid rgba(33, 150, 243, 0.25);
+  animation: gpsPulse 2.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+  animation-delay: 0.8s;
+}
+
+@keyframes gpsPulse {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.3;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.8);
+    opacity: 0;
+  }
+}
+
+/* GPS icon subtle breathing effect */
+.gps-icon {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: gpsBreathing 3s ease-in-out infinite;
+}
+
+@keyframes gpsBreathing {
+  0%, 100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Stop animation on hover - user is about to click */
+.gps-btn:hover::before,
+.gps-btn:hover::after {
+  animation-play-state: paused;
+  opacity: 0;
+}
+
+.gps-btn:hover .gps-icon {
+  animation: none;
+  color: #2196F3;
+  transform: scale(1.15);
+  opacity: 1;
+}
+
+/* Active state - quick pulse inward */
+.gps-btn:active {
+  transform: scale(0.95);
+}
+
+.gps-btn:active .gps-icon {
+  transform: scale(0.9);
+}
+
+/* Loading state - disable pulse, show spinner context */
+.gps-btn-loading::before,
+.gps-btn-loading::after {
+  animation: none;
+  opacity: 0;
+}
+
+/* === MOBILE TOUCH FEEDBACK ENHANCEMENTS === */
+@media (hover: none) and (pointer: coarse) {
+  /* Stronger visual feedback for touch devices */
+  .zoom-btn:active {
+    background: rgba(33, 150, 243, 0.1);
+    transform: scale(0.96);
+  }
+
+  .gps-btn:active {
+    background: rgba(33, 150, 243, 0.1);
+    transform: scale(0.94);
+  }
+
+  .search-bar-animated:focus-within {
+    transform: scale(1.01);
+  }
+
+  /* Faster animations for touch responsiveness */
+  .zoom-btn::after {
+    transition: width 0.3s ease-out, height 0.3s ease-out, opacity 0.3s ease-out;
+  }
+}
+
+/* === REDUCED MOTION PREFERENCE === */
+@media (prefers-reduced-motion: reduce) {
+  .search-bar-animated,
+  .search-icon-animated,
+  .search-input-animated,
+  .zoom-btn,
+  .zoom-btn-icon,
+  .gps-btn,
+  .gps-icon {
+    animation: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .gps-btn::before,
+  .gps-btn::after {
+    animation: none;
+    display: none;
+  }
+
+  .zoom-btn::after {
+    display: none;
+  }
+}

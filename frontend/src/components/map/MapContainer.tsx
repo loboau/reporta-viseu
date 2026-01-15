@@ -98,6 +98,13 @@ function MapCenterController({ lat, lng }: { lat: number; lng: number }) {
   return null
 }
 
+// Smooth zoom animation options - calm, premium feel
+const SMOOTH_ZOOM_OPTIONS = {
+  animate: true,
+  duration: 0.5, // 500ms for smooth, calm zoom
+  easeLinearity: 0.1, // Very smooth easing (lower = smoother)
+}
+
 // Component to expose map instance and handle zoom
 function MapController({
   onMapInstanceReady,
@@ -115,34 +122,51 @@ function MapController({
   const prevZoomOutRef = useRef(zoomOutTrigger)
   const apiExposedRef = useRef(false)
 
+  // Smooth zoom functions with animation
+  const smoothZoomIn = useCallback(() => {
+    const currentZoom = map.getZoom()
+    const maxZoom = map.getMaxZoom()
+    if (currentZoom < maxZoom) {
+      map.setZoom(currentZoom + 1, SMOOTH_ZOOM_OPTIONS)
+    }
+  }, [map])
+
+  const smoothZoomOut = useCallback(() => {
+    const currentZoom = map.getZoom()
+    const minZoom = map.getMinZoom()
+    if (currentZoom > minZoom) {
+      map.setZoom(currentZoom - 1, SMOOTH_ZOOM_OPTIONS)
+    }
+  }, [map])
+
   useEffect(() => {
     onMapInstanceReady(map)
 
-    // Expose zoom API to parent - only once
+    // Expose smooth zoom API to parent - only once
     if (onMapApiReady && !apiExposedRef.current) {
       apiExposedRef.current = true
       onMapApiReady({
-        zoomIn: () => map.zoomIn(),
-        zoomOut: () => map.zoomOut(),
+        zoomIn: smoothZoomIn,
+        zoomOut: smoothZoomOut,
       })
     }
-  }, [map, onMapInstanceReady, onMapApiReady])
+  }, [map, onMapInstanceReady, onMapApiReady, smoothZoomIn, smoothZoomOut])
 
   // Handle zoom in - compare with previous value (fallback for trigger-based zoom)
   useEffect(() => {
     if (zoomInTrigger > 0 && zoomInTrigger !== prevZoomInRef.current) {
-      map.zoomIn()
+      smoothZoomIn()
     }
     prevZoomInRef.current = zoomInTrigger
-  }, [zoomInTrigger, map])
+  }, [zoomInTrigger, smoothZoomIn])
 
   // Handle zoom out - compare with previous value (fallback for trigger-based zoom)
   useEffect(() => {
     if (zoomOutTrigger > 0 && zoomOutTrigger !== prevZoomOutRef.current) {
-      map.zoomOut()
+      smoothZoomOut()
     }
     prevZoomOutRef.current = zoomOutTrigger
-  }, [zoomOutTrigger, map])
+  }, [zoomOutTrigger, smoothZoomOut])
 
   return null
 }
