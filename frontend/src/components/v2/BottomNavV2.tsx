@@ -98,7 +98,11 @@ export function BottomNavV2({
                     <p className="text-[10px] sm:text-xs text-gray-500 line-clamp-1">
                       {location.address}
                     </p>
-                  ) : null}
+                  ) : (
+                    <p className="text-[10px] sm:text-xs text-gray-400">
+                      {location.lat.toFixed(5)}, {location.lng.toFixed(5)}
+                    </p>
+                  )}
                 </div>
               </>
             ) : (

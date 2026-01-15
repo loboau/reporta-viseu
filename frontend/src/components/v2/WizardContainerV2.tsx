@@ -4,6 +4,7 @@ import React, { useReducer, useCallback, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { WizardStateV2, WizardActionV2, ReportDataV2, Location, CategoryV2, Photo, UrgencyV2 } from '@/types'
 import { generateReference } from '@/lib/generateReference'
+import { useReverseGeocode } from '@/hooks/useReverseGeocode'
 import { HeaderV2 } from './HeaderV2'
 import { SidebarDrawer } from './SidebarDrawer'
 import { BottomNavV2 } from './BottomNavV2'
@@ -242,6 +243,7 @@ export default function WizardContainerV2() {
   const [state, dispatch] = useReducer(wizardReducer, initialState)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [mapApi, setMapApi] = useState<{ zoomIn: () => void; zoomOut: () => void } | null>(null)
+  const { reverseGeocode, loading: isGeocodingLoading } = useReverseGeocode()
 
   const handleMapReady = useCallback((api: { zoomIn: () => void; zoomOut: () => void }) => {
     setMapApi(api)
@@ -265,9 +267,23 @@ export default function WizardContainerV2() {
   }, [state.data.name, state.data.email])
 
   // Memoized dispatch handlers
-  const handleLocationChange = useCallback((location: Location) => {
+  const handleLocationChange = useCallback(async (location: Location) => {
+    // First update with basic location (lat/lng)
     dispatch({ type: 'SET_LOCATION', payload: location })
-  }, [])
+
+    // Then fetch address via reverse geocoding
+    const result = await reverseGeocode(location)
+    if (result) {
+      dispatch({
+        type: 'SET_LOCATION',
+        payload: {
+          ...location,
+          address: result.address,
+          freguesia: result.freguesia || undefined,
+        },
+      })
+    }
+  }, [reverseGeocode])
 
   const handleCategoryChange = useCallback((category: CategoryV2) => {
     dispatch({ type: 'SET_CATEGORY', payload: category })
@@ -497,6 +513,7 @@ export default function WizardContainerV2() {
               isLoading={nextButtonProps.isLoading}
               showBack={state.currentStep > 1}
               location={state.data.location}
+              isGeocodingLoading={isGeocodingLoading}
             />
           </div>
         </div>
