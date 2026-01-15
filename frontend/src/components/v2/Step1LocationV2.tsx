@@ -287,7 +287,7 @@ export default function Step1LocationV2({
       </div>
 
       {/* Location Info Card - V2 Style */}
-      <div className="absolute bottom-32 sm:bottom-36 left-3 right-3 sm:left-4 sm:right-4 z-20 max-w-xl mx-auto">
+      <div className="absolute bottom-28 sm:bottom-36 left-3 right-3 sm:left-4 sm:right-4 z-20 max-w-xl mx-auto">
         {location ? (
           <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 animate-slide-up">
             <div className="flex items-start gap-2.5 sm:gap-3">

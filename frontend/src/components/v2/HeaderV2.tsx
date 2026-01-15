@@ -68,9 +68,9 @@ export function HeaderV2({ onMenuClick }: HeaderV2Props) {
           <Image
             src="/v2/logos/Viseu_Reporta_Logo_Positivo.png"
             alt="Viseu Reporta"
-            width={160}
-            height={48}
-            className="h-8 sm:h-10 w-auto"
+            width={180}
+            height={54}
+            className="h-10 sm:h-12 w-auto"
             priority
           />
         </div>
