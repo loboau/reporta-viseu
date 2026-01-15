@@ -452,49 +452,46 @@ export default function WizardContainerV2() {
         />
       )}
 
-      {/* Steps 2 & 3: Full screen white background */}
+      {/* Steps 2 & 3: Normal flow below sticky header */}
       {state.currentStep > 1 && (
-        <div className="fixed inset-x-0 top-14 bottom-0 z-10 flex flex-col items-center overflow-hidden bg-gray-50">
-          {/* Scrollable Content Area */}
-          <div id="step-content-scroll" className="w-full flex-1 overflow-y-auto v2-scrollbar pt-4 pb-36">
-            <div className="w-full max-w-xl mx-auto px-4">
-              {/* Error Message */}
-              {state.submitError && (
-                <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-2xl">
-                  <p className="text-red-600 text-sm font-medium">
-                    {state.submitError}
-                  </p>
-                </div>
-              )}
+        <div id="step-content-scroll" className="min-h-[calc(100vh-60px)] sm:min-h-[calc(100vh-72px)] bg-gray-50 pt-4 pb-36">
+          <div className="w-full max-w-xl mx-auto px-4">
+            {/* Error Message */}
+            {state.submitError && (
+              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-2xl">
+                <p className="text-red-600 text-sm font-medium">
+                  {state.submitError}
+                </p>
+              </div>
+            )}
 
-              {/* Content Card - same width as bottom nav badge */}
-              <div className="bg-white rounded-2xl sm:rounded-3xl shadow-sm">
-                <div className="p-4 sm:p-5">
-                  {/* Step 2: Problem */}
-                  {state.currentStep === 2 && (
-                    <Step2ProblemV2
-                      category={state.data.category}
-                      description={state.data.description}
-                      photos={state.data.photos}
-                      urgency={state.data.urgency}
-                      onCategoryChange={handleCategoryChange}
-                      onDescriptionChange={handleDescriptionChange}
-                      onAddPhoto={handleAddPhoto}
-                      onRemovePhoto={handleRemovePhoto}
-                      onUrgencyChange={handleUrgencyChange}
-                    />
-                  )}
+            {/* Content Card - same width as bottom nav badge */}
+            <div className="bg-white rounded-2xl sm:rounded-3xl shadow-sm">
+              <div className="p-4 sm:p-5">
+                {/* Step 2: Problem */}
+                {state.currentStep === 2 && (
+                  <Step2ProblemV2
+                    category={state.data.category}
+                    description={state.data.description}
+                    photos={state.data.photos}
+                    urgency={state.data.urgency}
+                    onCategoryChange={handleCategoryChange}
+                    onDescriptionChange={handleDescriptionChange}
+                    onAddPhoto={handleAddPhoto}
+                    onRemovePhoto={handleRemovePhoto}
+                    onUrgencyChange={handleUrgencyChange}
+                  />
+                )}
 
-                  {/* Step 3: Submit */}
-                  {state.currentStep === 3 && (
-                    <Step3SubmitV2
-                      data={state.data}
-                      onNameChange={handleNameChange}
-                      onEmailChange={handleEmailChange}
-                      onPhoneChange={handlePhoneChange}
-                    />
-                  )}
-                </div>
+                {/* Step 3: Submit */}
+                {state.currentStep === 3 && (
+                  <Step3SubmitV2
+                    data={state.data}
+                    onNameChange={handleNameChange}
+                    onEmailChange={handleEmailChange}
+                    onPhoneChange={handlePhoneChange}
+                  />
+                )}
               </div>
             </div>
           </div>
