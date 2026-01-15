@@ -154,7 +154,7 @@ export default function Step1LocationV2({
       </div>
 
       {/* Search Bar - V2 Style */}
-      <div className="absolute top-16 sm:top-20 left-3 right-3 sm:left-4 sm:right-4 z-20 max-w-xl mx-auto">
+      <div className="absolute top-20 sm:top-24 left-3 right-3 sm:left-4 sm:right-4 z-20 max-w-xl mx-auto">
         <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg">
           <div className="relative">
             <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400 pointer-events-none" />
