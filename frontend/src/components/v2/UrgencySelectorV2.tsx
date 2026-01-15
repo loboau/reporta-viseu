@@ -20,27 +20,31 @@ export function UrgencySelectorV2({ selected, onSelect }: UrgencySelectorV2Props
             key={option.id}
             onClick={() => onSelect(option.id)}
             aria-pressed={isSelected}
-            className={`flex-1 flex flex-col items-center gap-2 p-3 sm:p-4 rounded-2xl transition-all duration-200 border-2 min-h-[88px] ${
+            className={`flex-1 aspect-square flex flex-col items-center justify-between pt-2.5 pb-1.5 sm:pt-5 sm:pb-3 px-1 sm:px-2 rounded-lg sm:rounded-2xl transition-all duration-200 ${
               isSelected
-                ? 'scale-[1.02] shadow-md'
-                : 'border-transparent hover:scale-[1.02] active:scale-95 shadow-sm'
+                ? 'scale-[1.02]'
+                : 'hover:scale-[1.02] active:scale-95 shadow-sm'
             }`}
             style={{
               backgroundColor: option.bgColor,
-              borderColor: isSelected ? option.color : 'transparent',
+              // Sombra lateral estilo logo quando selecionado
+              boxShadow: isSelected
+                ? `4px 4px 0px 0px ${option.color}40, 6px 6px 12px 0px rgba(0,0,0,0.12)`
+                : undefined,
             }}
           >
-            {/* Icon */}
-            <div className="w-8 h-8 flex items-center justify-center flex-shrink-0">
+            {/* Icon - proportional to category icons */}
+            <div className="flex-1 flex items-center justify-center w-full">
               <CategoryIconV2
                 iconPath={option.iconPath}
                 alt={option.label}
-                size={32}
+                size={64}
+                className="w-14 h-14 sm:w-16 sm:h-16"
               />
             </div>
             {/* Label */}
             <span
-              className="text-xs font-semibold text-center leading-tight line-clamp-1 w-full px-1"
+              className="text-[11px] sm:text-sm font-semibold text-center leading-tight w-full truncate px-0.5"
               style={{ color: option.color }}
             >
               {option.label}

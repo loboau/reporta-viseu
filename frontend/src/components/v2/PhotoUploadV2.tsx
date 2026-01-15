@@ -98,29 +98,29 @@ export function PhotoUploadV2({
           </div>
         ))}
 
-        {/* Add Photo Button - V2 Style */}
+        {/* Add Photo Button - V2 Style - proportional to category buttons */}
         {photos.length < MAX_PHOTOS && (
           <button
             type="button"
             onClick={handleButtonClick}
-            className="aspect-square rounded-xl sm:rounded-2xl border-2 border-dashed border-gray-200
+            className="aspect-square rounded-lg sm:rounded-2xl border-2 border-dashed border-gray-200
                        hover:border-gray-300 hover:bg-gray-50
-                       flex flex-col items-center justify-center gap-1.5 sm:gap-2
+                       flex flex-col items-center justify-between pt-2.5 pb-1.5 sm:pt-5 sm:pb-3 px-1 sm:px-2
                        transition-all duration-200 cursor-pointer"
             aria-label="Adicionar fotografia"
           >
             {photos.length === 0 ? (
               <>
-                {/* Use the PNG icon */}
-                <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center">
+                {/* Use the PNG icon - proportional to category icons */}
+                <div className="flex-1 flex items-center justify-center w-full">
                   <CategoryIconV2
                     iconPath="/v2/icons/Icon_Foto.png"
                     alt="Tirar Foto"
-                    size={32}
-                    className="opacity-40"
+                    size={64}
+                    className="opacity-50 w-14 h-14 sm:w-16 sm:h-16"
                   />
                 </div>
-                <span className="text-[10px] sm:text-xs text-gray-400 font-medium">
+                <span className="text-[11px] sm:text-sm text-gray-500 font-semibold">
                   Tirar Foto
                 </span>
               </>

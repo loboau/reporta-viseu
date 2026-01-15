@@ -4,6 +4,7 @@ import React, { useRef, useCallback } from 'react'
 import { CategoryV2, Photo, UrgencyV2 } from '@/types'
 import Textarea from '@/components/ui/Textarea'
 import { CategoryGridV2 } from './CategoryGridV2'
+import { CategoryIconV2 } from './CategoryIconV2'
 import { UrgencySelectorV2 } from './UrgencySelectorV2'
 import { PhotoUploadV2 } from './PhotoUploadV2'
 
@@ -36,20 +37,56 @@ export default function Step2ProblemV2({
   const defaultPlaceholder = 'Selecione primeiro uma categoria acima para ver um exemplo de descrição...'
   const placeholder = category?.placeholder || defaultPlaceholder
 
-  // Handle category selection with auto-scroll
+  // Very smooth, calm scroll animation
+  const smoothScrollTo = useCallback((targetY: number, duration: number = 1200) => {
+    const startY = window.scrollY
+    const difference = targetY - startY
+    const startTime = performance.now()
+
+    // Ease-in-out sine for an extra calm, gentle scroll
+    const easeInOutSine = (t: number): number => -(Math.cos(Math.PI * t) - 1) / 2
+
+    const animateScroll = (currentTime: number) => {
+      const elapsed = currentTime - startTime
+      const progress = Math.min(elapsed / duration, 1)
+      const easedProgress = easeInOutSine(progress)
+
+      window.scrollTo(0, startY + difference * easedProgress)
+
+      if (progress < 1) {
+        requestAnimationFrame(animateScroll)
+      }
+    }
+
+    requestAnimationFrame(animateScroll)
+  }, [])
+
+  // Handle category selection with precise auto-scroll
   const handleCategorySelect = useCallback((cat: CategoryV2) => {
     onCategoryChange(cat)
-    // Scroll to description section after a brief delay
-    setTimeout(() => {
-      descriptionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }, 100)
-  }, [onCategoryChange])
+
+    // Multi-frame delay ensures React updates DOM and browser completes layout
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          if (descriptionRef.current) {
+            // Calculate target position with 64px offset from top
+            const rect = descriptionRef.current.getBoundingClientRect()
+            const targetY = window.scrollY + rect.top - 64
+
+            // Very calm, slow scroll animation over 1200ms
+            smoothScrollTo(targetY, 1200)
+          }
+        }, 100) // 100ms delay ensures layout is stable after category badge renders
+      })
+    })
+  }, [onCategoryChange, smoothScrollTo])
 
   return (
-    <div className="space-y-4 sm:space-y-6 animate-fade-in pb-44">
+    <div className="space-y-3 sm:space-y-5">
       {/* Category Selection */}
       <div>
-        <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4">
+        <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-2 sm:mb-3">
           Identifique o tipo de problema
         </h2>
         <CategoryGridV2
@@ -58,8 +95,29 @@ export default function Step2ProblemV2({
         />
       </div>
 
-      {/* Description */}
-      <div ref={descriptionRef} className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-sm scroll-mt-4">
+      {/* Selected Category Badge + Description */}
+      <div ref={descriptionRef} className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-sm scroll-mt-16">
+        {/* Selected category mini-badge */}
+        {category && (
+          <div className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100">
+            <div
+              className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+              style={{ backgroundColor: category.color }}
+            >
+              <CategoryIconV2
+                iconPath={category.iconPath}
+                alt={category.label}
+                size={20}
+                className="brightness-0 invert"
+              />
+            </div>
+            <div className="min-w-0">
+              <span className="text-sm font-semibold text-gray-900">{category.label}</span>
+              <span className="text-xs text-gray-500 ml-2">{category.sublabel}</span>
+            </div>
+          </div>
+        )}
+
         <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-2 sm:mb-3">
           Descreva o problema
         </h2>
@@ -96,18 +154,16 @@ export default function Step2ProblemV2({
 
       {/* Urgency Level */}
       <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-sm">
-        <div className="mb-3 sm:mb-4">
-          <h2 className="text-base sm:text-lg font-bold text-gray-900">
-            Nível de urgência
-          </h2>
-          <p className="text-xs sm:text-sm text-gray-500 mt-0.5">
-            Emergências: ligue 112
-          </p>
-        </div>
+        <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4">
+          Nível de urgência
+        </h2>
         <UrgencySelectorV2
           selected={urgency}
           onSelect={onUrgencyChange}
         />
+        <p className="text-[10px] sm:text-xs text-gray-400 text-center mt-3">
+          Emergências: ligue 112
+        </p>
       </div>
     </div>
   )

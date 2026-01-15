@@ -1,8 +1,7 @@
 'use client'
 
 import React, { useEffect, useState, useRef, useCallback } from 'react'
-import dynamic from 'next/dynamic'
-import { MapPin, Navigation, Search, X, Target, Eye, AlertTriangle, ChevronRight } from 'lucide-react'
+import { MapPin, Search, X, Target, AlertTriangle } from 'lucide-react'
 import { Location } from '@/types'
 import { useGeolocation } from '@/hooks/useGeolocation'
 import { useReverseGeocode } from '@/hooks/useReverseGeocode'
@@ -10,81 +9,31 @@ import { useAddressSearch } from '@/hooks/useAddressSearch'
 import { isPointInViseuConcelho } from '@/lib/constants'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 
-const STEPS = [
-  { step: 1, label: 'Localização' },
-  { step: 2, label: 'Problema' },
-  { step: 3, label: 'Enviar' },
-]
-
-// Dynamically import map to avoid SSR issues with Leaflet
-const MapContainer = dynamic(
-  () => import('@/components/map/MapContainer'),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="absolute inset-0 bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <LoadingSpinner size="lg" className="mx-auto mb-4" />
-          <p className="text-gray-500 font-medium">A carregar mapa...</p>
-        </div>
-      </div>
-    ),
-  }
-)
-
 interface Step1LocationV2Props {
   location: Location | null
   onLocationChange: (location: Location) => void
-  onNext: () => void
-  canProceed: boolean
+  mapApi: { zoomIn: () => void; zoomOut: () => void } | null
 }
 
 export default function Step1LocationV2({
   location,
   onLocationChange,
-  onNext,
-  canProceed,
+  mapApi,
 }: Step1LocationV2Props) {
   const [showDropdown, setShowDropdown] = useState(false)
   const searchInputRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  // Zoom triggers
-  const [zoomInTrigger, setZoomInTrigger] = useState(0)
-  const [zoomOutTrigger, setZoomOutTrigger] = useState(0)
-
-  // Map API ref
-  const mapApiRef = useRef<{ zoomIn: () => void; zoomOut: () => void } | null>(null)
-
-  const handleMapReady = (api: { zoomIn: () => void; zoomOut: () => void }) => {
-    mapApiRef.current = api
-  }
-
   const handleZoomIn = () => {
-    if (mapApiRef.current) {
-      mapApiRef.current.zoomIn()
-    } else {
-      setZoomInTrigger(prev => prev + 1)
-    }
+    mapApi?.zoomIn()
   }
 
   const handleZoomOut = () => {
-    if (mapApiRef.current) {
-      mapApiRef.current.zoomOut()
-    } else {
-      setZoomOutTrigger(prev => prev + 1)
-    }
-  }
-
-  const openStreetView = () => {
-    if (location) {
-      const url = `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=${location.lat},${location.lng}`
-      window.open(url, '_blank')
-    }
+    mapApi?.zoomOut()
   }
 
   const geolocation = useGeolocation()
-  const { reverseGeocode, loading: geocodeLoading } = useReverseGeocode()
+  const { reverseGeocode } = useReverseGeocode()
   const addressSearch = useAddressSearch()
 
   // Handle GPS location
@@ -150,21 +99,9 @@ export default function Step1LocationV2({
   }
 
   return (
-    <div className="fixed inset-0 w-full animate-fade-in z-10">
-      {/* Fullscreen Map */}
-      <div className="absolute inset-0">
-        <MapContainer
-          location={location}
-          onLocationChange={handleLocationChange}
-          className="h-full w-full"
-          zoomInTrigger={zoomInTrigger}
-          zoomOutTrigger={zoomOutTrigger}
-          onMapReady={handleMapReady}
-        />
-      </div>
-
+    <>
       {/* Search Bar - V2 Style */}
-      <div className="absolute top-20 sm:top-24 left-3 right-3 sm:left-4 sm:right-4 z-20 max-w-xl mx-auto">
+      <div className="fixed top-20 sm:top-24 left-3 right-3 sm:left-4 sm:right-4 z-20 max-w-xl mx-auto">
         <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg">
           <div className="relative">
             <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400 pointer-events-none" />
@@ -256,10 +193,18 @@ export default function Step1LocationV2({
             </div>
           )}
         </div>
+
+        {/* Error messages - below search bar */}
+        {(geolocation.error || outOfBoundsError) && (
+          <div className="mt-2 p-3 bg-red-50 rounded-xl flex items-center gap-2 shadow-sm">
+            <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" />
+            <p className="text-xs sm:text-sm text-red-600">{geolocation.error || outOfBoundsError}</p>
+          </div>
+        )}
       </div>
 
       {/* Map Controls - V2 Style */}
-      <div className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-2 sm:gap-3">
+      <div className="fixed right-3 sm:right-4 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-2 sm:gap-3">
         <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden">
           <button
             type="button"
@@ -295,102 +240,6 @@ export default function Step1LocationV2({
           )}
         </button>
       </div>
-
-      {/* Bottom Card - Fixed at bottom with steps + location info + button */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 safe-area-pb">
-        <div className="bg-white rounded-t-2xl sm:rounded-t-3xl shadow-lg">
-          {/* Steps Progress */}
-          <div className="flex gap-1 px-4 sm:px-6 pt-3 sm:pt-4">
-            {STEPS.map((step) => (
-              <div key={step.step} className="flex-1 flex flex-col items-center gap-1">
-                <span className={`text-[10px] sm:text-xs font-medium ${
-                  step.step === 1 ? 'text-gray-900' : 'text-gray-300'
-                }`}>
-                  {step.label}
-                </span>
-                <div className={`h-1 w-full rounded-full ${
-                  step.step === 1 ? 'bg-v2-yellow' : 'bg-gray-200'
-                }`} />
-              </div>
-            ))}
-          </div>
-
-          {/* Location Info + Button */}
-          <div className="p-3 sm:p-4">
-            {location ? (
-              <div className="flex items-center gap-2 sm:gap-3">
-                {/* R Logo Icon */}
-                <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center flex-shrink-0">
-                  <img
-                    src="/v2/logos/Viseu_Reporta_Símbolo_R.png"
-                    alt="Localização"
-                    className="w-full h-full object-contain"
-                  />
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-gray-900 text-xs sm:text-sm">
-                    Localização marcada
-                  </h3>
-                  {geocodeLoading ? (
-                    <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-gray-500">
-                      <LoadingSpinner size="sm" />
-                      A obter morada...
-                    </div>
-                  ) : location.address ? (
-                    <p className="text-[10px] sm:text-xs text-gray-500 line-clamp-1">
-                      {location.address}
-                    </p>
-                  ) : null}
-                </div>
-
-                {/* Next Button */}
-                <button
-                  onClick={onNext}
-                  disabled={!canProceed}
-                  className={`flex items-center gap-1 px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold transition-all ${
-                    canProceed
-                      ? 'bg-v2-yellow text-gray-900 hover:bg-yellow-400 active:scale-95 shadow-sm'
-                      : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                  }`}
-                >
-                  <span>Seguinte</span>
-                  <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                </button>
-              </div>
-            ) : (
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                  <Target className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
-                </div>
-
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900 text-xs sm:text-sm">
-                    Toque no mapa ou pesquise a morada
-                  </h3>
-                </div>
-
-                {/* Disabled Button */}
-                <button
-                  disabled
-                  className="flex items-center gap-1 px-4 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-semibold bg-gray-200 text-gray-400 cursor-not-allowed"
-                >
-                  <span>Seguinte</span>
-                  <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                </button>
-              </div>
-            )}
-
-            {/* Error message */}
-            {(geolocation.error || outOfBoundsError) && (
-              <div className="mt-2 p-2 bg-red-50 rounded-lg flex items-center gap-2">
-                <AlertTriangle className="w-3.5 h-3.5 text-red-500 flex-shrink-0" />
-                <p className="text-[10px] sm:text-xs text-red-600">{geolocation.error || outOfBoundsError}</p>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
+    </>
   )
 }

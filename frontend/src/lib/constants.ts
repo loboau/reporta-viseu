@@ -12,6 +12,15 @@ export const MAP_CONFIG = {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 }
 
+// Polígono exterior grande para criar máscara (cobre área fora do concelho)
+export const WORLD_BOUNDS: LatLngTuple[] = [
+  [85, -180],
+  [85, 180],
+  [-85, 180],
+  [-85, -180],
+  [85, -180],
+]
+
 // Limites aproximados do Concelho de Viseu (polígono simplificado)
 // O concelho tem 34 freguesias e cerca de 507 km²
 export const VISEU_CONCELHO_BOUNDS: LatLngTuple[] = [

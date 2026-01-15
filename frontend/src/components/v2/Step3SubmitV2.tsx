@@ -30,7 +30,7 @@ export default function Step3SubmitV2({
   const urgencyOption = urgencyOptionsV2.find(u => u.id === data.urgency)
 
   return (
-    <div className="space-y-3 sm:space-y-4 animate-fade-in pb-44">
+    <div className="space-y-3 sm:space-y-4">
       {/* Header */}
       <div className="text-center mb-3 sm:mb-4">
         <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-0.5 sm:mb-1">

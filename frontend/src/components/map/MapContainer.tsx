@@ -6,7 +6,7 @@ import { LatLngExpression, Icon, Map } from 'leaflet'
 import { Phone, Mail, Globe, AlertTriangle } from 'lucide-react'
 import 'leaflet/dist/leaflet.css'
 import { Location } from '@/types'
-import { MAP_CONFIG, VISEU_CONCELHO_BOUNDS, isPointInViseuConcelho } from '@/lib/constants'
+import { MAP_CONFIG, VISEU_CONCELHO_BOUNDS, WORLD_BOUNDS, isPointInViseuConcelho } from '@/lib/constants'
 
 // Câmara Municipal de Viseu location and info
 // Coordinates from: https://mapcarta.com/W282549483
@@ -77,15 +77,23 @@ function MapClickHandler({
   return null
 }
 
-// Component to handle map centering
-function MapCenterController({ center }: { center: LatLngExpression }) {
+// Component to handle map centering - only flies when lat/lng actually change
+function MapCenterController({ lat, lng }: { lat: number; lng: number }) {
   const map = useMap()
+  const prevCoordsRef = useRef<{ lat: number; lng: number } | null>(null)
 
   useEffect(() => {
-    map.flyTo(center, map.getZoom(), {
+    // Only fly if coordinates actually changed (not just reference)
+    const prev = prevCoordsRef.current
+    if (prev && prev.lat === lat && prev.lng === lng) {
+      return // Same coordinates, skip flyTo
+    }
+
+    prevCoordsRef.current = { lat, lng }
+    map.flyTo([lat, lng], map.getZoom(), {
       duration: 0.5,
     })
-  }, [center, map])
+  }, [lat, lng, map])
 
   return null
 }
@@ -214,7 +222,7 @@ function MapContainerComponent({
         zoom={MAP_CONFIG.zoom}
         minZoom={MAP_CONFIG.minZoom}
         maxZoom={MAP_CONFIG.maxZoom}
-        style={{ height: '100%', width: '100%', minHeight: '300px' }}
+        style={{ height: '100%', width: '100%' }}
         className="z-0"
         zoomControl={false}
       >
@@ -234,6 +242,18 @@ function MapContainerComponent({
         <MapClickHandler
           onLocationChange={onLocationChange}
           onOutOfBounds={handleOutOfBounds}
+        />
+
+        {/* Máscara para área fora do concelho - desaturação com cinza */}
+        <Polygon
+          positions={[WORLD_BOUNDS, VISEU_CONCELHO_BOUNDS]}
+          pathOptions={{
+            color: 'transparent',
+            fillColor: '#d0d0d0',
+            fillOpacity: 0.55,
+            stroke: false,
+          }}
+          className="outside-mask"
         />
 
         {/* Limites do Concelho de Viseu - apenas tracejado sem fill */}
@@ -292,7 +312,7 @@ function MapContainerComponent({
         {/* User's selected location marker */}
         {location && markerIcon && (
           <>
-            <MapCenterController center={[location.lat, location.lng]} />
+            <MapCenterController lat={location.lat} lng={location.lng} />
             <Marker
               position={[location.lat, location.lng]}
               icon={markerIcon}

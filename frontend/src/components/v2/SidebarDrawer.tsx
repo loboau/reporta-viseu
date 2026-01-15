@@ -14,10 +14,29 @@ interface SidebarDrawerProps {
 export function SidebarDrawer({ isOpen, onClose, onNewReport }: SidebarDrawerProps) {
   const [showAbout, setShowAbout] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
+  const [isVisible, setIsVisible] = useState(false)
+  const [isClosing, setIsClosing] = useState(false)
+
+  // Handle open/close with animation
+  useEffect(() => {
+    if (isOpen) {
+      setIsVisible(true)
+      setIsClosing(false)
+    } else if (isVisible) {
+      // Start closing animation
+      setIsClosing(true)
+      // Wait for animation to complete before hiding
+      const timer = setTimeout(() => {
+        setIsVisible(false)
+        setIsClosing(false)
+      }, 300) // Match animation duration
+      return () => clearTimeout(timer)
+    }
+  }, [isOpen, isVisible])
 
   // Prevent body scroll when drawer is open
   useEffect(() => {
-    if (isOpen) {
+    if (isVisible) {
       document.body.style.overflow = 'hidden'
     } else {
       document.body.style.overflow = ''
@@ -25,7 +44,7 @@ export function SidebarDrawer({ isOpen, onClose, onNewReport }: SidebarDrawerPro
     return () => {
       document.body.style.overflow = ''
     }
-  }, [isOpen])
+  }, [isVisible])
 
   // Close on escape key
   useEffect(() => {
@@ -38,20 +57,24 @@ export function SidebarDrawer({ isOpen, onClose, onNewReport }: SidebarDrawerPro
     return () => document.removeEventListener('keydown', handleEscape)
   }, [isOpen, onClose, showAbout, showHelp])
 
-  if (!isOpen) return null
+  if (!isVisible) return null
 
   return (
     <>
       <div className="fixed inset-0 z-[100]">
         {/* Backdrop */}
         <div
-          className="absolute inset-0 bg-black/50 animate-fade-in-overlay"
+          className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${
+            isClosing ? 'opacity-0' : 'animate-fade-in-overlay'
+          }`}
           onClick={onClose}
           aria-hidden="true"
         />
 
         {/* Drawer - opens from right */}
-        <div className="absolute right-0 top-0 bottom-0 w-[280px] max-w-[85vw] bg-white shadow-xl animate-slide-in-right-drawer">
+        <div className={`absolute right-0 top-0 bottom-0 w-[280px] max-w-[85vw] bg-white shadow-xl transition-transform duration-300 ease-out ${
+          isClosing ? 'translate-x-full' : 'animate-slide-in-right-drawer'
+        }`}>
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-100">
             <button
