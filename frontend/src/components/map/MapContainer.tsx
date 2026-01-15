@@ -159,9 +159,9 @@ const createCamaraMarkerIcon = () => {
 
   return new Icon({
     iconUrl: '/v2/icons/Icon_Logo_Viseu.png',
-    iconSize: [44, 44],
-    iconAnchor: [22, 44], // Bottom-center anchor so icon sits above the location point
-    popupAnchor: [0, -44],
+    iconSize: [56, 56],
+    iconAnchor: [28, 56], // Bottom-center anchor so icon sits above the location point
+    popupAnchor: [0, -56],
   })
 }
 
