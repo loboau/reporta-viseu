@@ -11,7 +11,7 @@ interface CategoryGridV2Props {
 
 export function CategoryGridV2({ selectedCategory, onSelectCategory }: CategoryGridV2Props) {
   return (
-    <div className="grid grid-cols-3 gap-4 sm:gap-5">
+    <div className="grid grid-cols-3 gap-3 sm:gap-4">
       {categoriesV2.map((category) => {
         const isSelected = selectedCategory?.id === category.id
 
@@ -19,15 +19,15 @@ export function CategoryGridV2({ selectedCategory, onSelectCategory }: CategoryG
           <button
             key={category.id}
             onClick={() => onSelectCategory(category)}
-            className={`flex flex-col items-center gap-2.5 sm:gap-3 transition-all duration-200 ${
+            className={`transition-all duration-200 ${
               isSelected
                 ? 'scale-[1.02]'
                 : 'hover:scale-[1.02] active:scale-95'
             }`}
           >
-            {/* Icon Container - Large rounded square matching V2 design reference */}
+            {/* Button with icon and label inside */}
             <div
-              className={`w-24 h-24 sm:w-28 sm:h-28 rounded-3xl flex items-center justify-center transition-all shadow-sm ${
+              className={`w-full aspect-square rounded-3xl flex flex-col items-center justify-center gap-2 p-3 transition-all shadow-sm ${
                 isSelected ? 'ring-3 ring-offset-2 shadow-lg' : ''
               }`}
               style={{
@@ -38,17 +38,14 @@ export function CategoryGridV2({ selectedCategory, onSelectCategory }: CategoryG
               <CategoryIconV2
                 iconPath={category.iconPath}
                 alt={category.label}
-                size={44}
-                className="brightness-0 invert sm:scale-110"
+                size={40}
+                className="brightness-0 invert"
               />
+              {/* Label inside button - white text */}
+              <span className="text-xs sm:text-sm font-semibold text-white text-center leading-tight">
+                {category.label}
+              </span>
             </div>
-            {/* Label - Colored to match icon background */}
-            <span
-              className="text-sm sm:text-base font-semibold text-center leading-tight"
-              style={{ color: category.color }}
-            >
-              {category.label}
-            </span>
           </button>
         )
       })}
