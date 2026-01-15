@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Image from 'next/image'
 import { X, Info, PlusCircle, HelpCircle, Mail, ExternalLink } from 'lucide-react'
 import { AboutModal } from './AboutModal'
 import { HelpModal } from './HelpModal'
@@ -62,12 +61,10 @@ export function SidebarDrawer({ isOpen, onClose, onNewReport }: SidebarDrawerPro
             >
               <X className="w-5 h-5 text-gray-500" />
             </button>
-            <Image
+            <img
               src="/v2/logos/Viseu_Reporta_Logo_Positivo.png"
               alt="Viseu Reporta"
-              width={120}
-              height={36}
-              className="h-8 w-auto"
+              className="h-8 w-auto object-contain"
             />
           </div>
 

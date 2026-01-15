@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect } from 'react'
-import Image from 'next/image'
 import { X, Heart, Shield, MapPin, Users } from 'lucide-react'
 
 interface AboutModalProps {
@@ -62,12 +61,10 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
         <div className="p-4 sm:p-6 overflow-y-auto">
           {/* Logo */}
           <div className="flex justify-center mb-6">
-            <Image
+            <img
               src="/v2/logos/Viseu_Reporta_Logo_Positivo.png"
               alt="Viseu Reporta"
-              width={180}
-              height={54}
-              className="h-12 w-auto"
+              className="h-12 w-auto object-contain"
             />
           </div>
 
