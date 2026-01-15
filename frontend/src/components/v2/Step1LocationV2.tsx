@@ -286,13 +286,13 @@ export default function Step1LocationV2({
         </button>
       </div>
 
-      {/* Location Info Card - V2 Style */}
-      <div className="absolute bottom-28 sm:bottom-36 left-3 right-3 sm:left-4 sm:right-4 z-20 max-w-xl mx-auto">
-        {location ? (
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 animate-slide-up">
-            <div className="flex items-start gap-2.5 sm:gap-3">
+      {/* Location Info Card - Only shows when location is selected */}
+      {location && (
+        <div className="absolute bottom-20 sm:bottom-32 left-3 right-3 sm:left-4 sm:right-4 z-20 max-w-xl mx-auto">
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-2.5 sm:p-4 animate-slide-up">
+            <div className="flex items-start gap-2 sm:gap-3">
               {/* R Logo Icon - Yellow symbol matching the map marker */}
-              <div className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 sm:w-12 sm:h-12 flex items-center justify-center flex-shrink-0">
                 <img
                   src="/v2/logos/Viseu_Reporta_Símbolo_R.png"
                   alt="Localização"
@@ -301,56 +301,41 @@ export default function Step1LocationV2({
               </div>
 
               <div className="flex-1 min-w-0">
-                <h3 className="font-bold text-gray-900 text-sm sm:text-base mb-0.5 sm:mb-1">
+                <h3 className="font-bold text-gray-900 text-xs sm:text-base mb-0.5">
                   Localização marcada
                 </h3>
 
                 {geocodeLoading ? (
-                  <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
+                  <div className="flex items-center gap-2 text-[10px] sm:text-sm text-gray-600">
                     <LoadingSpinner size="sm" />
                     A obter morada...
                   </div>
                 ) : (
                   <>
                     {location.address && (
-                      <p className="text-xs sm:text-sm text-gray-600 line-clamp-2">
+                      <p className="text-[10px] sm:text-sm text-gray-600 line-clamp-1 sm:line-clamp-2">
                         {location.address}
                       </p>
                     )}
-                    <p className="text-[10px] sm:text-xs text-gray-400 mt-0.5 font-mono">
-                      {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
-                    </p>
                   </>
                 )}
               </div>
             </div>
           </div>
-        ) : (
-          <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-3 sm:p-4 animate-fade-in">
-            <div className="flex items-center gap-2.5 sm:gap-3">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 rounded-lg sm:rounded-xl flex items-center justify-center flex-shrink-0">
-                <Target className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400" />
-              </div>
+        </div>
+      )}
 
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 text-sm sm:text-base mb-0.5">
-                  Onde é o problema?
-                </h3>
-                <p className="text-xs sm:text-sm text-gray-500">
-                  Toque no mapa ou use o GPS
-                </p>
-              </div>
+      {/* Error message - Shows only when there's an error and no location */}
+      {!location && (geolocation.error || outOfBoundsError) && (
+        <div className="absolute bottom-20 sm:bottom-32 left-3 right-3 sm:left-4 sm:right-4 z-20 max-w-xl mx-auto">
+          <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg p-2.5 sm:p-4 animate-fade-in">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" />
+              <p className="text-xs sm:text-sm text-red-600">{geolocation.error || outOfBoundsError}</p>
             </div>
-
-            {(geolocation.error || outOfBoundsError) && (
-              <div className="mt-2 sm:mt-3 p-2 sm:p-3 bg-red-50 rounded-lg sm:rounded-xl flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" />
-                <p className="text-xs sm:text-sm text-red-600">{geolocation.error || outOfBoundsError}</p>
-              </div>
-            )}
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   )
 }
