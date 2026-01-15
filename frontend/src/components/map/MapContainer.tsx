@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef, useCallback } from 'react'
 import { MapContainer as LeafletMap, TileLayer, Marker, Popup, useMapEvents, useMap, Polygon } from 'react-leaflet'
-import { LatLngExpression, Icon, Map } from 'leaflet'
+import { LatLngExpression, Icon, DivIcon, Map } from 'leaflet'
 import { Phone, Mail, Globe, AlertTriangle } from 'lucide-react'
 import 'leaflet/dist/leaflet.css'
 import { Location } from '@/types'
@@ -147,17 +147,28 @@ function MapController({
   return null
 }
 
-// User's selected location marker - uses yellow "R" pin from logos
-// Original image is 421x479px (ratio ~0.88), has pointed bottom like a pin
+// User's selected location marker - floating animation with shadow
+// Uses DivIcon to combine the PNG with CSS animation
 const createUserLocationIcon = () => {
   if (typeof window === 'undefined') return undefined
 
-  // Keep aspect ratio: 421/479 ≈ 0.88, so for height 54, width ≈ 47
-  return new Icon({
-    iconUrl: '/v2/logos/Viseu_Reporta_Símbolo_R.png',
-    iconSize: [47, 54],
-    iconAnchor: [23, 54], // Center-bottom anchor (pin points down)
-    popupAnchor: [0, -54],
+  // Create a DivIcon with floating animation and ground shadow
+  return new DivIcon({
+    className: '', // Remove default leaflet styles
+    iconSize: [50, 70], // Width, Height including shadow space
+    iconAnchor: [25, 70], // Center-bottom anchor
+    popupAnchor: [0, -70],
+    html: `
+      <div class="floating-marker-container" style="width: 50px; height: 70px;">
+        <img
+          src="/v2/logos/Viseu_Reporta_Símbolo_R.png"
+          alt="Localização"
+          class="floating-marker-icon"
+          style="width: 47px; height: 54px; object-fit: contain;"
+        />
+        <div class="marker-shadow" style="margin-top: 4px;"></div>
+      </div>
+    `,
   })
 }
 
@@ -183,7 +194,7 @@ function MapContainerComponent({
   onMapReady,
 }: MapContainerProps) {
   const [isMounted, setIsMounted] = useState(false)
-  const [markerIcon, setMarkerIcon] = useState<Icon | undefined>(undefined)
+  const [markerIcon, setMarkerIcon] = useState<DivIcon | undefined>(undefined)
   const [camaraIcon, setCamaraIcon] = useState<Icon | undefined>(undefined)
   const [mapInstance, setMapInstance] = useState<Map | null>(null)
   const [showOutOfBoundsWarning, setShowOutOfBoundsWarning] = useState(false)
