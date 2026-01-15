@@ -440,18 +440,19 @@ export default function WizardContainerV2() {
       {state.currentStep > 1 && (
         <div className="fixed inset-x-0 top-14 bottom-0 z-10 flex flex-col items-center overflow-hidden bg-gray-50">
           {/* Scrollable Content Area */}
-          <div id="step-content-scroll" className="w-full max-w-xl mx-auto flex-1 overflow-y-auto v2-scrollbar px-4 pt-4 pb-36">
-            {/* Error Message */}
-            {state.submitError && (
-              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-2xl">
-                <p className="text-red-600 text-sm font-medium">
-                  {state.submitError}
-                </p>
-              </div>
-            )}
+          <div id="step-content-scroll" className="w-full flex-1 overflow-y-auto v2-scrollbar pt-4 pb-36">
+            <div className="w-full max-w-xl mx-auto px-4">
+              {/* Error Message */}
+              {state.submitError && (
+                <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-2xl">
+                  <p className="text-red-600 text-sm font-medium">
+                    {state.submitError}
+                  </p>
+                </div>
+              )}
 
-            {/* Content Card */}
-            <div className="bg-white rounded-2xl sm:rounded-3xl shadow-sm p-4 sm:p-5">
+              {/* Content Card */}
+              <div className="bg-white rounded-2xl sm:rounded-3xl shadow-sm p-4 sm:p-5">
               {/* Step 2: Problem */}
               {state.currentStep === 2 && (
                 <Step2ProblemV2
@@ -476,6 +477,7 @@ export default function WizardContainerV2() {
                   onPhoneChange={handlePhoneChange}
                 />
               )}
+              </div>
             </div>
           </div>
         </div>
