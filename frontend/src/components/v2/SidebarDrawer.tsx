@@ -91,11 +91,11 @@ export const SidebarDrawer = memo(function SidebarDrawer({ isOpen, onClose, onNe
               <X className="w-5 h-5 text-gray-500" aria-hidden="true" />
             </button>
             <Image
-              src="/v2/icons/Icon_Logo_Viseu.png"
-              alt="Camara Municipal de Viseu"
-              width={80}
-              height={40}
-              className="h-10 w-auto object-contain"
+              src="/v2/logos/viseu_marca_horizontal.png"
+              alt="Câmara Municipal de Viseu"
+              width={140}
+              height={50}
+              className="h-12 w-auto object-contain"
             />
           </div>
 

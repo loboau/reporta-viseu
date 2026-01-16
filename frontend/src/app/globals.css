@@ -748,12 +748,12 @@
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-8px);
+    transform: translateY(-4px); /* Reduced from 8px to 4px for subtler effect */
   }
 }
 
 .marker-float {
-  animation: markerFloat 2s ease-in-out infinite;
+  animation: markerFloat 2.5s ease-in-out infinite;
 }
 
 /* Marker shadow that stays on ground while icon floats */
@@ -762,10 +762,22 @@
   bottom: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 24px;
-  height: 8px;
-  background: radial-gradient(ellipse at center, rgba(0,0,0,0.3) 0%, transparent 70%);
+  width: 20px;
+  height: 6px;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0.25) 0%, transparent 70%);
   border-radius: 50%;
+  animation: shadowPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes shadowPulse {
+  0%, 100% {
+    transform: translateX(-50%) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: translateX(-50%) scale(0.85);
+    opacity: 0.5;
+  }
 }
 
 /* Container for floating marker with shadow */
@@ -774,11 +786,39 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  will-change: transform; /* GPU acceleration */
 }
 
 .floating-marker-icon {
-  animation: markerFloat 2s ease-in-out infinite;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+  animation: markerFloat 2.5s ease-in-out infinite;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
+  will-change: transform; /* GPU acceleration for smooth animation */
+}
+
+/* ====== LEAFLET MARKER STABILITY ====== */
+/* Prevent marker jumping during zoom transitions */
+.leaflet-marker-icon {
+  will-change: transform;
+  transition: none !important; /* Disable Leaflet's default transitions that cause jumping */
+}
+
+.leaflet-zoom-anim .leaflet-marker-icon {
+  transition: transform 0.25s cubic-bezier(0, 0, 0.25, 1) !important;
+}
+
+/* Stabilize marker pane during zoom */
+.leaflet-marker-pane {
+  will-change: transform;
+}
+
+/* Smoother tile loading */
+.leaflet-tile {
+  will-change: transform, opacity;
+}
+
+.leaflet-tile-loaded {
+  opacity: 1;
+  transition: opacity 0.2s ease-out;
 }
 
 /* ====== MICRO-ANIMATIONS - V2 Map Controls ====== */

@@ -52,17 +52,24 @@ export const BottomNavV2 = memo(function BottomNavV2({
           </div>
           <div className="flex-1 min-w-0">
             <p className="text-xs text-gray-400 font-medium mb-0.5">Localização marcada</p>
-            <p className="text-sm sm:text-base text-gray-700 font-medium leading-snug">
-              {isGeocodingLoading ? (
-                <span className="text-gray-400 font-normal">A obter morada...</span>
-              ) : location?.address ? (
-                location.address
-              ) : location ? (
-                <span className="text-gray-400 font-normal">{location.lat.toFixed(5)}, {location.lng.toFixed(5)}</span>
-              ) : (
-                <span className="text-gray-400 font-normal">Toque no mapa para marcar</span>
-              )}
-            </p>
+            {isGeocodingLoading ? (
+              <p className="text-sm sm:text-base text-gray-400 font-normal leading-snug">
+                A obter morada...
+              </p>
+            ) : location ? (
+              <div>
+                <p className="text-sm sm:text-base text-gray-700 font-medium leading-snug">
+                  {location.address || 'Morada não disponível'}
+                </p>
+                <p className="text-[10px] sm:text-xs text-gray-400 font-normal mt-0.5">
+                  {location.lat.toFixed(6)}, {location.lng.toFixed(6)}
+                </p>
+              </div>
+            ) : (
+              <p className="text-sm sm:text-base text-gray-400 font-normal leading-snug">
+                Toque no mapa para marcar
+              </p>
+            )}
           </div>
         </div>
       )}

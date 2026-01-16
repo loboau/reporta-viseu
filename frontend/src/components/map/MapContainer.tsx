@@ -78,9 +78,32 @@ function MapClickHandler({
 }
 
 // Component to handle map centering - only flies when lat/lng actually change
+// and prevents conflicts with zoom operations
 function MapCenterController({ lat, lng }: { lat: number; lng: number }) {
   const map = useMap()
   const prevCoordsRef = useRef<{ lat: number; lng: number } | null>(null)
+  const isZoomingRef = useRef(false)
+
+  // Track zoom state to prevent flyTo during zoom
+  useEffect(() => {
+    const handleZoomStart = () => {
+      isZoomingRef.current = true
+    }
+    const handleZoomEnd = () => {
+      // Small delay to let zoom animation complete
+      setTimeout(() => {
+        isZoomingRef.current = false
+      }, 100)
+    }
+
+    map.on('zoomstart', handleZoomStart)
+    map.on('zoomend', handleZoomEnd)
+
+    return () => {
+      map.off('zoomstart', handleZoomStart)
+      map.off('zoomend', handleZoomEnd)
+    }
+  }, [map])
 
   useEffect(() => {
     // Only fly if coordinates actually changed (not just reference)
@@ -89,9 +112,16 @@ function MapCenterController({ lat, lng }: { lat: number; lng: number }) {
       return // Same coordinates, skip flyTo
     }
 
+    // Don't fly during zoom operations
+    if (isZoomingRef.current) {
+      prevCoordsRef.current = { lat, lng }
+      return
+    }
+
     prevCoordsRef.current = { lat, lng }
     map.flyTo([lat, lng], map.getZoom(), {
-      duration: 0.5,
+      duration: 0.4,
+      easeLinearity: 0.25,
     })
   }, [lat, lng, map])
 
@@ -177,20 +207,22 @@ const createUserLocationIcon = () => {
   if (typeof window === 'undefined') return undefined
 
   // Create a DivIcon with floating animation and ground shadow
+  // Icon dimensions: 47x54 image + 6px shadow = 60px total height
+  // Anchor at bottom center of the pin point
   return new DivIcon({
-    className: '', // Remove default leaflet styles
-    iconSize: [50, 70], // Width, Height including shadow space
-    iconAnchor: [25, 70], // Center-bottom anchor
-    popupAnchor: [0, -70],
+    className: 'user-location-marker', // Custom class for stability
+    iconSize: [50, 64], // Width, Height including shadow space
+    iconAnchor: [25, 58], // Center-bottom anchor (above shadow)
+    popupAnchor: [0, -58],
     html: `
-      <div class="floating-marker-container" style="width: 50px; height: 70px;">
+      <div class="floating-marker-container" style="width: 50px; height: 64px;">
         <img
           src="/v2/logos/Viseu_Reporta_Símbolo_R.png"
           alt="Localização"
           class="floating-marker-icon"
-          style="width: 47px; height: 54px; object-fit: contain;"
+          style="width: 44px; height: 50px; object-fit: contain;"
         />
-        <div class="marker-shadow" style="margin-top: 4px;"></div>
+        <div class="marker-shadow"></div>
       </div>
     `,
   })
