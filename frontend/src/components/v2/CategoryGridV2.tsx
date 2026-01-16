@@ -66,7 +66,7 @@ export const CategoryGridV2 = memo(function CategoryGridV2({ selectedCategory, o
                   />
                 </div>
                 {/* Label */}
-                <span className="text-[11px] sm:text-sm font-semibold text-white text-center leading-tight w-full truncate px-0.5" aria-hidden="true">
+                <span className="text-xs sm:text-sm font-semibold text-white text-center leading-tight w-full truncate px-0.5" aria-hidden="true">
                   {category.label}
                 </span>
               </button>
