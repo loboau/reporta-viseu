@@ -3,6 +3,34 @@ import { env } from '../config/env';
 import { logger } from '../utils/logger';
 import type { ReportWithRelations } from './ReportService';
 
+/**
+ * Sanitizes text by removing control characters and potential injection attempts
+ */
+function sanitizeText(text: string): string {
+  if (!text || typeof text !== 'string') return '';
+  return text
+    .replace(/[\u0000-\u001F\u007F-\u009F]/g, '') // Remove control characters
+    .replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '') // Remove script tags
+    .replace(/javascript:/gi, '') // Remove javascript: protocol
+    .replace(/on\w+\s*=/gi, '') // Remove event handlers
+    .trim();
+}
+
+/**
+ * Escapes special characters that could affect prompt injection
+ */
+function escapePromptInjection(text: string): string {
+  if (!text || typeof text !== 'string') return '';
+  // Replace potential prompt injection attempts
+  return text
+    .replace(/\{\{/g, '{ {')
+    .replace(/\}\}/g, '} }')
+    .replace(/\[INST\]/gi, '[_INST_]')
+    .replace(/\[\/INST\]/gi, '[_/INST_]')
+    .replace(/<\|.*?\|>/g, '') // Remove special tokens
+    .replace(/###/g, '# # #');
+}
+
 export class LetterService {
   private client: Anthropic;
 
@@ -15,16 +43,27 @@ export class LetterService {
   /**
    * Generates a formal letter in Portuguese (PT-PT) for a citizen report
    * to be sent to the relevant municipal department
+   *
+   * All inputs are sanitized to prevent XSS and prompt injection attacks
    */
   async generateLetter(report: ReportWithRelations): Promise<string> {
     try {
       logger.info('A gerar carta para relatório', { reportId: report.id });
 
+      // Sanitize all user inputs to prevent XSS and prompt injection
+      const sanitizedDescription = escapePromptInjection(sanitizeText(report.description));
+      const sanitizedAddress = escapePromptInjection(sanitizeText(report.address));
+      const sanitizedFreguesia = report.freguesia ? escapePromptInjection(sanitizeText(report.freguesia)) : '';
+      const sanitizedName = report.name ? escapePromptInjection(sanitizeText(report.name)) : '';
+      const sanitizedEmail = report.email ? sanitizeText(report.email) : '';
+      const sanitizedPhone = report.phone ? sanitizeText(report.phone) : '';
+
       const urgencyLabel = this.getUrgencyLabel(report.urgency);
       const citizenInfo = report.isAnonymous
         ? 'Munícipe (anónimo)'
-        : `${report.name} (${report.email}${report.phone ? `, tel: ${report.phone}` : ''})`;
+        : `${sanitizedName} (${sanitizedEmail}${sanitizedPhone ? `, tel: ${sanitizedPhone}` : ''})`;
 
+      // Use XML tags to clearly separate user input from instructions
       const prompt = `Você é um assistente especializado em redigir cartas formais para a administração pública portuguesa.
 
 Redija uma carta formal em português de Portugal (PT-PT) para o departamento municipal "${report.category.departamento}" da Câmara Municipal de Viseu, relatando a seguinte ocorrência:
@@ -32,8 +71,8 @@ Redija uma carta formal em português de Portugal (PT-PT) para o departamento mu
 INFORMAÇÕES DA OCORRÊNCIA:
 - Referência: ${report.reference}
 - Categoria: ${report.category.label}
-- Descrição: ${report.description}
-- Localização: ${report.address}${report.freguesia ? `, ${report.freguesia}` : ''}
+- Descrição: ${sanitizedDescription}
+- Localização: ${sanitizedAddress}${sanitizedFreguesia ? `, ${sanitizedFreguesia}` : ''}
 - Coordenadas: ${report.latitude}, ${report.longitude}
 - Urgência: ${urgencyLabel}
 - Data de reporte: ${new Date(report.createdAt).toLocaleDateString('pt-PT')}

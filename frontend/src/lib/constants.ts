@@ -68,8 +68,13 @@ export function isPointInViseuConcelho(lat: number, lng: number): boolean {
   const polygon = VISEU_CONCELHO_BOUNDS
 
   for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-    const xi = polygon[i][0], yi = polygon[i][1]
-    const xj = polygon[j][0], yj = polygon[j][1]
+    const pi = polygon[i]
+    const pj = polygon[j]
+    if (!pi || !pj) continue
+
+    const xi = pi[0], yi = pi[1]
+    const xj = pj[0], yj = pj[1]
+    if (xi === undefined || yi === undefined || xj === undefined || yj === undefined) continue
 
     const intersect = ((yi > lng) !== (yj > lng)) &&
       (lat < (xj - xi) * (lng - yi) / (yj - yi) + xi)

@@ -1,12 +1,14 @@
 'use client'
 
-import React, { useRef, useCallback, useEffect } from 'react'
+import React, { useRef, useCallback, useEffect, useState } from 'react'
 import type { CategoryV2, Photo, UrgencyV2 } from '@/types'
 import Textarea from '@/components/ui/Textarea'
 import { CategoryGridV2 } from './CategoryGridV2'
 import { CategoryIconV2 } from './CategoryIconV2'
 import { UrgencySelectorV2 } from './UrgencySelectorV2'
 import { PhotoUploadV2 } from './PhotoUploadV2'
+import { sanitizeDescription, validateDescription, escapeHtml } from '@/lib/validation'
+import { AlertCircle } from 'lucide-react'
 
 interface Step2ProblemV2Props {
   category: CategoryV2 | null
@@ -33,10 +35,36 @@ export default function Step2ProblemV2({
 }: Step2ProblemV2Props) {
   const descriptionSectionRef = useRef<HTMLDivElement>(null)
   const previousCategoryRef = useRef<CategoryV2 | null>(null)
+  const [descriptionError, setDescriptionError] = useState<string | undefined>()
+  const [touched, setTouched] = useState(false)
 
   // Default placeholder when no category is selected
   const defaultPlaceholder = 'Selecione primeiro uma categoria acima para ver um exemplo de descrição...'
   const placeholder = category?.placeholder || defaultPlaceholder
+
+  // Handle description change with sanitization
+  const handleDescriptionChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const value = e.target.value
+    const sanitized = sanitizeDescription(value)
+    onDescriptionChange(sanitized)
+
+    // Clear error when user starts typing
+    if (descriptionError && value) {
+      setDescriptionError(undefined)
+    }
+  }, [onDescriptionChange, descriptionError])
+
+  // Handle description blur validation
+  const handleDescriptionBlur = useCallback(() => {
+    if (!description) return // Don't validate empty on blur, let form validation handle it
+    setTouched(true)
+    const validation = validateDescription(description)
+    if (!validation.valid) {
+      setDescriptionError(validation.error)
+    } else {
+      setDescriptionError(undefined)
+    }
+  }, [description])
 
   // Scroll to description section when category changes (not on initial render)
   useEffect(() => {
@@ -63,6 +91,7 @@ export default function Step2ProblemV2({
       return () => clearTimeout(timer)
     }
     previousCategoryRef.current = category
+    return undefined
   }, [category])
 
   // Handle category selection
@@ -112,12 +141,21 @@ export default function Step2ProblemV2({
         <Textarea
           placeholder={placeholder}
           value={description}
-          onChange={(e) => onDescriptionChange(e.target.value)}
+          onChange={handleDescriptionChange}
+          onBlur={handleDescriptionBlur}
           rows={4}
-          maxLength={1000}
+          maxLength={2000}
           showCount
           className="resize-none border-0 bg-gray-50 rounded-xl focus:ring-2 focus:ring-v2-yellow"
+          aria-invalid={!!descriptionError}
+          aria-describedby={descriptionError ? 'description-error' : undefined}
         />
+        {touched && descriptionError && (
+          <div className="flex items-start gap-1.5 mt-2 text-red-600" id="description-error" role="alert">
+            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+            <p className="text-xs">{descriptionError}</p>
+          </div>
+        )}
       </div>
 
       {/* Photo Upload */}

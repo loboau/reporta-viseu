@@ -1,24 +1,40 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useCallback } from 'react'
 import {
   MapPin,
   FileText,
   Camera,
   User,
   CheckCircle2,
+  AlertCircle,
 } from 'lucide-react'
 import type { ReportDataV2 } from '@/types'
 import Input from '@/components/ui/Input'
 import Image from 'next/image'
 import { CategoryIconV2 } from './CategoryIconV2'
 import { urgencyOptionsV2 } from '@/lib/categoriesV2'
+import {
+  sanitizeName,
+  sanitizeEmail,
+  sanitizePhone,
+  sanitizeAddress,
+  validateName,
+  validateEmail,
+  validatePhone,
+} from '@/lib/validation'
 
 interface Step3SubmitV2Props {
   data: ReportDataV2
   onNameChange: (name: string) => void
   onEmailChange: (email: string) => void
   onPhoneChange: (phone: string) => void
+}
+
+interface ValidationErrors {
+  name?: string
+  email?: string
+  phone?: string
 }
 
 export default function Step3SubmitV2({
@@ -28,6 +44,81 @@ export default function Step3SubmitV2({
   onPhoneChange,
 }: Step3SubmitV2Props) {
   const urgencyOption = urgencyOptionsV2.find(u => u.id === data.urgency)
+  const [errors, setErrors] = useState<ValidationErrors>({})
+  const [touched, setTouched] = useState<Record<string, boolean>>({})
+
+  // Handle name change with validation and sanitization
+  const handleNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    const sanitized = sanitizeName(value)
+    onNameChange(sanitized)
+
+    // Clear error when user starts typing
+    if (errors.name && value) {
+      setErrors(prev => ({ ...prev, name: undefined }))
+    }
+  }, [onNameChange, errors.name])
+
+  // Handle name blur validation
+  const handleNameBlur = useCallback(() => {
+    setTouched(prev => ({ ...prev, name: true }))
+    const validation = validateName(data.name)
+    if (!validation.valid) {
+      setErrors(prev => ({ ...prev, name: validation.error }))
+    } else {
+      setErrors(prev => ({ ...prev, name: undefined }))
+    }
+  }, [data.name])
+
+  // Handle email change with validation and sanitization
+  const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    const sanitized = sanitizeEmail(value)
+    onEmailChange(sanitized)
+
+    // Clear error when user starts typing
+    if (errors.email && value) {
+      setErrors(prev => ({ ...prev, email: undefined }))
+    }
+  }, [onEmailChange, errors.email])
+
+  // Handle email blur validation
+  const handleEmailBlur = useCallback(() => {
+    setTouched(prev => ({ ...prev, email: true }))
+    const validation = validateEmail(data.email)
+    if (!validation.valid) {
+      setErrors(prev => ({ ...prev, email: validation.error }))
+    } else {
+      setErrors(prev => ({ ...prev, email: undefined }))
+    }
+  }, [data.email])
+
+  // Handle phone change with validation and sanitization
+  const handlePhoneChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    const sanitized = sanitizePhone(value)
+    onPhoneChange(sanitized)
+
+    // Clear error when user starts typing
+    if (errors.phone && value) {
+      setErrors(prev => ({ ...prev, phone: undefined }))
+    }
+  }, [onPhoneChange, errors.phone])
+
+  // Handle phone blur validation
+  const handlePhoneBlur = useCallback(() => {
+    if (!data.phone) return // Phone is optional
+    setTouched(prev => ({ ...prev, phone: true }))
+    const validation = validatePhone(data.phone)
+    if (!validation.valid) {
+      setErrors(prev => ({ ...prev, phone: validation.error }))
+    } else {
+      setErrors(prev => ({ ...prev, phone: undefined }))
+    }
+  }, [data.phone])
+
+  // Sanitize address from reverse geocoding (XSS protection)
+  const sanitizedAddress = data.location?.address ? sanitizeAddress(data.location.address) : ''
 
   return (
     <div className="space-y-3 sm:space-y-4">
@@ -54,9 +145,9 @@ export default function Step3SubmitV2({
                 <h3 className="font-semibold text-gray-900 text-xs sm:text-sm">
                   Localização
                 </h3>
-                {data.location.address && (
-                  <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 mt-0.5" title={data.location.address}>
-                    {data.location.address}
+                {sanitizedAddress && (
+                  <p className="text-xs sm:text-sm text-gray-600 line-clamp-2 mt-0.5" title={sanitizedAddress}>
+                    {sanitizedAddress}
                   </p>
                 )}
               </div>
@@ -191,39 +282,72 @@ export default function Step3SubmitV2({
         </div>
 
         <div className="space-y-3 sm:space-y-4">
-          <Input
-            label="Nome"
-            type="text"
-            placeholder="O seu nome completo"
-            value={data.name}
-            onChange={(e) => onNameChange(e.target.value)}
-            required
-            autoComplete="name"
-            inputMode="text"
-          />
+          <div>
+            <Input
+              label="Nome"
+              type="text"
+              placeholder="O seu nome completo"
+              value={data.name}
+              onChange={handleNameChange}
+              onBlur={handleNameBlur}
+              required
+              autoComplete="name"
+              inputMode="text"
+              aria-invalid={!!errors.name}
+              aria-describedby={errors.name ? 'name-error' : undefined}
+            />
+            {touched.name && errors.name && (
+              <div className="flex items-start gap-1.5 mt-1.5 text-red-600" id="name-error" role="alert">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <p className="text-xs">{errors.name}</p>
+              </div>
+            )}
+          </div>
 
-          <Input
-            label="Email"
-            type="email"
-            placeholder="exemplo@email.com"
-            value={data.email}
-            onChange={(e) => onEmailChange(e.target.value)}
-            required
-            helperText="Para receber atualizações"
-            autoComplete="email"
-            inputMode="email"
-          />
+          <div>
+            <Input
+              label="Email"
+              type="email"
+              placeholder="exemplo@email.com"
+              value={data.email}
+              onChange={handleEmailChange}
+              onBlur={handleEmailBlur}
+              required
+              helperText={!errors.email ? "Para receber atualizações" : undefined}
+              autoComplete="email"
+              inputMode="email"
+              aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? 'email-error' : undefined}
+            />
+            {touched.email && errors.email && (
+              <div className="flex items-start gap-1.5 mt-1.5 text-red-600" id="email-error" role="alert">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <p className="text-xs">{errors.email}</p>
+              </div>
+            )}
+          </div>
 
-          <Input
-            label="Telefone"
-            type="tel"
-            placeholder="912 345 678"
-            value={data.phone}
-            onChange={(e) => onPhoneChange(e.target.value)}
-            helperText="Opcional"
-            autoComplete="tel"
-            inputMode="tel"
-          />
+          <div>
+            <Input
+              label="Telefone"
+              type="tel"
+              placeholder="912 345 678"
+              value={data.phone}
+              onChange={handlePhoneChange}
+              onBlur={handlePhoneBlur}
+              helperText={!errors.phone ? "Opcional" : undefined}
+              autoComplete="tel"
+              inputMode="tel"
+              aria-invalid={!!errors.phone}
+              aria-describedby={errors.phone ? 'phone-error' : undefined}
+            />
+            {touched.phone && errors.phone && (
+              <div className="flex items-start gap-1.5 mt-1.5 text-red-600" id="phone-error" role="alert">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <p className="text-xs">{errors.phone}</p>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

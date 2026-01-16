@@ -1,10 +1,36 @@
 'use client'
 
+/**
+ * @fileoverview Main wizard container for the V2 report submission flow.
+ * Manages the multi-step form state and orchestrates the submission process.
+ * @module components/v2/WizardContainerV2
+ */
+
 import React, { useReducer, useCallback, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
-import type { WizardStateV2, WizardActionV2, ReportDataV2, Location, CategoryV2, Photo, UrgencyV2, MapApi } from '@/types'
+
+import type {
+  WizardStateV2,
+  WizardActionV2,
+  ReportDataV2,
+  Location,
+  CategoryV2,
+  Photo,
+  UrgencyV2,
+  MapApi,
+} from '@/types'
+
 import { generateReference } from '@/lib/generateReference'
 import { useReverseGeocode } from '@/hooks/useReverseGeocode'
+import {
+  sanitizeName,
+  sanitizeEmail,
+  sanitizePhone,
+  sanitizeDescription,
+  sanitizeAddress,
+  validateContactInfo,
+  validateDescription,
+} from '@/lib/validation'
 import { HeaderV2 } from './HeaderV2'
 import { SidebarDrawer } from './SidebarDrawer'
 import { BottomNavV2 } from './BottomNavV2'
@@ -249,22 +275,35 @@ export default function WizardContainerV2() {
     setMapApi(api)
   }, [])
 
-  // Validation functions
+  // Validation functions with comprehensive checks
   const canProceedFromStep1 = useMemo(() => {
     return state.data.location !== null
   }, [state.data.location])
 
   const canProceedFromStep2 = useMemo(() => {
-    return state.data.category !== null && state.data.description.trim().length > 0
+    if (!state.data.category || !state.data.description.trim()) {
+      return false
+    }
+
+    // Validate description
+    const descValidation = validateDescription(state.data.description)
+    return descValidation.valid
   }, [state.data.category, state.data.description])
 
   const canProceedFromStep3 = useMemo(() => {
-    return (
-      state.data.name.trim() !== '' &&
-      state.data.email.trim() !== '' &&
-      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(state.data.email)
-    )
-  }, [state.data.name, state.data.email])
+    if (!state.data.name.trim() || !state.data.email.trim()) {
+      return false
+    }
+
+    // Validate contact info
+    const validation = validateContactInfo({
+      name: state.data.name,
+      email: state.data.email,
+      phone: state.data.phone,
+    })
+
+    return validation.valid
+  }, [state.data.name, state.data.email, state.data.phone])
 
   // Memoized dispatch handlers
   const handleLocationChange = useCallback(async (location: Location) => {
@@ -318,13 +357,54 @@ export default function WizardContainerV2() {
     dispatch({ type: 'SET_PHONE', payload: phone })
   }, [])
 
-  // Submit handler
+  // Submit handler with comprehensive data sanitization
   const handleSubmit = useCallback(async () => {
+    // Final validation before submission
+    const contactValidation = validateContactInfo({
+      name: state.data.name,
+      email: state.data.email,
+      phone: state.data.phone,
+    })
+
+    if (!contactValidation.valid) {
+      dispatch({
+        type: 'SUBMIT_ERROR',
+        payload: 'Por favor, corrija os erros nos dados de contacto antes de submeter.',
+      })
+      return
+    }
+
+    const descValidation = validateDescription(state.data.description)
+    if (!descValidation.valid) {
+      dispatch({
+        type: 'SUBMIT_ERROR',
+        payload: 'Por favor, corrija a descrição do problema antes de submeter.',
+      })
+      return
+    }
+
     dispatch({ type: 'SUBMIT_START' })
 
     try {
+      // Sanitize all data before submission
+      const sanitizedData: ReportDataV2 = {
+        ...state.data,
+        name: sanitizeName(state.data.name),
+        email: sanitizeEmail(state.data.email),
+        phone: sanitizePhone(state.data.phone),
+        description: sanitizeDescription(state.data.description),
+        location: state.data.location
+          ? {
+              ...state.data.location,
+              address: state.data.location.address
+                ? sanitizeAddress(state.data.location.address)
+                : undefined,
+            }
+          : null,
+      }
+
       const reference = generateReference()
-      const letter = await generateLetter(state.data, reference)
+      const letter = await generateLetter(sanitizedData, reference)
 
       dispatch({
         type: 'SUBMIT_SUCCESS',

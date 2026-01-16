@@ -1,11 +1,12 @@
 'use client'
 
-import React, { useRef, ChangeEvent, useEffect } from 'react'
+import React, { useRef, ChangeEvent, useEffect, useState } from 'react'
 import Image from 'next/image'
-import { X, Plus } from 'lucide-react'
+import { X, Plus, AlertCircle } from 'lucide-react'
 import type { Photo } from '@/types'
 import { MAX_PHOTOS, MAX_PHOTO_SIZE, ACCEPTED_IMAGE_TYPES } from '@/lib/constants'
 import { CategoryIconV2 } from './CategoryIconV2'
+import { validatePhotoFile, ALLOWED_IMAGE_TYPES } from '@/lib/validation'
 
 interface PhotoUploadV2Props {
   photos: Photo[]
@@ -19,6 +20,7 @@ export function PhotoUploadV2({
   onRemovePhoto,
 }: PhotoUploadV2Props) {
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [uploadError, setUploadError] = useState<string | null>(null)
 
   // Cleanup object URLs when photos are removed to prevent memory leaks
   useEffect(() => {
@@ -31,33 +33,60 @@ export function PhotoUploadV2({
     }
   }, [photos])
 
-  const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
+  // Clear error after 5 seconds
+  useEffect(() => {
+    if (uploadError) {
+      const timer = setTimeout(() => setUploadError(null), 5000)
+      return () => clearTimeout(timer)
+    }
+    return undefined
+  }, [uploadError])
+
+  const handleFileSelect = async (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (!files || files.length === 0) return
 
-    Array.from(files).forEach((file) => {
-      if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
-        alert(`Formato não suportado: ${file.name}. Use JPG, PNG ou WebP.`)
-        return
-      }
+    setUploadError(null)
 
-      if (file.size > MAX_PHOTO_SIZE) {
-        alert(`Ficheiro muito grande: ${file.name}. Tamanho máximo: 5MB.`)
-        return
+    // Check if adding these files would exceed the limit
+    if (photos.length + files.length > MAX_PHOTOS) {
+      setUploadError(`Pode adicionar no máximo ${MAX_PHOTOS} fotos. Já tem ${photos.length} foto${photos.length > 1 ? 's' : ''}.`)
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
       }
+      return
+    }
 
+    for (const file of Array.from(files)) {
+      // Check if we've reached the limit
       if (photos.length >= MAX_PHOTOS) {
-        alert(`Máximo de ${MAX_PHOTOS} fotos atingido.`)
-        return
+        setUploadError(`Máximo de ${MAX_PHOTOS} fotos atingido.`)
+        break
       }
 
-      const photo: Photo = {
-        id: `${Date.now()}-${Math.random()}`,
-        file,
-        preview: URL.createObjectURL(file),
+      // Comprehensive file validation
+      const validation = await validatePhotoFile(file, {
+        checkDimensions: false, // Skip dimension check for performance
+      })
+
+      if (!validation.valid) {
+        setUploadError(validation.error || 'Erro ao validar ficheiro')
+        continue
       }
-      onAddPhoto(photo)
-    })
+
+      // Additional security check: verify file is actually an image
+      try {
+        const photo: Photo = {
+          id: `${Date.now()}-${Math.random()}`,
+          file,
+          preview: URL.createObjectURL(file),
+        }
+        onAddPhoto(photo)
+      } catch (error) {
+        setUploadError('Erro ao processar imagem. Por favor, tente novamente.')
+        console.error('Error processing photo:', error)
+      }
+    }
 
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
@@ -70,11 +99,19 @@ export function PhotoUploadV2({
 
   return (
     <div>
+      {/* Error Message */}
+      {uploadError && (
+        <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-xl flex items-start gap-2" role="alert">
+          <AlertCircle className="w-4 h-4 text-red-600 flex-shrink-0 mt-0.5" />
+          <p className="text-xs text-red-700">{uploadError}</p>
+        </div>
+      )}
+
       {/* Hidden File Input */}
       <input
         ref={fileInputRef}
         type="file"
-        accept={ACCEPTED_IMAGE_TYPES.join(',')}
+        accept={ALLOWED_IMAGE_TYPES.join(',')}
         multiple
         onChange={handleFileSelect}
         className="hidden"

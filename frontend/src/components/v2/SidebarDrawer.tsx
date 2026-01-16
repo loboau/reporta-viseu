@@ -33,6 +33,7 @@ export function SidebarDrawer({ isOpen, onClose, onNewReport }: SidebarDrawerPro
       }, 300) // Match animation duration
       return () => clearTimeout(timer)
     }
+    return undefined
   }, [isOpen, isVisible])
 
   // Prevent body scroll when drawer is open

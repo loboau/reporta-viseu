@@ -101,7 +101,7 @@ export default function Step2Problem({
         <div className="grid grid-cols-3 gap-3">
           {categories.map((cat, index) => {
             const isSelected = category?.id === cat.id
-            const style = categoryStyles[cat.id] || categoryStyles.outro
+            const style = categoryStyles[cat.id] ?? categoryStyles.outro ?? { bg: 'bg-gray-500', shadow: 'shadow-card' }
 
             return (
               <button
