@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import type { Location } from '@/types'
-import { isPointInViseuConcelho, VISEU_BBOX } from '@/lib/constants'
+import { isPointInViseuConcelho } from '@/lib/constants'
 
 interface NominatimResult {
   place_id: number
@@ -74,16 +74,10 @@ export function useAddressSearch() {
       abortControllerRef.current = new AbortController()
 
       try {
-        // Pesquisa com viewbox para dar prioridade ao concelho de Viseu
-        const searchQuery = encodeURIComponent(`${query}, Viseu`)
-        const viewbox = `${VISEU_BBOX.west},${VISEU_BBOX.north},${VISEU_BBOX.east},${VISEU_BBOX.south}`
+        // Use our API route which handles User-Agent on server side
         const response = await fetch(
-          `https://nominatim.openstreetmap.org/search?q=${searchQuery}&format=json&limit=8&addressdetails=1&viewbox=${viewbox}&bounded=0&countrycodes=pt`,
+          `/api/search?q=${encodeURIComponent(query)}`,
           {
-            headers: {
-              'Accept': 'application/json',
-              'User-Agent': 'ViseuReporta/2.0 (https://reporta.viseu.pt; municipal-reporting-app)',
-            },
             signal: abortControllerRef.current.signal,
           }
         )
@@ -92,10 +86,11 @@ export function useAddressSearch() {
           throw new Error('Erro ao pesquisar morada')
         }
 
-        const data: NominatimResult[] = await response.json()
+        const data = await response.json()
+        const nominatimResults: NominatimResult[] = data.results || []
 
         // Filtrar e ordenar: primeiro os que estão dentro do concelho
-        const mappedResults: AddressSearchResult[] = data.map((item) => {
+        const mappedResults: AddressSearchResult[] = nominatimResults.map((item) => {
           const lat = parseFloat(item.lat)
           const lng = parseFloat(item.lon)
           const isInConcelho = isPointInViseuConcelho(lat, lng) || isViseuConcelhoAddress(item.address)

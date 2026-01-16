@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useRef } from 'react'
 import type { Location, ReverseGeocodeResult } from '@/types'
-import { NOMINATIM_URL } from '@/lib/constants'
 
 // Simple in-memory cache for geocode results
 const geocodeCache = new Map<string, { result: ReverseGeocodeResult; timestamp: number }>()
@@ -40,49 +39,19 @@ export function useReverseGeocode() {
       abortControllerRef.current = new AbortController()
 
       try {
-        const params = new URLSearchParams({
-          lat: location.lat.toString(),
-          lon: location.lng.toString(),
-          format: 'json',
-          addressdetails: '1',
-          zoom: '18',
-        })
-
-        const response = await fetch(`${NOMINATIM_URL}?${params}`, {
-          headers: {
-            'Accept-Language': 'pt-PT,pt',
-            'User-Agent': 'ViseuReporta/2.0 (https://reporta.viseu.pt; municipal-reporting-app)',
-          },
-          signal: abortControllerRef.current.signal,
-        })
+        // Use our API route which handles User-Agent on server side
+        const response = await fetch(
+          `/api/geocode?lat=${location.lat}&lng=${location.lng}`,
+          {
+            signal: abortControllerRef.current.signal,
+          }
+        )
 
         if (!response.ok) {
           throw new Error('Erro ao obter endereço')
         }
 
-        const data = await response.json()
-
-        // Build a readable address from components
-        const address = [
-          data.address?.road,
-          data.address?.house_number,
-          data.address?.suburb || data.address?.neighbourhood,
-          data.address?.city || data.address?.town || data.address?.village,
-        ]
-          .filter(Boolean)
-          .join(', ')
-
-        // Try to extract freguesia from various fields
-        const freguesia =
-          data.address?.suburb ||
-          data.address?.neighbourhood ||
-          data.address?.quarter ||
-          null
-
-        const result: ReverseGeocodeResult = {
-          address: address || 'Endereço não encontrado',
-          freguesia,
-        }
+        const result: ReverseGeocodeResult = await response.json()
 
         // Store in cache
         geocodeCache.set(cacheKey, { result, timestamp: Date.now() })
