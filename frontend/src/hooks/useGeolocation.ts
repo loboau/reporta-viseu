@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback } from 'react'
-import { Location, GeolocationState } from '@/types'
+import type { Location, GeolocationState } from '@/types'
 import { isPointInViseuConcelho } from '@/lib/constants'
 
 export function useGeolocation() {

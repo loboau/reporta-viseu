@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 import { X, Info, PlusCircle, HelpCircle, Mail, ExternalLink } from 'lucide-react'
 import { AboutModal } from './AboutModal'
 import { HelpModal } from './HelpModal'
@@ -61,7 +62,7 @@ export function SidebarDrawer({ isOpen, onClose, onNewReport }: SidebarDrawerPro
 
   return (
     <>
-      <div className="fixed inset-0 z-[100]">
+      <div className="fixed inset-0 z-[100]" role="dialog" aria-modal="true" aria-labelledby="sidebar-title">
         {/* Backdrop */}
         <div
           className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${
@@ -72,72 +73,86 @@ export function SidebarDrawer({ isOpen, onClose, onNewReport }: SidebarDrawerPro
         />
 
         {/* Drawer - opens from right */}
-        <div className={`absolute right-0 top-0 bottom-0 w-[280px] max-w-[85vw] bg-white shadow-xl transition-transform duration-300 ease-out ${
-          isClosing ? 'translate-x-full' : 'animate-slide-in-right-drawer'
-        }`}>
+        <aside
+          className={`absolute right-0 top-0 bottom-0 w-[280px] max-w-[85vw] bg-white shadow-xl transition-transform duration-300 ease-out ${
+            isClosing ? 'translate-x-full' : 'animate-slide-in-right-drawer'
+          }`}
+          aria-label="Menu de navegação lateral"
+        >
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-gray-100">
+            <h2 id="sidebar-title" className="sr-only">Menu de navegação</h2>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              aria-label="Fechar menu"
+              className="p-2 hover:bg-gray-100 rounded-xl transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-v2-yellow focus-visible:ring-offset-2"
+              aria-label="Fechar menu de navegação"
             >
-              <X className="w-5 h-5 text-gray-500" />
+              <X className="w-5 h-5 text-gray-500" aria-hidden="true" />
             </button>
-            <img
-              src="/v2/logos/Viseu_Reporta_Logo_Positivo.png"
-              alt="Viseu Reporta"
-              className="h-8 w-auto object-contain"
+            <Image
+              src="/v2/icons/Icon_Logo_Viseu.png"
+              alt="Camara Municipal de Viseu"
+              width={80}
+              height={40}
+              className="h-10 w-auto object-contain"
             />
           </div>
 
           {/* Navigation Items - simplified */}
-          <nav className="p-3">
-            <ul className="space-y-1">
+          <nav className="p-3" aria-label="Menu principal">
+            <ul className="space-y-1" role="menu">
               {/* New Report */}
-              <li>
+              <li role="none">
                 <button
+                  role="menuitem"
                   onClick={() => {
                     onNewReport?.()
                     onClose()
                   }}
-                  className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-50 transition-colors text-left"
+                  className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-50 transition-colors duration-200 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-v2-yellow focus-visible:ring-offset-2"
+                  aria-label="Criar nova ocorrência"
                 >
-                  <PlusCircle className="w-5 h-5 text-v2-green" />
+                  <PlusCircle className="w-5 h-5 text-v2-green" aria-hidden="true" />
                   <span className="font-medium text-gray-900">Nova Ocorrência</span>
                 </button>
               </li>
 
               {/* About */}
-              <li>
+              <li role="none">
                 <button
+                  role="menuitem"
                   onClick={() => setShowAbout(true)}
-                  className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-50 transition-colors text-left"
+                  className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-50 transition-colors duration-200 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-v2-yellow focus-visible:ring-offset-2"
+                  aria-label="Sobre a aplicação"
                 >
-                  <Info className="w-5 h-5 text-v2-blue" />
+                  <Info className="w-5 h-5 text-v2-blue" aria-hidden="true" />
                   <span className="font-medium text-gray-900">Sobre</span>
                 </button>
               </li>
 
               {/* Help */}
-              <li>
+              <li role="none">
                 <button
+                  role="menuitem"
                   onClick={() => setShowHelp(true)}
-                  className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-50 transition-colors text-left"
+                  className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-50 transition-colors duration-200 text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-v2-yellow focus-visible:ring-offset-2"
+                  aria-label="Ajuda e instruções de uso"
                 >
-                  <HelpCircle className="w-5 h-5 text-v2-purple" />
+                  <HelpCircle className="w-5 h-5 text-v2-purple" aria-hidden="true" />
                   <span className="font-medium text-gray-900">Ajuda</span>
                 </button>
               </li>
 
               {/* Contact */}
-              <li>
+              <li role="none">
                 <a
+                  role="menuitem"
                   href="mailto:geral@cm-viseu.pt"
-                  className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-50 transition-colors"
+                  className="w-full flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-50 transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-v2-yellow focus-visible:ring-offset-2"
                   onClick={onClose}
+                  aria-label="Enviar email para geral@cm-viseu.pt"
                 >
-                  <Mail className="w-5 h-5 text-v2-orange" />
+                  <Mail className="w-5 h-5 text-v2-orange" aria-hidden="true" />
                   <span className="font-medium text-gray-900">Contacto</span>
                 </a>
               </li>
@@ -150,16 +165,16 @@ export function SidebarDrawer({ isOpen, onClose, onNewReport }: SidebarDrawerPro
               href="https://cm-viseu.pt"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+              className="flex items-center justify-center gap-2 text-sm text-gray-500 hover:text-gray-700 transition-colors duration-200"
             >
               <span>cm-viseu.pt</span>
               <ExternalLink className="w-4 h-4" />
             </a>
             <p className="text-center text-xs text-gray-400 mt-2">
-              Versão 2.0
+              Versao 2.0
             </p>
           </div>
-        </div>
+        </aside>
       </div>
 
       {/* Modals */}

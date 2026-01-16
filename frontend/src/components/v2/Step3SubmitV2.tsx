@@ -8,7 +8,7 @@ import {
   User,
   CheckCircle2,
 } from 'lucide-react'
-import { ReportDataV2 } from '@/types'
+import type { ReportDataV2 } from '@/types'
 import Input from '@/components/ui/Input'
 import Image from 'next/image'
 import { CategoryIconV2 } from './CategoryIconV2'
@@ -60,7 +60,7 @@ export default function Step3SubmitV2({
                   </p>
                 )}
               </div>
-              <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" />
+              <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0 success-check" />
             </div>
           </div>
         )}
@@ -91,7 +91,7 @@ export default function Step3SubmitV2({
                   {data.category.departamento}
                 </p>
               </div>
-              <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" />
+              <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0 success-check" />
             </div>
           </div>
         )}
@@ -111,7 +111,7 @@ export default function Step3SubmitV2({
                   {data.description}
                 </p>
               </div>
-              <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" />
+              <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0 success-check" />
             </div>
           </div>
         )}
@@ -143,7 +143,7 @@ export default function Step3SubmitV2({
                   ))}
                 </div>
               </div>
-              <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0" />
+              <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0 success-check" />
             </div>
           </div>
         )}
@@ -198,6 +198,8 @@ export default function Step3SubmitV2({
             value={data.name}
             onChange={(e) => onNameChange(e.target.value)}
             required
+            autoComplete="name"
+            inputMode="text"
           />
 
           <Input
@@ -208,6 +210,8 @@ export default function Step3SubmitV2({
             onChange={(e) => onEmailChange(e.target.value)}
             required
             helperText="Para receber atualizações"
+            autoComplete="email"
+            inputMode="email"
           />
 
           <Input
@@ -217,6 +221,8 @@ export default function Step3SubmitV2({
             value={data.phone}
             onChange={(e) => onPhoneChange(e.target.value)}
             helperText="Opcional"
+            autoComplete="tel"
+            inputMode="tel"
           />
         </div>
       </div>

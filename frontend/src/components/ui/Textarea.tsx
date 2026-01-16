@@ -19,6 +19,28 @@ export default function Textarea({
 }: TextareaProps) {
   const currentLength = typeof value === 'string' ? value.length : 0
 
+  // Encouraging character count logic
+  const getCharCountClass = () => {
+    if (!maxLength) return 'text-gray-400'
+    const percentage = (currentLength / maxLength) * 100
+    if (percentage >= 95) return 'char-count-max'
+    if (percentage >= 80) return 'char-count-warning'
+    if (currentLength > 20) return 'char-count-good'
+    return 'text-gray-400'
+  }
+
+  const getEncouragingMessage = () => {
+    if (!maxLength) return null
+    const percentage = (currentLength / maxLength) * 100
+    if (currentLength === 0) return null
+    if (currentLength < 20) return 'Continue escrevendo...'
+    if (percentage < 50) return 'Ótimo início!'
+    if (percentage < 80) return 'Está ficando ótimo!'
+    if (percentage < 95) return 'Quase lá!'
+    if (currentLength === maxLength) return 'Limite atingido'
+    return null
+  }
+
   return (
     <div className="w-full">
       {label && (
@@ -28,14 +50,21 @@ export default function Textarea({
             {props.required && <span className="text-category-red ml-1">*</span>}
           </label>
           {showCount && maxLength && (
-            <span className={`text-xs ${currentLength > maxLength * 0.9 ? 'text-category-orange' : 'text-gray-400'}`}>
-              {currentLength}/{maxLength}
-            </span>
+            <div className="flex items-center gap-2">
+              {getEncouragingMessage() && (
+                <span className="text-xs text-gray-500 italic">
+                  {getEncouragingMessage()}
+                </span>
+              )}
+              <span className={`text-xs font-medium char-count-progress ${getCharCountClass()}`}>
+                {currentLength}/{maxLength}
+              </span>
+            </div>
           )}
         </div>
       )}
       <textarea
-        className={`textarea min-h-[120px] ${error ? 'input-error' : ''} ${className}`}
+        className={`textarea min-h-[120px] input-enhanced ${error ? 'input-error shake-error' : ''} ${className}`}
         maxLength={maxLength}
         value={value}
         {...props}

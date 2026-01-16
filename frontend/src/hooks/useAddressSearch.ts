@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { Location } from '@/types'
+import type { Location } from '@/types'
 import { isPointInViseuConcelho, VISEU_BBOX } from '@/lib/constants'
 
 interface NominatimResult {

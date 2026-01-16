@@ -61,20 +61,20 @@ export function HeaderV2({ onMenuClick }: HeaderV2Props) {
   }, [])
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
+    <header className="sticky top-0 z-50 bg-white border-b border-gray-100" role="banner">
       <div className="px-3 sm:px-4 py-2.5 sm:py-3 flex items-center justify-between">
         {/* Logo Section - Using PNG logo, clickable to reset */}
         <button
           onClick={() => window.location.reload()}
-          className="flex items-center"
-          aria-label="Voltar ao início"
+          className="flex items-center focus:outline-none focus-visible:ring-2 focus-visible:ring-v2-yellow focus-visible:ring-offset-2 rounded-lg"
+          aria-label="Voltar ao início - Recarregar aplicação"
         >
           <Image
             src="/v2/logos/Viseu_Reporta_Logo_Positivo.png"
-            alt="Viseu Reporta"
-            width={180}
-            height={54}
-            className="h-10 sm:h-12 w-auto"
+            alt="Viseu Reporta - Logotipo"
+            width={220}
+            height={66}
+            className="h-12 sm:h-14 w-auto"
             priority
           />
         </button>
@@ -82,27 +82,29 @@ export function HeaderV2({ onMenuClick }: HeaderV2Props) {
         {/* Right Section - Date/Time & Menu */}
         <div className="flex items-center gap-3">
           {/* Date/Time */}
-          <div className="hidden sm:flex flex-col items-end">
-            <span className="text-[10px] text-gray-500 tracking-wide">
+          <div className="hidden sm:flex flex-col items-end" aria-live="polite" aria-atomic="true">
+            <time className="text-[10px] text-gray-500 tracking-wide" dateTime={new Date().toISOString()}>
               {dateTime.dateStr}
-            </span>
-            <span className="text-sm font-semibold text-gray-700">
+            </time>
+            <time className="text-sm font-semibold text-gray-700" dateTime={dateTime.timeStr}>
               {dateTime.timeStr}
-            </span>
+            </time>
           </div>
           {/* Mobile: Just time */}
-          <div className="sm:hidden">
-            <span className="text-sm font-semibold text-gray-700">
+          <div className="sm:hidden" aria-live="polite">
+            <time className="text-sm font-semibold text-gray-700" dateTime={dateTime.timeStr}>
               {dateTime.timeStr}
-            </span>
+            </time>
           </div>
           {/* Hamburger Menu */}
           <button
             onClick={onMenuClick}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            aria-label="Abrir menu"
+            className="p-2 hover:bg-gray-100 rounded-xl transition-colors duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-v2-yellow focus-visible:ring-offset-2"
+            aria-label="Abrir menu de navegação"
+            aria-expanded="false"
+            aria-haspopup="true"
           >
-            <Menu className="w-6 h-6 text-gray-700" />
+            <Menu className="w-5 h-5 text-gray-700" aria-hidden="true" />
           </button>
         </div>
       </div>

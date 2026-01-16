@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback, useRef } from 'react'
-import { Location, ReverseGeocodeResult } from '@/types'
+import type { Location, ReverseGeocodeResult } from '@/types'
 import { NOMINATIM_URL } from '@/lib/constants'
 
 // Simple in-memory cache for geocode results

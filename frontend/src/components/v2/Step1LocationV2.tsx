@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef, useCallback } from 'react'
 import { MapPin, Search, X, Target, AlertTriangle } from 'lucide-react'
-import { Location } from '@/types'
+import type { Location, MapApi } from '@/types'
 import { useGeolocation } from '@/hooks/useGeolocation'
 import { useReverseGeocode } from '@/hooks/useReverseGeocode'
 import { useAddressSearch } from '@/hooks/useAddressSearch'
@@ -12,7 +12,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner'
 interface Step1LocationV2Props {
   location: Location | null
   onLocationChange: (location: Location) => void
-  mapApi: { zoomIn: () => void; zoomOut: () => void } | null
+  mapApi: MapApi | null
 }
 
 export default function Step1LocationV2({
@@ -36,40 +36,6 @@ export default function Step1LocationV2({
   const { reverseGeocode } = useReverseGeocode()
   const addressSearch = useAddressSearch()
 
-  // Handle GPS location
-  useEffect(() => {
-    if (geolocation.location) {
-      handleLocationChange(geolocation.location)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [geolocation.location])
-
-  // Show/hide dropdown
-  useEffect(() => {
-    if (addressSearch.results.length > 0 && addressSearch.query) {
-      setShowDropdown(true)
-    } else {
-      setShowDropdown(false)
-    }
-  }, [addressSearch.results, addressSearch.query])
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        searchInputRef.current &&
-        !searchInputRef.current.contains(event.target as Node)
-      ) {
-        setShowDropdown(false)
-      }
-    }
-
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
-
   const handleLocationChange = useCallback(async (newLocation: Location) => {
     onLocationChange(newLocation)
 
@@ -82,6 +48,36 @@ export default function Step1LocationV2({
       })
     }
   }, [onLocationChange, reverseGeocode])
+
+  // Handle GPS location - optimized
+  useEffect(() => {
+    if (geolocation.location) {
+      handleLocationChange(geolocation.location)
+    }
+  }, [geolocation.location, handleLocationChange])
+
+  // Show/hide dropdown - optimized to avoid unnecessary updates
+  useEffect(() => {
+    const hasResults = addressSearch.results.length > 0 && addressSearch.query.length > 0
+    setShowDropdown(hasResults)
+  }, [addressSearch.results.length, addressSearch.query])
+
+  // Close dropdown on outside click - optimized
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node) &&
+        searchInputRef.current &&
+        !searchInputRef.current.contains(event.target as Node)
+      ) {
+        setShowDropdown(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside, { passive: true })
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   const [outOfBoundsError, setOutOfBoundsError] = useState<string | null>(null)
 
@@ -122,13 +118,13 @@ export default function Step1LocationV2({
                   addressSearch.clearSearch()
                   setShowDropdown(false)
                 }}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8
-                           flex items-center justify-center rounded-full
-                           text-gray-400 hover:text-gray-600 hover:bg-gray-100
-                           transition-all"
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 touch-target
+                           flex items-center justify-center rounded-xl
+                           text-gray-400 hover:text-gray-600 hover:bg-gray-100 active:bg-gray-200
+                           transition-colors duration-200"
                 aria-label="Limpar pesquisa"
               >
-                <X className="w-4 h-4" />
+                <X className="w-5 h-5" />
               </button>
             ) : (
               addressSearch.loading && (
@@ -157,8 +153,8 @@ export default function Step1LocationV2({
                       <button
                         type="button"
                         onClick={() => handleAddressSelect(result)}
-                        className={`w-full px-4 py-3 text-left transition-colors flex items-start gap-3
-                                   ${result.isInConcelho ? 'hover:bg-gray-50' : 'hover:bg-red-50 opacity-60'}`}
+                        className={`w-full px-4 py-3.5 text-left transition-colors flex items-start gap-3 touch-target
+                                   ${result.isInConcelho ? 'hover:bg-gray-50 active:bg-gray-100' : 'hover:bg-red-50 active:bg-red-100 opacity-60'}`}
                       >
                         <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0
                                         ${result.isInConcelho
@@ -203,24 +199,24 @@ export default function Step1LocationV2({
         )}
       </div>
 
-      {/* Map Controls - V2 Style with Micro-animations */}
+      {/* Map Controls - V2 Style with Micro-animations - Touch-optimized 44px minimum */}
       <div className="fixed right-3 sm:right-4 top-1/2 -translate-y-1/2 z-10 flex flex-col gap-2 sm:gap-3">
         <div className="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden">
           <button
             type="button"
-            className="w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center border-b border-gray-100 zoom-btn zoom-btn-plus"
+            className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center border-b border-gray-100 zoom-btn zoom-btn-plus touch-target active:bg-gray-100"
             onClick={handleZoomIn}
             aria-label="Aumentar zoom"
           >
-            <span className="text-lg sm:text-xl font-medium text-gray-600 zoom-btn-icon">+</span>
+            <span className="text-xl sm:text-2xl font-medium text-gray-600 zoom-btn-icon">+</span>
           </button>
           <button
             type="button"
-            className="w-10 h-10 sm:w-11 sm:h-11 flex items-center justify-center zoom-btn zoom-btn-minus"
+            className="w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center zoom-btn zoom-btn-minus touch-target active:bg-gray-100"
             onClick={handleZoomOut}
             aria-label="Diminuir zoom"
           >
-            <span className="text-lg sm:text-xl font-medium text-gray-600 zoom-btn-icon">-</span>
+            <span className="text-xl sm:text-2xl font-medium text-gray-600 zoom-btn-icon">-</span>
           </button>
         </div>
 
@@ -229,14 +225,14 @@ export default function Step1LocationV2({
           type="button"
           onClick={geolocation.getCurrentLocation}
           disabled={geolocation.loading}
-          className={`w-10 h-10 sm:w-11 sm:h-11 bg-white rounded-xl sm:rounded-2xl shadow-lg flex items-center justify-center
-                     gps-btn ${geolocation.loading ? 'gps-btn-loading' : ''}`}
+          className={`w-11 h-11 sm:w-12 sm:h-12 bg-white rounded-xl sm:rounded-2xl shadow-lg flex items-center justify-center touch-target
+                     gps-btn ${geolocation.loading ? 'gps-btn-loading' : ''} active:bg-gray-100 disabled:active:bg-white`}
           aria-label="Usar minha localização"
         >
           {geolocation.loading ? (
             <LoadingSpinner size="sm" />
           ) : (
-            <Target className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 gps-icon" />
+            <Target className="w-5 h-5 sm:w-6 sm:h-6 text-gray-600 gps-icon" />
           )}
         </button>
       </div>

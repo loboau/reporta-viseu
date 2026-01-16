@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
+import Image from 'next/image'
 import { X, Heart, Shield, MapPin, Users } from 'lucide-react'
 
 interface AboutModalProps {
@@ -50,7 +51,7 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
           <h2 className="text-lg font-bold text-gray-900">Sobre</h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-xl transition-colors duration-200"
             aria-label="Fechar"
           >
             <X className="w-5 h-5 text-gray-500" />
@@ -61,9 +62,11 @@ export function AboutModal({ isOpen, onClose }: AboutModalProps) {
         <div className="p-4 sm:p-6 overflow-y-auto">
           {/* Logo */}
           <div className="flex justify-center mb-6">
-            <img
+            <Image
               src="/v2/logos/Viseu_Reporta_Logo_Positivo.png"
               alt="Viseu Reporta"
+              width={180}
+              height={54}
               className="h-12 w-auto object-contain"
             />
           </div>

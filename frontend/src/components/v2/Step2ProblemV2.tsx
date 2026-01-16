@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useRef, useCallback, useEffect } from 'react'
-import { CategoryV2, Photo, UrgencyV2 } from '@/types'
+import type { CategoryV2, Photo, UrgencyV2 } from '@/types'
 import Textarea from '@/components/ui/Textarea'
 import { CategoryGridV2 } from './CategoryGridV2'
 import { CategoryIconV2 } from './CategoryIconV2'

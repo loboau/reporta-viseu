@@ -1,4 +1,4 @@
-import { CategoryV2 } from '@/types'
+import type { CategoryV2, UrgencyOptionV2 } from '@/types'
 
 export const categoriesV2: CategoryV2[] = [
   {
@@ -123,26 +123,26 @@ export const categoriesV2: CategoryV2[] = [
   },
 ]
 
-export const urgencyOptionsV2 = [
+export const urgencyOptionsV2: readonly UrgencyOptionV2[] = [
   {
-    id: 'pouco_urgente' as const,
+    id: 'pouco_urgente',
     label: 'Pouco Urgente',
     color: '#4CAF50',
     bgColor: '#E8F5E9',
     iconPath: '/v2/icons/Icon_Pouco_Urgente.png',
   },
   {
-    id: 'urgente' as const,
+    id: 'urgente',
     label: 'Urgente',
     color: '#FFC107',
     bgColor: '#FFF8E1',
     iconPath: '/v2/icons/Icon_Urgente.png',
   },
   {
-    id: 'perigoso' as const,
+    id: 'perigoso',
     label: 'Perigoso',
     color: '#E91E63',
     bgColor: '#FCE4EC',
     iconPath: '/v2/icons/Icon_Perigoso.png',
   },
-]
+] as const

@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { CheckCircle, Copy, Mail, FileText, RotateCcw, Check, RefreshCw } from 'lucide-react'
-import { ReportDataV2 } from '@/types'
+import type { ReportDataV2 } from '@/types'
 import Button from '@/components/ui/Button'
 import Image from 'next/image'
 
@@ -53,11 +53,16 @@ ${senderName}`
 export default function StepSuccessV2({ data, onNewReport, onRegenerateLetter, isRegenerating }: StepSuccessV2Props) {
   const [copiedLetter, setCopiedLetter] = useState(false)
 
-  const handleCopyLetter = () => {
+  const handleCopyLetter = async (): Promise<void> => {
     const letter = buildFormalLetter(data)
-    navigator.clipboard.writeText(letter)
-    setCopiedLetter(true)
-    setTimeout(() => setCopiedLetter(false), 2000)
+    try {
+      await navigator.clipboard.writeText(letter)
+      setCopiedLetter(true)
+      setTimeout(() => setCopiedLetter(false), 2000)
+    } catch {
+      // Fallback for browsers that don't support clipboard API
+      console.warn('Clipboard API not available')
+    }
   }
 
   const formalLetter = buildFormalLetter(data)
@@ -100,18 +105,18 @@ export default function StepSuccessV2({ data, onNewReport, onRegenerateLetter, i
             <button
               onClick={onRegenerateLetter}
               disabled={isRegenerating}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50"
+              className="p-2 rounded-xl hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50"
             >
-              <RefreshCw className={`w-4 h-4 text-gray-600 ${isRegenerating ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-5 h-5 text-gray-600 ${isRegenerating ? 'animate-spin' : ''}`} />
             </button>
             <button
               onClick={handleCopyLetter}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              className="p-2 rounded-xl hover:bg-gray-100 transition-colors duration-200"
             >
               {copiedLetter ? (
-                <Check className="w-4 h-4 text-v2-green" />
+                <Check className="w-5 h-5 text-v2-green" />
               ) : (
-                <Copy className="w-4 h-4 text-gray-600" />
+                <Copy className="w-5 h-5 text-gray-600" />
               )}
             </button>
           </div>

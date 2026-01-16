@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import { memo } from 'react'
 
 interface CategoryIconV2Props {
   iconPath: string
@@ -9,7 +10,7 @@ interface CategoryIconV2Props {
   className?: string
 }
 
-export function CategoryIconV2({
+export const CategoryIconV2 = memo(function CategoryIconV2({
   iconPath,
   alt,
   size = 32,
@@ -23,6 +24,9 @@ export function CategoryIconV2({
       height={size}
       className={className}
       style={{ objectFit: 'contain' }}
+      priority={false}
+      quality={85}
+      loading="lazy"
     />
   )
-}
+})

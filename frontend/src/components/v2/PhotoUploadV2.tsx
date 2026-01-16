@@ -1,9 +1,9 @@
 'use client'
 
-import React, { useRef, ChangeEvent } from 'react'
+import React, { useRef, ChangeEvent, useEffect } from 'react'
 import Image from 'next/image'
 import { X, Plus } from 'lucide-react'
-import { Photo } from '@/types'
+import type { Photo } from '@/types'
 import { MAX_PHOTOS, MAX_PHOTO_SIZE, ACCEPTED_IMAGE_TYPES } from '@/lib/constants'
 import { CategoryIconV2 } from './CategoryIconV2'
 
@@ -19,6 +19,17 @@ export function PhotoUploadV2({
   onRemovePhoto,
 }: PhotoUploadV2Props) {
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Cleanup object URLs when photos are removed to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      photos.forEach(photo => {
+        if (photo.preview) {
+          URL.revokeObjectURL(photo.preview)
+        }
+      })
+    }
+  }, [photos])
 
   const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
@@ -67,33 +78,36 @@ export function PhotoUploadV2({
         multiple
         onChange={handleFileSelect}
         className="hidden"
-        aria-label="Selecionar fotografias"
+        aria-label="Selecionar fotografias para upload"
+        id="photo-upload-input"
       />
 
       {/* Photo Grid - V2 Style */}
-      <div className="grid grid-cols-3 gap-2 sm:gap-3">
+      <div className="grid grid-cols-3 gap-2 sm:gap-3" role="list" aria-label={`Fotografias adicionadas: ${photos.length} de ${MAX_PHOTOS}`}>
         {/* Existing Photos */}
-        {photos.map((photo) => (
+        {photos.map((photo, index) => (
           <div
             key={photo.id}
-            className="relative group aspect-square rounded-xl sm:rounded-2xl overflow-hidden bg-gray-100 shadow-sm"
+            role="listitem"
+            className="relative group aspect-square rounded-xl sm:rounded-2xl overflow-hidden bg-gray-100 shadow-sm photo-pop-in"
           >
             <Image
               src={photo.preview}
-              alt="Preview"
+              alt={`Fotografia ${index + 1} de ${photos.length}`}
               fill
               className="object-cover"
             />
             <button
               type="button"
               onClick={() => onRemovePhoto(photo.id)}
-              className="absolute top-1 right-1 sm:top-2 sm:right-2 w-6 h-6 sm:w-7 sm:h-7 bg-white/90 backdrop-blur-sm text-v2-pink
-                         rounded-full flex items-center justify-center
+              className="absolute top-1 right-1 sm:top-2 sm:right-2 w-8 h-8 sm:w-9 sm:h-9 bg-white/90 backdrop-blur-sm text-v2-pink touch-target
+                         rounded-xl flex items-center justify-center
                          opacity-100
-                         transition-all hover:bg-white shadow-sm"
-              aria-label="Remover fotografia"
+                         transition-colors duration-200 hover:bg-white active:bg-gray-100 shadow-sm
+                         focus:outline-none focus-visible:ring-2 focus-visible:ring-v2-pink focus-visible:ring-offset-1"
+              aria-label={`Remover fotografia ${index + 1}`}
             >
-              <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <X className="w-5 h-5" aria-hidden="true" />
             </button>
           </div>
         ))}
@@ -104,10 +118,11 @@ export function PhotoUploadV2({
             type="button"
             onClick={handleButtonClick}
             className="aspect-square rounded-lg sm:rounded-2xl border-2 border-dashed border-gray-200
-                       hover:border-gray-300 hover:bg-gray-50
+                       hover:border-gray-300 hover:bg-gray-50 active:bg-gray-100 active:border-gray-400
                        flex flex-col items-center justify-between pt-2.5 pb-1.5 sm:pt-5 sm:pb-3 px-1 sm:px-2
-                       transition-all duration-200 cursor-pointer"
-            aria-label="Adicionar fotografia"
+                       transition-all duration-200 cursor-pointer touch-target
+                       focus:outline-none focus-visible:ring-2 focus-visible:ring-v2-yellow focus-visible:ring-offset-2"
+            aria-label={`Adicionar fotografia - ${photos.length} de ${MAX_PHOTOS} usadas`}
           >
             {photos.length === 0 ? (
               <>

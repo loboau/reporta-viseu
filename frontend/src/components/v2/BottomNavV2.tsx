@@ -2,7 +2,7 @@
 
 import { ChevronRight, ChevronLeft, Loader2 } from 'lucide-react'
 import Image from 'next/image'
-import { Location } from '@/types'
+import type { Location } from '@/types'
 
 interface BottomNavV2Props {
   currentStep: number
@@ -33,14 +33,14 @@ export function BottomNavV2({
   const progressPercent = ((currentStep - 1) / 2) * 100
 
   return (
-    <div className="w-full p-3 sm:p-4">
+    <nav className="w-full p-3 sm:p-4" aria-label="Navegação do formulário de reporte">
       {/* Step 1: Location display with VR yellow icon */}
       {currentStep === 1 && (
-        <div className="flex items-start gap-3 mb-3 px-1">
-          <div className="w-10 h-10 sm:w-11 sm:h-11 flex-shrink-0 mt-0.5">
+        <div className="flex items-start gap-3 mb-3 px-1" role="status" aria-live="polite">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 flex-shrink-0 mt-0.5" aria-hidden="true">
             <Image
               src="/v2/icons/Icon_Pin_Amarelo.png"
-              alt="Localização"
+              alt=""
               width={44}
               height={44}
               className="w-full h-full object-contain"
@@ -65,17 +65,21 @@ export function BottomNavV2({
 
       {/* Progress bar - thin gradient style (yellow to green like VR logo) */}
       <div className="mb-4">
-        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden" role="progressbar" aria-valuenow={progressPercent} aria-valuemin={0} aria-valuemax={100} aria-label={`Progresso do formulário: ${progressPercent.toFixed(0)}%`}>
           <div
-            className="h-full rounded-full transition-all duration-500 ease-out"
+            className={`h-full rounded-full progress-bar-fill-animated ${
+              progressPercent > 0 && progressPercent < 100 ? 'progress-shimmer' : ''
+            }`}
             style={{
               width: `${progressPercent}%`,
-              background: 'linear-gradient(90deg, #FFC107 0%, #8BC34A 100%)',
+              background: progressPercent > 0 && progressPercent < 100
+                ? undefined
+                : 'linear-gradient(90deg, #FFC107 0%, #8BC34A 100%)',
             }}
           />
         </div>
         {/* Step labels below progress bar - flex with equal spacing */}
-        <div className="flex justify-between items-center mt-2 px-1">
+        <div className="flex justify-between items-center mt-2 px-1" role="tablist" aria-label="Passos do formulário">
           {['Localização', 'Problema', 'Enviar'].map((label, index) => {
             const stepNum = index + 1
             const isActive = stepNum === currentStep
@@ -85,15 +89,20 @@ export function BottomNavV2({
             return (
               <button
                 key={label}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                aria-controls={`step-${stepNum}-panel`}
                 onClick={() => isClickable && onTabClick(stepNum)}
                 disabled={!isClickable}
-                className={`text-xs font-medium transition-all duration-200 ${
+                className={`text-xs font-medium transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-v2-yellow focus-visible:ring-offset-2 rounded px-2 py-1 ${
                   isActive
                     ? 'text-gray-900'
                     : isCompleted
                     ? 'text-v2-green hover:text-v2-green/80'
                     : 'text-gray-300 cursor-not-allowed'
                 }`}
+                aria-label={`Passo ${stepNum}: ${label}${isCompleted ? ' - concluído' : isActive ? ' - atual' : ' - bloqueado'}`}
               >
                 {label}
               </button>
@@ -113,28 +122,35 @@ export function BottomNavV2({
           }`}
         >
           <button
+            type="button"
             onClick={onBack}
-            className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl
-                       bg-gray-100 hover:bg-gray-200
+            aria-label="Voltar ao passo anterior"
+            className="flex items-center justify-center gap-1.5 px-5 py-3 rounded-xl touch-target
+                       bg-gray-100 hover:bg-gray-200 active:bg-gray-300
                        text-gray-600 text-sm font-semibold
-                       transition-all duration-200 active:scale-95
-                       whitespace-nowrap"
+                       transition-all duration-200 active:scale-[0.97]
+                       focus:outline-none focus-visible:ring-2 focus-visible:ring-v2-yellow focus-visible:ring-offset-2
+                       whitespace-nowrap min-h-[44px]"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-5 h-5" aria-hidden="true" />
             <span>Voltar</span>
           </button>
         </div>
 
         {/* Next/Submit button - centered, contracts when back button appears */}
         <button
+          type="button"
           onClick={onNext}
           disabled={nextDisabled || isLoading}
-          className={`flex items-center justify-center gap-2 px-8 py-2.5
-                      rounded-xl text-sm font-semibold
-                      transition-all duration-300 ease-out ${
+          aria-label={currentStep === 3 ? 'Gerar carta formal' : 'Avançar para próximo passo'}
+          aria-disabled={nextDisabled || isLoading}
+          className={`flex items-center justify-center gap-2 px-8 py-3 touch-target
+                      rounded-xl text-sm font-semibold nav-btn-next min-h-[44px]
+                      focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-v2-yellow
+                      ${
             nextDisabled || isLoading
               ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-              : 'bg-v2-yellow text-gray-900 hover:bg-yellow-400 active:scale-[0.98]'
+              : 'bg-v2-yellow text-gray-900 hover:bg-yellow-400 active:bg-yellow-500 active:scale-[0.97]'
           } ${
             showBack && currentStep > 1 ? 'flex-1 max-w-[200px]' : 'w-full max-w-[280px]'
           }`}
@@ -146,17 +162,17 @@ export function BottomNavV2({
         >
           {isLoading ? (
             <>
-              <Loader2 className="w-4 h-4 animate-spin" />
+              <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
               <span>A processar...</span>
             </>
           ) : (
             <>
               <span>{currentStep === 3 ? 'Gerar Carta' : nextLabel}</span>
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-5 h-5" aria-hidden="true" />
             </>
           )}
         </button>
       </div>
-    </div>
+    </nav>
   )
 }

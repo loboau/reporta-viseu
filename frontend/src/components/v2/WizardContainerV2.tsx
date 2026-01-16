@@ -2,7 +2,7 @@
 
 import React, { useReducer, useCallback, useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
-import { WizardStateV2, WizardActionV2, ReportDataV2, Location, CategoryV2, Photo, UrgencyV2 } from '@/types'
+import type { WizardStateV2, WizardActionV2, ReportDataV2, Location, CategoryV2, Photo, UrgencyV2, MapApi } from '@/types'
 import { generateReference } from '@/lib/generateReference'
 import { useReverseGeocode } from '@/hooks/useReverseGeocode'
 import { HeaderV2 } from './HeaderV2'
@@ -242,10 +242,10 @@ async function generateLetter(data: ReportDataV2, reference: string): Promise<st
 export default function WizardContainerV2() {
   const [state, dispatch] = useReducer(wizardReducer, initialState)
   const [sidebarOpen, setSidebarOpen] = useState(false)
-  const [mapApi, setMapApi] = useState<{ zoomIn: () => void; zoomOut: () => void } | null>(null)
+  const [mapApi, setMapApi] = useState<MapApi | null>(null)
   const { reverseGeocode, loading: isGeocodingLoading } = useReverseGeocode()
 
-  const handleMapReady = useCallback((api: { zoomIn: () => void; zoomOut: () => void }) => {
+  const handleMapReady = useCallback((api: MapApi) => {
     setMapApi(api)
   }, [])
 
@@ -455,10 +455,10 @@ export default function WizardContainerV2() {
       {/* Steps 2 & 3: Normal flow below sticky header */}
       {state.currentStep > 1 && (
         <div id="step-content-scroll" className="min-h-[calc(100vh-60px)] sm:min-h-[calc(100vh-72px)] bg-gray-50 pt-4 pb-36">
-          <div className="w-full max-w-xl mx-auto px-4">
+          <div className="w-full max-w-xl mx-auto px-4 step-transition">
             {/* Error Message */}
             {state.submitError && (
-              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-2xl">
+              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-2xl shake-error">
                 <p className="text-red-600 text-sm font-medium">
                   {state.submitError}
                 </p>
@@ -499,8 +499,8 @@ export default function WizardContainerV2() {
       )}
 
       {/* Bottom Navigation - ALWAYS fixed at bottom, same position for ALL steps */}
-      <div className="fixed bottom-0 left-0 right-0 z-20 w-full">
-        <div className="w-full max-w-xl mx-auto px-4 pb-4 safe-area-pb">
+      <div className="fixed bottom-0 left-0 right-0 z-20 w-full safe-area-nav">
+        <div className="w-full max-w-xl mx-auto px-4 pb-4">
           <div className="bg-white/95 backdrop-blur-xl rounded-2xl sm:rounded-3xl shadow-float">
             <BottomNavV2
               currentStep={state.currentStep}

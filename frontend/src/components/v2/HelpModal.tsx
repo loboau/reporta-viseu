@@ -50,7 +50,7 @@ export function HelpModal({ isOpen, onClose }: HelpModalProps) {
           <h2 className="text-lg font-bold text-gray-900">Como usar</h2>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-xl transition-colors duration-200"
             aria-label="Fechar"
           >
             <X className="w-5 h-5 text-gray-500" />

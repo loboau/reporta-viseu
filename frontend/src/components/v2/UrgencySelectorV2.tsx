@@ -1,6 +1,7 @@
 'use client'
 
-import { UrgencyV2 } from '@/types'
+import React from 'react'
+import type { UrgencyV2 } from '@/types'
 import { urgencyOptionsV2 } from '@/lib/categoriesV2'
 import { CategoryIconV2 } from './CategoryIconV2'
 
@@ -10,20 +11,30 @@ interface UrgencySelectorV2Props {
 }
 
 export function UrgencySelectorV2({ selected, onSelect }: UrgencySelectorV2Props) {
+  const [lastSelected, setLastSelected] = React.useState<UrgencyV2 | null>(null)
+
+  const handleSelect = (urgency: UrgencyV2) => {
+    setLastSelected(urgency)
+    onSelect(urgency)
+  }
   return (
-    <div className="flex gap-2 sm:gap-3">
+    <div className="flex gap-2 sm:gap-3" role="group" aria-label="Selecione o nível de urgência">
       {urgencyOptionsV2.map((option) => {
         const isSelected = selected === option.id
 
         return (
           <button
             key={option.id}
-            onClick={() => onSelect(option.id)}
+            type="button"
+            onClick={() => handleSelect(option.id)}
             aria-pressed={isSelected}
-            className={`flex-1 aspect-square flex flex-col items-center justify-between pt-2.5 pb-1.5 sm:pt-5 sm:pb-3 px-1 sm:px-2 rounded-lg sm:rounded-2xl transition-all duration-200 ${
-              isSelected
+            aria-label={`Urgência ${option.label}${isSelected ? ' (selecionado)' : ''}`}
+            className={`flex-1 aspect-square flex flex-col items-center justify-between pt-2.5 pb-1.5 sm:pt-5 sm:pb-3 px-1 sm:px-2 rounded-lg sm:rounded-2xl focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2 ${
+              isSelected && lastSelected === option.id
+                ? 'urgency-selected-animate'
+                : isSelected
                 ? 'scale-[1.02]'
-                : 'hover:scale-[1.02] active:scale-95 shadow-sm'
+                : 'hover:scale-[1.02] active:scale-95 shadow-sm transition-all duration-200'
             }`}
             style={{
               backgroundColor: option.bgColor,
@@ -34,10 +45,10 @@ export function UrgencySelectorV2({ selected, onSelect }: UrgencySelectorV2Props
             }}
           >
             {/* Icon - proportional to category icons */}
-            <div className="flex-1 flex items-center justify-center w-full">
+            <div className="flex-1 flex items-center justify-center w-full" aria-hidden="true">
               <CategoryIconV2
                 iconPath={option.iconPath}
-                alt={option.label}
+                alt=""
                 size={64}
                 className="w-14 h-14 sm:w-16 sm:h-16"
               />
@@ -46,6 +57,7 @@ export function UrgencySelectorV2({ selected, onSelect }: UrgencySelectorV2Props
             <span
               className="text-[11px] sm:text-sm font-semibold text-center leading-tight w-full truncate px-0.5"
               style={{ color: option.color }}
+              aria-hidden="true"
             >
               {option.label}
             </span>

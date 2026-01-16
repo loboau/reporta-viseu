@@ -24,9 +24,23 @@
     font-size: 16px !important;
   }
 
-  /* Smooth focus for accessibility */
+  /* Smooth focus for accessibility - Enhanced visibility */
   :focus-visible {
     @apply outline-none ring-2 ring-viseu-gold ring-offset-2;
+  }
+
+  /* Ensure focus is always visible on interactive elements */
+  button:focus-visible,
+  a:focus-visible,
+  [role="button"]:focus-visible,
+  [role="menuitem"]:focus-visible,
+  [role="tab"]:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 2px solid #D4AF37;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2);
   }
 }
 
@@ -284,15 +298,24 @@
 
   /* ====== SAFE AREA PADDING ====== */
   .safe-area-bottom {
-    padding-bottom: env(safe-area-inset-bottom, 20px);
+    padding-bottom: max(env(safe-area-inset-bottom), 20px);
   }
 
   .safe-area-top {
-    padding-top: env(safe-area-inset-top, 0px);
+    padding-top: max(env(safe-area-inset-top), 0px);
   }
 
   .safe-area-pb {
     padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .safe-area-pt {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  /* Safe area with minimum padding for button bars */
+  .safe-area-nav {
+    padding-bottom: max(env(safe-area-inset-bottom), 16px);
   }
 
   /* ====== URGENCY SELECTOR ====== */
@@ -375,6 +398,77 @@
   .touch-target {
     @apply min-w-[44px] min-h-[44px];
   }
+
+  /* Screen reader only content - WCAG 2.1 compliant */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
+
+  /* Accessible skip link - visible on focus */
+  .skip-link {
+    @apply sr-only;
+  }
+
+  .skip-link:focus {
+    position: fixed;
+    top: 1rem;
+    left: 1rem;
+    z-index: 9999;
+    padding: 1rem 1.5rem;
+    background: white;
+    border: 2px solid theme('colors.viseu-gold');
+    border-radius: 0.5rem;
+    width: auto;
+    height: auto;
+    clip: auto;
+    overflow: visible;
+    white-space: normal;
+  }
+
+  /* Smooth momentum scrolling on iOS */
+  .momentum-scroll {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+  }
+
+  /* Prevent overscroll bounce on body */
+  .no-overscroll {
+    overscroll-behavior: none;
+  }
+
+  /* Performance optimization: contain layout/paint for animated elements */
+  .perf-contain {
+    contain: layout paint;
+  }
+
+  /* Hardware acceleration for smooth animations */
+  .gpu-accelerate {
+    -webkit-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+  }
+
+  /* Better tap highlighting for mobile buttons */
+  .tap-highlight-none {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Active state for touch devices */
+  @media (hover: none) and (pointer: coarse) {
+    .touch-active:active {
+      transform: scale(0.97);
+      transition: transform 0.1s ease-out;
+    }
+  }
 }
 
 /* ====== LEAFLET MAP OVERRIDES - City Guide Style ====== */
@@ -393,27 +487,26 @@
   user-select: none;
 }
 
-/* GPU-accelerated tile rendering */
+/* GPU-accelerated tile rendering - optimized */
 .leaflet-tile-container {
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-  will-change: transform;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
 }
 
 .leaflet-tile {
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
   /* Instant tile rendering - no fade delay */
   opacity: 1 !important;
 }
 
 /* Smooth panning layer */
 .leaflet-map-pane {
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
 }
 
-/* Remove all transition delays from map elements */
+/* Remove all transition delays from map elements - optimized */
 .leaflet-pane,
 .leaflet-tile-pane,
 .leaflet-overlay-pane,
@@ -421,8 +514,8 @@
 .leaflet-marker-pane,
 .leaflet-tooltip-pane,
 .leaflet-popup-pane {
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
 }
 
 /* Disable CSS transitions on map during touch */
@@ -436,13 +529,13 @@
   transition: transform 0.25s cubic-bezier(0, 0, 0.25, 1);
 }
 
-/* Prevent jerky marker movement */
+/* Prevent jerky marker movement - optimized */
 .leaflet-marker-icon {
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
 }
 
-/* Film grain effect overlay for map - fine 400 ISO style */
+/* Film grain effect overlay for map - fine 400 ISO style - optimized */
 .map-grain-overlay {
   position: absolute;
   top: 0;
@@ -454,37 +547,37 @@
   opacity: 0.08;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   /* GPU layer - no impact on touch */
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
-  will-change: opacity;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
 }
 
-/* Soft map style with blue-gray roads */
+/* Soft map style with blue-gray roads - optimized for performance */
 .map-styled {
-  filter: saturate(0.6) brightness(1.02) contrast(0.9) hue-rotate(-8deg);
+  filter: saturate(0.6) brightness(1.02) contrast(0.9);
   /* GPU acceleration for filter */
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
+  will-change: auto;
 }
 
-/* Mask for area outside concelho - desaturated effect */
+/* Mask for area outside concelho - desaturated effect - optimized */
 .outside-mask {
   mix-blend-mode: saturation;
   /* GPU layer for smooth panning */
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
 }
 
-/* SVG paths in map should be GPU accelerated */
+/* SVG paths in map should be GPU accelerated - optimized */
 .leaflet-overlay-pane svg {
-  -webkit-transform: translateZ(0);
-  transform: translateZ(0);
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
 }
 
 .leaflet-overlay-pane svg path {
-  shape-rendering: geometricPrecision;
+  shape-rendering: optimizeSpeed;
 }
 
 .leaflet-popup-content-wrapper {
@@ -859,5 +952,428 @@
   .gps-btn::after {
     animation: none;
     display: none;
+  }
+}
+
+/* ====== ENHANCED MICRO-INTERACTIONS - STEP TRANSITIONS ====== */
+
+/* Step content fade-in-up animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.step-transition {
+  animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ====== BUTTON PRESS FEEDBACK - SATISFYING TACTILE FEEL ====== */
+
+/* Primary button with juice */
+.btn-primary-juicy {
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.btn-primary-juicy:active {
+  transform: scale(0.96);
+}
+
+.btn-primary-juicy:hover:not(:disabled) {
+  transform: scale(1.02) translateY(-1px);
+  box-shadow: 0 4px 16px rgba(255, 193, 7, 0.4);
+}
+
+/* Bottom nav buttons enhanced */
+.nav-btn-next {
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-btn-next::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.nav-btn-next:active:not(:disabled)::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* ====== CATEGORY SELECTION CELEBRATION ====== */
+
+/* Pop and glow effect when category selected */
+@keyframes categoryPop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15) rotate(-2deg);
+  }
+  100% {
+    transform: scale(1.05) rotate(0deg);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7), 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(255, 255, 255, 0), 0 8px 32px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.category-selected-pop {
+  animation: categoryPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1),
+             glowPulse 2s ease-in-out 0.5s infinite;
+}
+
+/* Checkmark bounce-in */
+@keyframes checkBounce {
+  0% {
+    transform: scale(0) rotate(-45deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(5deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
+
+.check-bounce-in {
+  animation: checkBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ====== PHOTO UPLOAD CELEBRATION ====== */
+
+/* Photo slot zoom-in with bounce */
+@keyframes photoPopIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.photo-pop-in {
+  animation: photoPopIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Photo remove with shrink */
+@keyframes photoShrinkOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.5) rotate(10deg);
+  }
+}
+
+.photo-shrink-out {
+  animation: photoShrinkOut 0.3s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards;
+}
+
+/* ====== CHARACTER COUNT ENCOURAGEMENT ====== */
+
+/* Progress indicator for description length */
+.char-count-progress {
+  transition: all 0.3s ease-out;
+}
+
+.char-count-good {
+  color: #22C55E;
+}
+
+.char-count-warning {
+  color: #F59E0B;
+}
+
+.char-count-max {
+  color: #EF4444;
+  font-weight: 700;
+}
+
+/* ====== URGENCY SELECTION ANIMATIONS ====== */
+
+@keyframes urgencySelect {
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.1) rotate(-3deg);
+  }
+  60% {
+    transform: scale(1.1) rotate(3deg);
+  }
+  100% {
+    transform: scale(1.05) rotate(0deg);
+  }
+}
+
+.urgency-selected-animate {
+  animation: urgencySelect 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ====== INPUT FOCUS MICRO-ANIMATIONS ====== */
+
+/* Input grows slightly on focus with smooth border glow */
+.input-enhanced {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.input-enhanced:focus {
+  transform: scale(1.01);
+  box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.1);
+}
+
+/* Label slides up on focus */
+@keyframes labelSlideUp {
+  from {
+    transform: translateY(0);
+    color: #9CA3AF;
+  }
+  to {
+    transform: translateY(-2px);
+    color: #2196F3;
+  }
+}
+
+.label-active {
+  animation: labelSlideUp 0.2s ease-out forwards;
+}
+
+/* ====== PROGRESS BAR ANIMATIONS ====== */
+
+/* Smooth fill with spring easing */
+.progress-bar-fill-animated {
+  transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Shimmer effect during progress */
+@keyframes progressShimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.progress-shimmer {
+  background: linear-gradient(90deg, #FFC107 0%, #FFD54F 25%, #FFC107 50%, #FFD54F 75%, #8BC34A 100%);
+  background-size: 200% 100%;
+  animation: progressShimmer 2s ease-in-out infinite;
+}
+
+/* ====== SUCCESS SCREEN CONFETTI ====== */
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0.3;
+  }
+}
+
+.confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.confetti-1 {
+  animation: confettiFall 3s ease-out forwards;
+  animation-delay: 0s;
+}
+
+.confetti-2 {
+  animation: confettiFall 3.5s ease-out forwards;
+  animation-delay: 0.1s;
+}
+
+.confetti-3 {
+  animation: confettiFall 3.2s ease-out forwards;
+  animation-delay: 0.2s;
+}
+
+/* ====== LOADING DOTS ANIMATION ====== */
+
+@keyframes loadingDots {
+  0%, 80%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.loading-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  margin: 0 2px;
+  animation: loadingDots 1.4s infinite ease-in-out;
+}
+
+.loading-dot:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-dot:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+/* ====== VALIDATION FEEDBACK ANIMATIONS ====== */
+
+/* Shake animation for errors */
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-4px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(4px);
+  }
+}
+
+.shake-error {
+  animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+}
+
+/* Success checkmark bounce */
+@keyframes successBounce {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.success-check {
+  animation: successBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ====== STEP BADGE PULSE ====== */
+
+@keyframes badgePulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+.step-badge-active {
+  animation: badgePulse 2s ease-in-out infinite;
+}
+
+/* ====== HOVER LIFT EFFECT ====== */
+
+.lift-on-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.lift-on-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* ====== TOOLTIP FADE IN ====== */
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tooltip-animate {
+  animation: tooltipFadeIn 0.2s ease-out;
+}
+
+/* ====== ACCESSIBILITY - RESPECT REDUCED MOTION ====== */
+
+@media (prefers-reduced-motion: reduce) {
+  .step-transition,
+  .category-selected-pop,
+  .check-bounce-in,
+  .photo-pop-in,
+  .urgency-selected-animate,
+  .progress-shimmer,
+  .confetti-1,
+  .confetti-2,
+  .confetti-3,
+  .loading-dot,
+  .shake-error,
+  .success-check,
+  .step-badge-active {
+    animation: none !important;
+  }
+
+  .nav-btn-next,
+  .btn-primary-juicy,
+  .lift-on-hover,
+  .input-enhanced {
+    transition: opacity 0.2s ease !important;
+    transform: none !important;
   }
 }

@@ -2,9 +2,8 @@
 
 import React, { useReducer, useCallback, useMemo, useState, useRef } from 'react'
 import dynamic from 'next/dynamic'
-import { Search, X, MapPin, Navigation, AlertTriangle } from 'lucide-react'
-import { WizardStateV2, WizardActionV2, ReportDataV2, Location, CategoryV2, Photo, UrgencyV2 } from '@/types'
-import { generateReference } from '@/lib/generateReference'
+import { Search, X, MapPin, Navigation } from 'lucide-react'
+import type { WizardStateV2, WizardActionV2, Location, CategoryV2, Photo, UrgencyV2 } from '@/types'
 import { useGeolocation } from '@/hooks/useGeolocation'
 import { useReverseGeocode } from '@/hooks/useReverseGeocode'
 import { useAddressSearch } from '@/hooks/useAddressSearch'
@@ -15,7 +14,6 @@ import { BottomNavV2 } from './BottomNavV2'
 import { CategoryGridV2 } from './CategoryGridV2'
 import { UrgencySelectorV2 } from './UrgencySelectorV2'
 import { PhotoUploadV2 } from './PhotoUploadV2'
-import { CategoryIconV2 } from './CategoryIconV2'
 import Textarea from '@/components/ui/Textarea'
 import LoadingSpinner from '@/components/ui/LoadingSpinner'
 
@@ -51,7 +49,7 @@ const initialState: WizardStateV2 = {
   submitError: null,
 }
 
-// Reducer
+// Reducer - handles all WizardActionV2 types exhaustively
 function wizardReducer(state: WizardStateV2, action: WizardActionV2): WizardStateV2 {
   switch (action.type) {
     case 'SET_LOCATION':
@@ -86,10 +84,12 @@ function wizardReducer(state: WizardStateV2, action: WizardActionV2): WizardStat
       return { ...state, data: { ...state.data, reference: action.payload.reference, letter: action.payload.letter }, isSubmitting: false, isSubmitted: true }
     case 'SUBMIT_ERROR':
       return { ...state, isSubmitting: false, submitError: action.payload }
+    case 'REGENERATE_START':
+      return { ...state, isSubmitting: true }
+    case 'REGENERATE_SUCCESS':
+      return { ...state, data: { ...state.data, letter: action.payload }, isSubmitting: false }
     case 'RESET':
       return { ...initialState, data: { ...initialState.data, location: null } }
-    default:
-      return state
   }
 }
 

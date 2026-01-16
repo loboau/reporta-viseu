@@ -136,3 +136,32 @@ export interface ReverseGeocodeResult {
   address: string
   freguesia: string | null
 }
+
+/**
+ * V2 Urgency option configuration for UI display
+ */
+export interface UrgencyOptionV2 {
+  readonly id: UrgencyV2
+  readonly label: string
+  readonly color: string
+  readonly bgColor: string
+  readonly iconPath: string
+}
+
+/**
+ * Address search result from Nominatim
+ */
+export interface AddressSearchResult {
+  id: number
+  displayName: string
+  location: Location
+  isInConcelho: boolean
+}
+
+/**
+ * Map API interface exposed by MapContainer
+ */
+export interface MapApi {
+  zoomIn: () => void
+  zoomOut: () => void
+}

@@ -5,7 +5,7 @@ import { MapContainer as LeafletMap, TileLayer, Marker, Popup, useMapEvents, use
 import { LatLngExpression, Icon, DivIcon, Map } from 'leaflet'
 import { Phone, Mail, Globe, AlertTriangle } from 'lucide-react'
 import 'leaflet/dist/leaflet.css'
-import { Location } from '@/types'
+import type { Location, MapApi } from '@/types'
 import { MAP_CONFIG, VISEU_CONCELHO_BOUNDS, WORLD_BOUNDS, isPointInViseuConcelho } from '@/lib/constants'
 
 // Câmara Municipal de Viseu location and info
@@ -48,7 +48,7 @@ interface MapContainerProps {
   className?: string
   zoomInTrigger?: number
   zoomOutTrigger?: number
-  onMapReady?: (mapApi: { zoomIn: () => void; zoomOut: () => void }) => void
+  onMapReady?: (mapApi: MapApi) => void
 }
 
 // Component to handle map clicks with boundary validation
@@ -113,7 +113,7 @@ function MapController({
   zoomOutTrigger,
 }: {
   onMapInstanceReady: (map: Map) => void
-  onMapApiReady?: (mapApi: { zoomIn: () => void; zoomOut: () => void }) => void
+  onMapApiReady?: (mapApi: MapApi) => void
   zoomInTrigger: number
   zoomOutTrigger: number
 }) {
@@ -220,8 +220,13 @@ function MapContainerComponent({
   const [isMounted, setIsMounted] = useState(false)
   const [markerIcon, setMarkerIcon] = useState<DivIcon | undefined>(undefined)
   const [camaraIcon, setCamaraIcon] = useState<Icon | undefined>(undefined)
-  const [mapInstance, setMapInstance] = useState<Map | null>(null)
   const [showOutOfBoundsWarning, setShowOutOfBoundsWarning] = useState(false)
+
+  // Store map instance for potential future use (e.g., programmatic control)
+  const mapInstanceRef = useRef<Map | null>(null)
+  const handleMapInstanceReady = useCallback((map: Map) => {
+    mapInstanceRef.current = map
+  }, [])
 
   useEffect(() => {
     setIsMounted(true)
@@ -230,7 +235,7 @@ function MapContainerComponent({
   }, [])
 
   // Handler para quando o utilizador clica fora do concelho
-  const handleOutOfBounds = useCallback(() => {
+  const handleOutOfBounds = useCallback((): void => {
     setShowOutOfBoundsWarning(true)
     // Esconder o aviso após 3 segundos
     setTimeout(() => setShowOutOfBoundsWarning(false), 3000)
@@ -284,7 +289,7 @@ function MapContainerComponent({
         />
 
         <MapController
-          onMapInstanceReady={setMapInstance}
+          onMapInstanceReady={handleMapInstanceReady}
           onMapApiReady={onMapReady}
           zoomInTrigger={zoomInTrigger}
           zoomOutTrigger={zoomOutTrigger}
