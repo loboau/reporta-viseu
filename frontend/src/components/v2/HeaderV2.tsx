@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { memo, useState, useEffect } from 'react'
 import Image from 'next/image'
 import { Menu } from 'lucide-react'
 
@@ -47,7 +47,7 @@ function formatDateTime(date: Date): { dateStr: string; timeStr: string } {
   }
 }
 
-export function HeaderV2({ onMenuClick }: HeaderV2Props) {
+export const HeaderV2 = memo(function HeaderV2({ onMenuClick }: HeaderV2Props) {
   const [dateTime, setDateTime] = useState<{ dateStr: string; timeStr: string }>(() =>
     formatDateTime(new Date())
   )
@@ -110,4 +110,4 @@ export function HeaderV2({ onMenuClick }: HeaderV2Props) {
       </div>
     </header>
   )
-}
+})

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { memo, useEffect, useState, useCallback } from 'react'
 import Image from 'next/image'
 import { X, Info, PlusCircle, HelpCircle, Mail, ExternalLink } from 'lucide-react'
 import { AboutModal } from './AboutModal'
@@ -12,7 +12,7 @@ interface SidebarDrawerProps {
   onNewReport?: () => void
 }
 
-export function SidebarDrawer({ isOpen, onClose, onNewReport }: SidebarDrawerProps) {
+export const SidebarDrawer = memo(function SidebarDrawer({ isOpen, onClose, onNewReport }: SidebarDrawerProps) {
   const [showAbout, setShowAbout] = useState(false)
   const [showHelp, setShowHelp] = useState(false)
   const [isVisible, setIsVisible] = useState(false)
@@ -183,4 +183,4 @@ export function SidebarDrawer({ isOpen, onClose, onNewReport }: SidebarDrawerPro
       <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} />
     </>
   )
-}
+})

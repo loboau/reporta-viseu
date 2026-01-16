@@ -1,8 +1,12 @@
 'use client'
 
+import { memo } from 'react'
 import { ChevronRight, ChevronLeft, Loader2 } from 'lucide-react'
 import Image from 'next/image'
 import type { Location } from '@/types'
+
+// Hoisted outside component to prevent recreation on each render
+const STEP_LABELS = ['Localização', 'Problema', 'Enviar'] as const
 
 interface BottomNavV2Props {
   currentStep: number
@@ -17,7 +21,7 @@ interface BottomNavV2Props {
   isGeocodingLoading?: boolean
 }
 
-export function BottomNavV2({
+export const BottomNavV2 = memo(function BottomNavV2({
   currentStep,
   onTabClick,
   onBack,
@@ -36,7 +40,7 @@ export function BottomNavV2({
     <nav className="w-full p-3 sm:p-4" aria-label="Navegação do formulário de reporte">
       {/* Step 1: Location display with VR yellow icon */}
       {currentStep === 1 && (
-        <div className="flex items-start gap-3 mb-3 px-1" role="status" aria-live="polite">
+        <div className="flex items-start gap-2 sm:gap-3 mb-2 sm:mb-3 px-2" role="status" aria-live="polite">
           <div className="w-10 h-10 sm:w-11 sm:h-11 flex-shrink-0 mt-0.5" aria-hidden="true">
             <Image
               src="/v2/icons/Icon_Pin_Amarelo.png"
@@ -80,7 +84,7 @@ export function BottomNavV2({
         </div>
         {/* Step labels below progress bar - flex with equal spacing */}
         <div className="flex justify-between items-center mt-2 px-1" role="tablist" aria-label="Passos do formulário">
-          {['Localização', 'Problema', 'Enviar'].map((label, index) => {
+          {STEP_LABELS.map((label, index) => {
             const stepNum = index + 1
             const isActive = stepNum === currentStep
             const isCompleted = stepNum < currentStep
@@ -112,7 +116,7 @@ export function BottomNavV2({
       </div>
 
       {/* Navigation buttons - animated transition */}
-      <div className="flex items-center justify-center gap-3">
+      <div className="flex items-center justify-center gap-2 sm:gap-3">
         {/* Back button - slides in from left with animation */}
         <div
           className={`transition-all duration-300 ease-out overflow-hidden ${
@@ -175,4 +179,4 @@ export function BottomNavV2({
       </div>
     </nav>
   )
-}
+})

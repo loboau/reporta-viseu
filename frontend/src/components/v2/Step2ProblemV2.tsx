@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useCallback, useEffect, useState } from 'react'
+import React, { memo, useRef, useCallback, useEffect, useState } from 'react'
 import type { CategoryV2, Photo, UrgencyV2 } from '@/types'
 import Textarea from '@/components/ui/Textarea'
 import { CategoryGridV2 } from './CategoryGridV2'
@@ -22,7 +22,7 @@ interface Step2ProblemV2Props {
   onUrgencyChange: (urgency: UrgencyV2) => void
 }
 
-export default function Step2ProblemV2({
+export default memo(function Step2ProblemV2({
   category,
   description,
   photos,
@@ -103,7 +103,7 @@ export default function Step2ProblemV2({
     <div className="space-y-3 sm:space-y-5">
       {/* Category Selection */}
       <div>
-        <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-2 sm:mb-3">
+        <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4">
           Identifique o tipo de problema
         </h2>
         <CategoryGridV2
@@ -113,7 +113,7 @@ export default function Step2ProblemV2({
       </div>
 
       {/* Selected Category Badge + Description */}
-      <div ref={descriptionSectionRef} className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-sm scroll-mt-20">
+      <div ref={descriptionSectionRef} className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-sm scroll-mt-20">
         {/* Selected category mini-badge */}
         {category && (
           <div className="flex items-center gap-2 mb-3 pb-3 border-b border-gray-100">
@@ -135,7 +135,7 @@ export default function Step2ProblemV2({
           </div>
         )}
 
-        <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-2 sm:mb-3">
+        <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4">
           Descreva o problema
         </h2>
         <Textarea
@@ -159,8 +159,8 @@ export default function Step2ProblemV2({
       </div>
 
       {/* Photo Upload */}
-      <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-sm">
-        <div className="flex items-center justify-between mb-2 sm:mb-3">
+      <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-sm">
+        <div className="flex items-center justify-between mb-3 sm:mb-4">
           <div className="flex-1 min-w-0">
             <h2 className="text-base sm:text-lg font-bold text-gray-900">
               Adicionar fotos
@@ -179,7 +179,7 @@ export default function Step2ProblemV2({
       </div>
 
       {/* Urgency Level */}
-      <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 shadow-sm">
+      <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-5 shadow-sm">
         <h2 className="text-base sm:text-lg font-bold text-gray-900 mb-3 sm:mb-4">
           Nível de urgência
         </h2>
@@ -187,10 +187,10 @@ export default function Step2ProblemV2({
           selected={urgency}
           onSelect={onUrgencyChange}
         />
-        <p className="text-[10px] sm:text-xs text-gray-400 text-center mt-3">
+        <p className="text-xs sm:text-sm text-gray-400 text-center mt-3">
           Emergências: ligue 112
         </p>
       </div>
     </div>
   )
-}
+})

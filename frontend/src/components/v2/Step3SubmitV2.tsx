@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback } from 'react'
+import React, { memo, useState, useCallback, useMemo } from 'react'
 import {
   MapPin,
   FileText,
@@ -37,13 +37,13 @@ interface ValidationErrors {
   phone?: string
 }
 
-export default function Step3SubmitV2({
+export default memo(function Step3SubmitV2({
   data,
   onNameChange,
   onEmailChange,
   onPhoneChange,
 }: Step3SubmitV2Props) {
-  const urgencyOption = urgencyOptionsV2.find(u => u.id === data.urgency)
+  const urgencyOption = useMemo(() => urgencyOptionsV2.find(u => u.id === data.urgency), [data.urgency])
   const [errors, setErrors] = useState<ValidationErrors>({})
   const [touched, setTouched] = useState<Record<string, boolean>>({})
 
@@ -118,7 +118,10 @@ export default function Step3SubmitV2({
   }, [data.phone])
 
   // Sanitize address from reverse geocoding (XSS protection)
-  const sanitizedAddress = data.location?.address ? sanitizeAddress(data.location.address) : ''
+  const sanitizedAddress = useMemo(
+    () => data.location?.address ? sanitizeAddress(data.location.address) : '',
+    [data.location?.address]
+  )
 
   return (
     <div className="space-y-3 sm:space-y-4">
@@ -378,4 +381,4 @@ export default function Step3SubmitV2({
       </div>
     </div>
   )
-}
+})

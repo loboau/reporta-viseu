@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { memo, useState, useCallback } from 'react'
 import type { UrgencyV2 } from '@/types'
 import { urgencyOptionsV2 } from '@/lib/categoriesV2'
 import { CategoryIconV2 } from './CategoryIconV2'
@@ -10,13 +10,13 @@ interface UrgencySelectorV2Props {
   onSelect: (urgency: UrgencyV2) => void
 }
 
-export function UrgencySelectorV2({ selected, onSelect }: UrgencySelectorV2Props) {
-  const [lastSelected, setLastSelected] = React.useState<UrgencyV2 | null>(null)
+export const UrgencySelectorV2 = memo(function UrgencySelectorV2({ selected, onSelect }: UrgencySelectorV2Props) {
+  const [lastSelected, setLastSelected] = useState<UrgencyV2 | null>(null)
 
-  const handleSelect = (urgency: UrgencyV2) => {
+  const handleSelect = useCallback((urgency: UrgencyV2) => {
     setLastSelected(urgency)
     onSelect(urgency)
-  }
+  }, [onSelect])
   return (
     <div className="flex gap-2 sm:gap-3" role="group" aria-label="Selecione o nível de urgência">
       {urgencyOptionsV2.map((option) => {
@@ -55,7 +55,7 @@ export function UrgencySelectorV2({ selected, onSelect }: UrgencySelectorV2Props
             </div>
             {/* Label */}
             <span
-              className="text-[11px] sm:text-sm font-semibold text-center leading-tight w-full truncate px-0.5"
+              className="text-xs sm:text-sm font-semibold text-center leading-tight w-full truncate px-0.5"
               style={{ color: option.color }}
               aria-hidden="true"
             >
@@ -66,4 +66,4 @@ export function UrgencySelectorV2({ selected, onSelect }: UrgencySelectorV2Props
       })}
     </div>
   )
-}
+})

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState, useRef, useCallback } from 'react'
+import React, { memo, useEffect, useState, useRef, useCallback } from 'react'
 import { MapPin, Search, X, Target, AlertTriangle } from 'lucide-react'
 import type { Location, MapApi } from '@/types'
 import { useGeolocation } from '@/hooks/useGeolocation'
@@ -15,7 +15,7 @@ interface Step1LocationV2Props {
   mapApi: MapApi | null
 }
 
-export default function Step1LocationV2({
+export default memo(function Step1LocationV2({
   location,
   onLocationChange,
   mapApi,
@@ -24,13 +24,13 @@ export default function Step1LocationV2({
   const searchInputRef = useRef<HTMLInputElement>(null)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
-  const handleZoomIn = () => {
+  const handleZoomIn = useCallback(() => {
     mapApi?.zoomIn()
-  }
+  }, [mapApi])
 
-  const handleZoomOut = () => {
+  const handleZoomOut = useCallback(() => {
     mapApi?.zoomOut()
-  }
+  }, [mapApi])
 
   const geolocation = useGeolocation()
   const { reverseGeocode } = useReverseGeocode()
@@ -81,7 +81,7 @@ export default function Step1LocationV2({
 
   const [outOfBoundsError, setOutOfBoundsError] = useState<string | null>(null)
 
-  const handleAddressSelect = async (result: typeof addressSearch.results[0]) => {
+  const handleAddressSelect = useCallback(async (result: typeof addressSearch.results[0]) => {
     if (!result.isInConcelho && !isPointInViseuConcelho(result.location.lat, result.location.lng)) {
       setOutOfBoundsError('Este local está fora do Concelho de Viseu')
       setTimeout(() => setOutOfBoundsError(null), 3000)
@@ -92,7 +92,7 @@ export default function Step1LocationV2({
     addressSearch.clearSearch()
     setShowDropdown(false)
     setOutOfBoundsError(null)
-  }
+  }, [handleLocationChange, addressSearch])
 
   return (
     <>
@@ -238,4 +238,4 @@ export default function Step1LocationV2({
       </div>
     </>
   )
-}
+})

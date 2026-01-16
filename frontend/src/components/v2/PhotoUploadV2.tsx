@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, ChangeEvent, useEffect, useState } from 'react'
+import React, { memo, useRef, useCallback, useEffect, useState, ChangeEvent } from 'react'
 import Image from 'next/image'
 import { X, Plus, AlertCircle } from 'lucide-react'
 import type { Photo } from '@/types'
@@ -14,7 +14,7 @@ interface PhotoUploadV2Props {
   onRemovePhoto: (id: string) => void
 }
 
-export function PhotoUploadV2({
+export const PhotoUploadV2 = memo(function PhotoUploadV2({
   photos,
   onAddPhoto,
   onRemovePhoto,
@@ -42,7 +42,7 @@ export function PhotoUploadV2({
     return undefined
   }, [uploadError])
 
-  const handleFileSelect = async (e: ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = useCallback(async (e: ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
     if (!files || files.length === 0) return
 
@@ -91,11 +91,11 @@ export function PhotoUploadV2({
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
-  }
+  }, [photos.length, onAddPhoto])
 
-  const handleButtonClick = () => {
+  const handleButtonClick = useCallback(() => {
     fileInputRef.current?.click()
-  }
+  }, [])
 
   return (
     <div>
@@ -138,7 +138,7 @@ export function PhotoUploadV2({
               type="button"
               onClick={() => onRemovePhoto(photo.id)}
               className="absolute top-1 right-1 sm:top-2 sm:right-2 w-8 h-8 sm:w-9 sm:h-9 bg-white/90 backdrop-blur-sm text-v2-pink touch-target
-                         rounded-xl flex items-center justify-center
+                         rounded-lg sm:rounded-xl flex items-center justify-center
                          opacity-100
                          transition-colors duration-200 hover:bg-white active:bg-gray-100 shadow-sm
                          focus:outline-none focus-visible:ring-2 focus-visible:ring-v2-pink focus-visible:ring-offset-1"
@@ -172,7 +172,7 @@ export function PhotoUploadV2({
                     className="opacity-50 w-14 h-14 sm:w-16 sm:h-16"
                   />
                 </div>
-                <span className="text-[11px] sm:text-sm text-gray-500 font-semibold">
+                <span className="text-xs sm:text-sm text-gray-500 font-semibold">
                   Tirar Foto
                 </span>
               </>
@@ -182,7 +182,7 @@ export function PhotoUploadV2({
                                 flex items-center justify-center">
                   <Plus className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                 </div>
-                <span className="text-[10px] sm:text-xs text-gray-400 font-medium">
+                <span className="text-xs sm:text-sm text-gray-400 font-medium">
                   Mais
                 </span>
               </>
@@ -192,4 +192,4 @@ export function PhotoUploadV2({
       </div>
     </div>
   )
-}
+})

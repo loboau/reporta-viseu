@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { memo, useState, useCallback, useMemo } from 'react'
 import { CheckCircle, Copy, Mail, FileText, RotateCcw, Check, RefreshCw } from 'lucide-react'
 import type { ReportDataV2 } from '@/types'
 import Button from '@/components/ui/Button'
@@ -50,25 +50,28 @@ Com os melhores cumprimentos,
 ${senderName}`
 }
 
-export default function StepSuccessV2({ data, onNewReport, onRegenerateLetter, isRegenerating }: StepSuccessV2Props) {
+export default memo(function StepSuccessV2({ data, onNewReport, onRegenerateLetter, isRegenerating }: StepSuccessV2Props) {
   const [copiedLetter, setCopiedLetter] = useState(false)
 
-  const handleCopyLetter = async (): Promise<void> => {
-    const letter = buildFormalLetter(data)
+  const formalLetter = useMemo(() => buildFormalLetter(data), [data])
+
+  const handleCopyLetter = useCallback(async (): Promise<void> => {
     try {
-      await navigator.clipboard.writeText(letter)
+      await navigator.clipboard.writeText(formalLetter)
       setCopiedLetter(true)
       setTimeout(() => setCopiedLetter(false), 2000)
     } catch {
       // Fallback for browsers that don't support clipboard API
       console.warn('Clipboard API not available')
     }
-  }
+  }, [formalLetter])
 
-  const formalLetter = buildFormalLetter(data)
   const testEmail = 'teste@reportaviseu.pt'
 
-  const emailLink = `mailto:${testEmail}?subject=${encodeURIComponent(`[${data.reference}] ${data.category?.label || 'Reporte'} - Viseu Reporta`)}&body=${encodeURIComponent(formalLetter)}`
+  const emailLink = useMemo(() =>
+    `mailto:${testEmail}?subject=${encodeURIComponent(`[${data.reference}] ${data.category?.label || 'Reporte'} - Viseu Reporta`)}&body=${encodeURIComponent(formalLetter)}`,
+    [data.reference, data.category?.label, formalLetter]
+  )
 
   return (
     <div className="space-y-5 animate-fade-in pb-32">
@@ -224,4 +227,4 @@ export default function StepSuccessV2({ data, onNewReport, onRegenerateLetter, i
       </div>
     </div>
   )
-}
+})
