@@ -82,6 +82,7 @@ export function useAddressSearch() {
           {
             headers: {
               'Accept': 'application/json',
+              'User-Agent': 'ViseuReporta/2.0 (https://reporta.viseu.pt; municipal-reporting-app)',
             },
             signal: abortControllerRef.current.signal,
           }

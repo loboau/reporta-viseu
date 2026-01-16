@@ -51,6 +51,7 @@ export function useReverseGeocode() {
         const response = await fetch(`${NOMINATIM_URL}?${params}`, {
           headers: {
             'Accept-Language': 'pt-PT,pt',
+            'User-Agent': 'ViseuReporta/2.0 (https://reporta.viseu.pt; municipal-reporting-app)',
           },
           signal: abortControllerRef.current.signal,
         })

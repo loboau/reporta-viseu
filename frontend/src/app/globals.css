@@ -562,22 +562,41 @@
   will-change: auto;
 }
 
-/* Mask for area outside concelho - desaturated effect - optimized */
+/* Mask for area outside concelho - GPU optimized for smooth zoom */
 .outside-mask {
-  mix-blend-mode: saturation;
-  /* GPU layer for smooth panning */
+  /* GPU layer for smooth panning and zooming */
   -webkit-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
+  contain: layout paint;
+  will-change: transform;
 }
 
 /* SVG paths in map should be GPU accelerated - optimized */
 .leaflet-overlay-pane svg {
   -webkit-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
+  will-change: transform;
 }
 
 .leaflet-overlay-pane svg path {
-  shape-rendering: optimizeSpeed;
+  shape-rendering: geometricPrecision;
+  will-change: transform, d;
+}
+
+/* Critical fix: Sync overlay pane transitions with Leaflet zoom animation */
+.leaflet-zoom-anim .leaflet-overlay-pane {
+  -webkit-transition: -webkit-transform 0.25s cubic-bezier(0, 0, 0.25, 1);
+  transition: transform 0.25s cubic-bezier(0, 0, 0.25, 1);
+}
+
+.leaflet-zoom-anim .leaflet-overlay-pane svg {
+  -webkit-transition: -webkit-transform 0.25s cubic-bezier(0, 0, 0.25, 1);
+  transition: transform 0.25s cubic-bezier(0, 0, 0.25, 1);
+}
+
+/* Optimize polygon rendering during zoom */
+.leaflet-interactive {
+  will-change: transform;
 }
 
 .leaflet-popup-content-wrapper {
