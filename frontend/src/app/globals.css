@@ -569,6 +569,16 @@
   transform: translate3d(0, 0, 0);
   contain: layout paint;
   will-change: transform;
+  /* Natural integration with map tiles */
+  mix-blend-mode: multiply;
+}
+
+/* Boundary line with subtle glow for depth */
+.boundary-line {
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+  filter: drop-shadow(0 0 2px rgba(74, 85, 104, 0.3));
 }
 
 /* SVG paths in map should be GPU accelerated - optimized */
@@ -1211,13 +1221,13 @@
 
 /* ====== INPUT FOCUS MICRO-ANIMATIONS ====== */
 
-/* Input grows slightly on focus with smooth border glow */
+/* Input focus glow effect - no transform to maintain Safari keyboard compatibility */
 .input-enhanced {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .input-enhanced:focus {
-  transform: scale(1.01);
+  /* Note: transform removed - causes Safari keyboard input issues */
   box-shadow: 0 0 0 4px rgba(33, 150, 243, 0.1);
 }
 

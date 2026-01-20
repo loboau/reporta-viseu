@@ -331,28 +331,29 @@ function MapContainerComponent({
           onOutOfBounds={handleOutOfBounds}
         />
 
-        {/* Máscara para área fora do concelho - desaturação com cinza */}
+        {/* Máscara para área fora do concelho - blue-gray with natural blend */}
         <Polygon
           positions={[WORLD_BOUNDS, VISEU_CONCELHO_BOUNDS]}
           pathOptions={{
             color: 'transparent',
-            fillColor: '#d0d0d0',
-            fillOpacity: 0.55,
+            fillColor: '#7a8a9b',
+            fillOpacity: 0.30,
             stroke: false,
           }}
           className="outside-mask"
         />
 
-        {/* Limites do Concelho de Viseu - apenas tracejado sem fill */}
+        {/* Limites do Concelho de Viseu - boundary line with subtle glow */}
         <Polygon
           positions={VISEU_CONCELHO_BOUNDS}
           pathOptions={{
-            color: '#9CA3AF',
-            weight: 2,
-            opacity: 0.6,
+            color: '#4a5568',
+            weight: 2.5,
+            opacity: 0.7,
             fill: false,
-            dashArray: '8, 12',
+            dashArray: '6, 8',
           }}
+          className="boundary-line"
         />
 
         {/* Câmara Municipal de Viseu - Fixed marker */}

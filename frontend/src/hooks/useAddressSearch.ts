@@ -126,7 +126,7 @@ export function useAddressSearch() {
         setResults([])
         setLoading(false)
       }
-    }, 400) // 400ms debounce
+    }, 350) // 350ms debounce
 
     return () => {
       clearTimeout(timeoutId)

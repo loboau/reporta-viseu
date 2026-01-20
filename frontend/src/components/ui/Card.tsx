@@ -28,7 +28,19 @@ export default function Card({
     <div
       className={`${variantClasses[variant]} ${isClickable ? 'cursor-pointer' : ''} ${className}`}
       onClick={onClick}
-      onKeyDown={isClickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') onClick?.() } : undefined}
+      onKeyDown={isClickable ? (e) => {
+        // Don't interfere with form inputs - let them handle keyboard events normally
+        const target = e.target as HTMLElement
+        const isFormElement = target.tagName === 'INPUT' ||
+                              target.tagName === 'TEXTAREA' ||
+                              target.tagName === 'SELECT' ||
+                              target.isContentEditable
+
+        if (!isFormElement && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault()
+          onClick?.()
+        }
+      } : undefined}
       role={isClickable ? 'button' : undefined}
       tabIndex={isClickable ? 0 : undefined}
     >

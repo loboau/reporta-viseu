@@ -8,7 +8,6 @@ const geocodeCache = new Map<string, { result: ReverseGeocodeResult; timestamp: 
 const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
 
 function getCacheKey(lat: number, lng: number): string {
-  // Round to 5 decimal places (~1m precision) for cache key
   return `${lat.toFixed(5)},${lng.toFixed(5)}`
 }
 
@@ -39,7 +38,6 @@ export function useReverseGeocode() {
       abortControllerRef.current = new AbortController()
 
       try {
-        // Use our API route which handles User-Agent on server side
         const response = await fetch(
           `/api/geocode?lat=${location.lat}&lng=${location.lng}`,
           {
@@ -59,12 +57,10 @@ export function useReverseGeocode() {
         setLoading(false)
         return result
       } catch (err) {
-        // Don't set error state for aborted requests
         if (err instanceof Error && err.name === 'AbortError') {
           return null
         }
-        const errorMessage =
-          err instanceof Error ? err.message : 'Erro ao obter endereço'
+        const errorMessage = err instanceof Error ? err.message : 'Erro ao obter endereço'
         setError(errorMessage)
         setLoading(false)
         return null

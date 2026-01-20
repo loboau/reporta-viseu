@@ -76,14 +76,17 @@ export function sanitizePlainText(input: string, maxLength: number = 1000): stri
  * Sanitizes name input
  * - Allows letters, spaces, hyphens, apostrophes
  * - Removes numbers and special characters that don't belong in names
+ *
+ * NOTE: Does NOT trim to allow natural typing with spaces between names.
+ * Trimming should happen at validation/submission time.
  */
 export function sanitizeName(name: string): string {
   if (!name || typeof name !== 'string') return ''
 
   return name
     .replace(/[^a-zA-ZÀ-ÿ\s'-]/g, '') // Only allow letters, spaces, hyphens, apostrophes
-    .replace(/\s+/g, ' ') // Normalize multiple spaces
-    .trim()
+    .replace(/\s+/g, ' ') // Normalize multiple spaces to single space
+    .replace(/^\s+/, '') // Only trim leading spaces (not trailing, to allow typing)
     .slice(0, 100)
 }
 
@@ -127,8 +130,11 @@ export function sanitizePhone(phone: string): string {
 /**
  * Sanitizes description/textarea input
  * - Strips HTML tags
- * - Removes excessive whitespace
+ * - Removes excessive whitespace (but preserves trailing spaces for typing)
  * - Prevents script injection
+ *
+ * NOTE: Does NOT trim to allow natural typing with spaces.
+ * Trimming should happen at validation/submission time.
  */
 export function sanitizeDescription(description: string): string {
   if (!description || typeof description !== 'string') return ''
@@ -139,11 +145,11 @@ export function sanitizeDescription(description: string): string {
   // Remove excessive line breaks (max 2 consecutive)
   sanitized = sanitized.replace(/\n{3,}/g, '\n\n')
 
-  // Remove excessive spaces
+  // Remove excessive spaces (but keep single/double spaces for natural typing)
   sanitized = sanitized.replace(/ {3,}/g, '  ')
 
-  // Trim and limit length
-  return sanitized.trim().slice(0, 2000)
+  // Limit length only - NO trim to preserve trailing spaces during typing
+  return sanitized.slice(0, 2000)
 }
 
 /**
