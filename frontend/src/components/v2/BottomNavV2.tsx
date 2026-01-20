@@ -1,9 +1,17 @@
 'use client'
 
 import { memo } from 'react'
+import { motion } from 'framer-motion'
 import { ChevronRight, ChevronLeft, Loader2 } from 'lucide-react'
 import Image from 'next/image'
 import type { Location } from '@/types'
+
+// Spring configuration for satisfying tap feedback
+const springConfig = {
+  type: 'spring' as const,
+  stiffness: 400,
+  damping: 17,
+}
 
 // Hoisted outside component to prevent recreation on each render
 const STEP_LABELS = ['Localização', 'Problema', 'Enviar'] as const
@@ -125,43 +133,51 @@ export const BottomNavV2 = memo(function BottomNavV2({
       {/* Navigation buttons - animated transition */}
       <div className="flex items-center justify-center gap-2 sm:gap-3">
         {/* Back button - slides in from left with animation */}
-        <div
-          className={`transition-all duration-300 ease-out overflow-hidden ${
-            showBack && currentStep > 1
-              ? 'w-auto opacity-100 translate-x-0'
-              : 'w-0 opacity-0 -translate-x-4'
-          }`}
+        <motion.div
+          initial={false}
+          animate={{
+            width: showBack && currentStep > 1 ? 'auto' : 0,
+            opacity: showBack && currentStep > 1 ? 1 : 0,
+            x: showBack && currentStep > 1 ? 0 : -16,
+          }}
+          transition={{ duration: 0.3, ease: 'easeOut' }}
+          className="overflow-hidden"
         >
-          <button
+          <motion.button
             type="button"
             onClick={onBack}
             aria-label="Voltar ao passo anterior"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.95 }}
+            transition={springConfig}
             className="flex items-center justify-center gap-1.5 px-5 py-3 rounded-xl touch-target
-                       bg-gray-100 hover:bg-gray-200 active:bg-gray-300
+                       bg-gray-100 hover:bg-gray-200
                        text-gray-600 text-sm font-semibold
-                       transition-all duration-200 active:scale-[0.97]
                        focus:outline-none focus-visible:ring-2 focus-visible:ring-v2-yellow focus-visible:ring-offset-2
                        whitespace-nowrap min-h-[44px]"
           >
             <ChevronLeft className="w-5 h-5" aria-hidden="true" />
             <span>Voltar</span>
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
 
         {/* Next/Submit button - centered, contracts when back button appears */}
-        <button
+        <motion.button
           type="button"
           onClick={onNext}
           disabled={nextDisabled || isLoading}
           aria-label={currentStep === 3 ? 'Gerar carta formal' : 'Avançar para próximo passo'}
           aria-disabled={nextDisabled || isLoading}
+          whileHover={nextDisabled || isLoading ? undefined : { scale: 1.02 }}
+          whileTap={nextDisabled || isLoading ? undefined : { scale: 0.95 }}
+          transition={springConfig}
           className={`flex items-center justify-center gap-2 px-8 py-3 touch-target
                       rounded-xl text-sm font-semibold nav-btn-next min-h-[44px]
                       focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-v2-yellow
                       ${
             nextDisabled || isLoading
               ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-              : 'bg-v2-yellow text-gray-900 hover:bg-yellow-400 active:bg-yellow-500 active:scale-[0.97]'
+              : 'bg-v2-yellow text-gray-900 hover:bg-yellow-400'
           } ${
             showBack && currentStep > 1 ? 'flex-1 max-w-[200px]' : 'w-full max-w-[280px]'
           }`}
@@ -182,7 +198,7 @@ export const BottomNavV2 = memo(function BottomNavV2({
               <ChevronRight className="w-5 h-5" aria-hidden="true" />
             </>
           )}
-        </button>
+        </motion.button>
       </div>
     </nav>
   )

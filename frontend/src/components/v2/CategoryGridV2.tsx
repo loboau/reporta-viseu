@@ -1,9 +1,17 @@
 'use client'
 
 import React, { memo, useMemo, useCallback } from 'react'
+import { motion } from 'framer-motion'
 import type { CategoryV2 } from '@/types'
 import { categoriesV2 } from '@/lib/categoriesV2'
 import { CategoryIconV2 } from './CategoryIconV2'
+
+// Spring configuration for satisfying tap feedback
+const springConfig = {
+  type: 'spring' as const,
+  stiffness: 400,
+  damping: 17,
+}
 
 interface CategoryGridV2Props {
   selectedCategory: CategoryV2 | null
@@ -35,22 +43,25 @@ export const CategoryGridV2 = memo(function CategoryGridV2({ selectedCategory, o
             const isSelected = selectedCategory?.id === category.id
 
             return (
-              <button
+              <motion.button
                 key={category.id}
                 type="button"
                 onClick={() => handleSelect(category)}
                 aria-pressed={isSelected}
                 aria-label={`${category.label} - ${category.sublabel}${isSelected ? ' (selecionado)' : ''}`}
-                className={`flex-1 aspect-square flex flex-col items-center justify-between pt-2.5 pb-1.5 sm:pt-5 sm:pb-3 px-1 sm:px-2 rounded-lg sm:rounded-2xl focus:outline-none focus-visible:ring-4 focus-visible:ring-white focus-visible:ring-offset-2 ${
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.92 }}
+                animate={
                   isSelected && lastSelected === category.id
-                    ? 'category-selected-pop'
+                    ? { scale: [1, 1.08, 1.02], transition: { duration: 0.3 } }
                     : isSelected
-                    ? 'scale-[1.02]'
-                    : 'hover:scale-[1.02] active:scale-95 shadow-sm transition-all duration-200'
-                }`}
+                    ? { scale: 1.02 }
+                    : { scale: 1 }
+                }
+                transition={springConfig}
+                className="flex-1 aspect-square flex flex-col items-center justify-between pt-2.5 pb-1.5 sm:pt-5 sm:pb-3 px-1 sm:px-2 rounded-lg sm:rounded-2xl focus:outline-none focus-visible:ring-4 focus-visible:ring-white focus-visible:ring-offset-2 shadow-sm"
                 style={{
                   backgroundColor: category.color,
-                  // Sombra lateral estilo logo quando selecionado
                   boxShadow: isSelected
                     ? `4px 4px 0px 0px ${category.color}40, 6px 6px 12px 0px rgba(0,0,0,0.15)`
                     : undefined,
@@ -69,7 +80,7 @@ export const CategoryGridV2 = memo(function CategoryGridV2({ selectedCategory, o
                 <span className="text-xs sm:text-sm font-semibold text-white text-center leading-tight w-full truncate px-0.5" aria-hidden="true">
                   {category.label}
                 </span>
-              </button>
+              </motion.button>
             )
           })}
         </div>
