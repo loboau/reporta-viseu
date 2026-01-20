@@ -312,6 +312,11 @@ function MapContainerComponent({
         worldCopyJump={false}
         // Enable bounce at bounds for natural feel
         bounceAtZoomLimits={true}
+        // Smooth zoom configuration - reduces jerkiness
+        wheelDebounceTime={40}
+        wheelPxPerZoomLevel={80}
+        zoomDelta={0.5}
+        zoomSnap={0.25}
       >
         {/* Voyager map with terrain colors - shows green parks, blue water, elevation */}
         <TileLayer

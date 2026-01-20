@@ -478,10 +478,9 @@
   /* Touch-optimized rendering for fluid navigation */
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
-  /* GPU acceleration for smooth panning */
+  /* GPU acceleration for smooth panning - translate3d is sufficient, no will-change needed */
   -webkit-transform: translateZ(0);
   transform: translateZ(0);
-  will-change: transform;
   /* Prevent text selection during drag */
   -webkit-user-select: none;
   user-select: none;
@@ -562,35 +561,31 @@
   will-change: auto;
 }
 
-/* Mask for area outside concelho - GPU optimized for smooth zoom */
+/* Mask for area outside concelho - simplified for smooth zoom */
 .outside-mask {
   /* GPU layer for smooth panning and zooming */
   -webkit-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
   contain: layout paint;
-  will-change: transform;
-  /* Natural integration with map tiles */
-  mix-blend-mode: multiply;
+  /* Removed will-change and mix-blend-mode for zoom performance */
 }
 
-/* Boundary line with subtle glow for depth */
+/* Boundary line - simplified for zoom performance */
 .boundary-line {
   -webkit-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
-  will-change: transform;
-  filter: drop-shadow(0 0 2px rgba(74, 85, 104, 0.3));
+  /* Removed will-change and drop-shadow filter for zoom performance */
 }
 
-/* SVG paths in map should be GPU accelerated - optimized */
+/* SVG paths in map - simplified for zoom performance */
 .leaflet-overlay-pane svg {
   -webkit-transform: translate3d(0, 0, 0);
   transform: translate3d(0, 0, 0);
-  will-change: transform;
 }
 
 .leaflet-overlay-pane svg path {
   shape-rendering: geometricPrecision;
-  will-change: transform, d;
+  /* Removed will-change: transform, d - causes severe zoom lag */
 }
 
 /* Critical fix: Sync overlay pane transitions with Leaflet zoom animation */
@@ -604,9 +599,9 @@
   transition: transform 0.25s cubic-bezier(0, 0, 0.25, 1);
 }
 
-/* Optimize polygon rendering during zoom */
+/* Polygon rendering - removed will-change for zoom performance */
 .leaflet-interactive {
-  will-change: transform;
+  /* will-change removed - causes layer explosion during zoom */
 }
 
 .leaflet-popup-content-wrapper {
@@ -821,7 +816,13 @@
 .floating-marker-icon {
   animation: markerFloat 2.5s ease-in-out infinite;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
-  will-change: transform; /* GPU acceleration for smooth animation */
+}
+
+/* Pause marker animations during zoom for GPU performance */
+.leaflet-zooming .floating-marker-icon,
+.leaflet-zooming .marker-shadow,
+.leaflet-zooming .floating-marker-container {
+  animation-play-state: paused !important;
 }
 
 /* ====== LEAFLET MARKER STABILITY ====== */
